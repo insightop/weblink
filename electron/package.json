@@ -1,0 +1,40 @@
+{
+    "name": "webhard",
+    "version": "1.0.0",
+    "description": "基于 web 技术的硬件调试工具集合",
+    "main": "main.js",
+    "scripts": {
+      "start": "electron ."
+    },
+    "devDependencies": {
+      "electron": "^23.3.13"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/insightop/webhard.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+      "url": "https://github.com/insightop/webhard/issues"
+    },
+    "homepage": "https://github.com/insightop/webhard#readme",
+    "build": {
+      "appId": "com.insightop.webhard",
+      "win": {
+        "target": "portable",
+        "icon": "build/icon.ico"
+      },
+      "mac": {
+        "target": "dmg",
+        "icon": "build/icon.icns"
+      },
+      "files": [
+        "dist/**/*",
+        "!node_modules"
+      ]
+    }
+  }
+  
