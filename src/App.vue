@@ -10,9 +10,15 @@ import HelloWorld from './components/HelloWorld.vue'
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+      <nav class="tab-nav">
+        <RouterLink to="/serial">Serial</RouterLink>
+        <RouterLink to="/camera">Camera</RouterLink>
+        <RouterLink to="/microphone">Microphone</RouterLink>
+        <RouterLink to="/bluetooth">Bluetooth</RouterLink>
+        <RouterLink to="/st-link">ST-Link</RouterLink>
+        <RouterLink to="/dap-link">DAP-Link</RouterLink>
+        <RouterLink to="/usb-dfu">USB-DFU</RouterLink>
+        <RouterLink to="/hid">HID</RouterLink>
       </nav>
     </div>
   </header>
@@ -54,6 +60,25 @@ nav a {
 
 nav a:first-of-type {
   border: 0;
+}
+
+.tab-nav {
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #eee;
+  background: #fafafa;
+}
+.tab-nav a {
+  padding: 1rem 2rem;
+  text-decoration: none;
+  color: #333;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+.tab-nav a.router-link-exact-active {
+  border-bottom: 2px solid #42b983;
+  color: #42b983;
+  background: #fff;
 }
 
 @media (min-width: 1024px) {
