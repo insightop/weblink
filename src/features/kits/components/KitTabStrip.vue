@@ -26,26 +26,65 @@ function onCloseAllClick() {
         :class="{ 'tab--active': t.id === props.activeTabId }"
         @click="emit('activate', t.id)"
       >
-        <KitIcon :icon="t.icon" :name="t.title" :size="14" class="tab__icon" />
+        <div class="tab__lead">
+          <KitIcon :icon="t.icon" :name="t.title" :size="14" class="tab__icon" />
+          <button
+            v-if="t.id === props.activeTabId"
+            type="button"
+            class="tab__hover tab__hover--reload"
+            title="刷新"
+            @click.stop="emit('reload', t.id)"
+          >
+            <span class="tab__hoverGlyph" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M20 12a8 8 0 0 1-13.66 5.66"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M4 12a8 8 0 0 1 13.66-5.66"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M18.6 7.2H21V4.8"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M3 19.2v-2.4h2.4"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+          </button>
+        </div>
         <span class="tab__title">{{ t.title }}</span>
         <span v-if="t.instanceIndex && t.instanceIndex > 1" class="tab__badge">
           {{ t.instanceIndex }}
         </span>
         <button
           type="button"
-          class="tab__btn tab__btn--reload"
-          title="刷新"
-          @click.stop="emit('reload', t.id)"
-        >
-          ↻
-        </button>
-        <button
-          type="button"
           class="tab__btn tab__btn--close"
           title="关闭"
           @click.stop="emit('close', t.id)"
         >
-          ×
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M7 7 17 17M17 7 7 17"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            />
+          </svg>
         </button>
       </div>
 
@@ -127,9 +166,67 @@ function onCloseAllClick() {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.tab__lead {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
 .tab__icon {
   flex: 0 0 auto;
   opacity: 0.9;
+  transition: opacity 0.12s ease;
+}
+.tab__hover {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  color: rgba(0, 0, 0, 0.55);
+  border-radius: 8px;
+  transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease;
+  font-size: 16px;
+  line-height: 1;
+}
+.tab__hoverGlyph {
+  display: inline-block;
+  transform-origin: 50% 50%;
+}
+.tab__hoverGlyph svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+.tab--active:hover .tab__icon {
+  opacity: 0;
+}
+.tab--active:hover .tab__hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+.tab__hover--reload:hover {
+  color: rgba(37, 99, 235, 0.95);
+  background: rgba(37, 99, 235, 0.10);
+}
+.tab--active:hover .tab__hover--reload .tab__hoverGlyph {
+  animation: weblink-rotate 0.55s ease-out 1;
+}
+@keyframes weblink-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .tab__badge {
   font-size: 12px;
@@ -147,7 +244,6 @@ function onCloseAllClick() {
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 16px;
   line-height: 1;
   width: 22px;
   height: 22px;
@@ -158,6 +254,11 @@ function onCloseAllClick() {
   color: rgba(0, 0, 0, 0.55);
   border-radius: 8px;
 }
+.tab__btn svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
 .tab--active .tab__btn {
   color: rgba(0, 0, 0, 0.7);
 }
@@ -167,13 +268,12 @@ function onCloseAllClick() {
 .tab__btn:active {
   background: rgba(0, 0, 0, 0.1);
 }
-.tab__btn--reload:hover {
-  color: rgba(37, 99, 235, 0.95);
-  background: rgba(37, 99, 235, 0.10);
-}
 .tab__btn--close:hover {
   color: rgba(220, 38, 38, 0.95);
   background: rgba(220, 38, 38, 0.10);
+}
+.tab__btn--close {
+  border-radius: 999px;
 }
 
 .action {
