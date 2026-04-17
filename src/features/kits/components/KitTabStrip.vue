@@ -1,5 +1,6 @@
 <script setup>
 import KitIcon from '@/features/kits/components/KitIcon.vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   tabs: { type: Array, required: true },
@@ -7,6 +8,18 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['activate', 'close', 'reload', 'closeAll'])
+
+const spinningReloadTabId = ref(null)
+let spinningTimer = 0
+
+function onReloadClick(tabId) {
+  window.clearTimeout(spinningTimer)
+  spinningReloadTabId.value = tabId
+  emit('reload', tabId)
+  spinningTimer = window.setTimeout(() => {
+    if (spinningReloadTabId.value === tabId) spinningReloadTabId.value = null
+  }, 520)
+}
 
 function onCloseAllClick() {
   if (!props.tabs.length) return
@@ -33,37 +46,14 @@ function onCloseAllClick() {
             type="button"
             class="tab__hover tab__hover--reload"
             title="刷新"
-            @click.stop="emit('reload', t.id)"
+            @click.stop="onReloadClick(t.id)"
           >
-            <span class="tab__hoverGlyph" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M20 12a8 8 0 0 1-13.66 5.66"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M4 12a8 8 0 0 1 13.66-5.66"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M18.6 7.2H21V4.8"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M3 19.2v-2.4h2.4"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+            <span
+              class="tab__hoverGlyph"
+              :class="{ 'tab__hoverGlyph--spin': spinningReloadTabId === t.id }"
+              aria-hidden="true"
+            >
+              ↻
             </span>
           </button>
         </div>
@@ -199,12 +189,17 @@ function onCloseAllClick() {
 }
 .tab__hoverGlyph {
   display: inline-block;
-  transform-origin: 50% 50%;
 }
-.tab__hoverGlyph svg {
-  width: 16px;
-  height: 16px;
-  display: block;
+.tab__hoverGlyph--spin {
+  animation: weblink-rotate-once 0.52s ease-in-out 1;
+}
+@keyframes weblink-rotate-once {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .tab--active:hover .tab__icon {
   opacity: 0;
@@ -216,17 +211,6 @@ function onCloseAllClick() {
 .tab__hover--reload:hover {
   color: rgba(37, 99, 235, 0.95);
   background: rgba(37, 99, 235, 0.10);
-}
-.tab--active:hover .tab__hover--reload .tab__hoverGlyph {
-  animation: weblink-rotate 0.55s ease-out 1;
-}
-@keyframes weblink-rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 .tab__badge {
   font-size: 12px;
