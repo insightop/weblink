@@ -60,6 +60,7 @@ onBeforeUnmount(() => {
         :src="src"
         title="kit-iframe"
         loading="eager"
+        allow="serial; usb; hid; camera; microphone; speaker-selection; clipboard-read; clipboard-write"
         @load="onLoad"
       />
     </div>
