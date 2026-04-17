@@ -65,12 +65,7 @@ function onKitPlusClick(m) {
             'kit--has': (kitStats[m.key]?.count ?? 0) > 0,
           }"
         >
-          <button
-            type="button"
-            class="kit__main"
-            :disabled="!m.url"
-            @click="onKitCardClick(m)"
-          >
+          <button type="button" class="kit__main" :disabled="!m.url" @click="onKitCardClick(m)">
             <div class="kit__head">
               <KitIcon :icon="m.icon" :name="m.name" :size="18" class="kit__icon" />
               <div class="kit__name">{{ m.name }}</div>
@@ -119,24 +114,9 @@ function onKitPlusClick(m) {
                   stroke="currentColor"
                   stroke-width="2"
                 />
-                <path
-                  d="M16 20H48"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M16 28H34"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M16 36H30"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
+                <path d="M16 20H48" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M16 28H34" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M16 36H30" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
               </svg>
             </div>
             <div class="placeholder__title">选择一个 Kit 开始</div>
@@ -193,7 +173,9 @@ function onKitPlusClick(m) {
   background: #fff;
   border-radius: 12px;
   padding: 8px 8px 8px 10px;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
   position: relative;
 }
 .kit::before {
