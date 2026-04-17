@@ -37,15 +37,22 @@ function ensureLocalStorageForDevtools() {
 
 // https://vite.dev/config/
 export default defineConfig(async () => {
-  ensureLocalStorageForDevtools()
-  const { default: vueDevTools } = await import('vite-plugin-vue-devtools')
+  const enableVueDevtools = process.env.VITE_VUE_DEVTOOLS === '1'
+  if (enableVueDevtools) ensureLocalStorageForDevtools()
+  const vueDevTools = enableVueDevtools
+    ? (await import('vite-plugin-vue-devtools')).default
+    : null
 
   return {
-    plugins: [vue(), vueDevTools()],
+    plugins: [vue(), ...(vueDevTools ? [vueDevTools()] : [])],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
+    },
+    server: {
+      // 避免 devtools/overlay 这类插件异常时每次刷新都遮挡页面
+      hmr: { overlay: false },
     },
   }
 })

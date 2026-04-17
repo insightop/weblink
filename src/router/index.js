@@ -1,24 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import SerialView from '../views/SerialView.vue'
-import CameraView from '../views/CameraView.vue'
-import MicrophoneView from '../views/MicrophoneView.vue'
-import BluetoothView from '../views/BluetoothView.vue'
-import StLinkView from '../views/StLinkView.vue'
-import DapLinkView from '../views/DapLinkView.vue'
-import UsbDfuView from '../views/UsbDfuView.vue'
-import HidView from '../views/HidView.vue'
+import KitWorkspaceView from '../features/kits/views/KitWorkspaceView.vue'
 
 const routes = [
-  { path: '/', redirect: '/serial' },
-  { path: '/serial', component: SerialView },
-  { path: '/camera', component: CameraView },
-  { path: '/microphone', component: MicrophoneView },
-  { path: '/bluetooth', component: BluetoothView },
-  { path: '/st-link', component: StLinkView },
-  { path: '/dap-link', component: DapLinkView },
-  { path: '/usb-dfu', component: UsbDfuView },
-  { path: '/hid', component: HidView },
+  { path: '/', component: KitWorkspaceView },
 ]
 
 const router = createRouter({
