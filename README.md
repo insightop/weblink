@@ -14,6 +14,7 @@
 6. DAPLink
 7. STM32USB-DFU
 8. HID
+9. Kits 工作台（iframe 聚合多个 kit）
 
 ## 开发
 
@@ -40,3 +41,35 @@ npm run build
 ```sh
 npm run lint
 ```
+
+## Kits 工作台（iframe 内嵌多 Kit）
+
+入口：`/kits`（顶部导航 `Kits`）。
+
+### 1) 配置各 Kit 的部署地址
+
+在 `src/features/kits/registry/kitRegistry.ts` 中为以下 key 配置 `baseUrl`：
+
+- `serialkit`
+- `modbuskit`
+- `gnsskit`
+- `capturekit`
+- `downloadkit`
+
+支持同一 kit 打开多个实例（标签页），并会在刷新后从 localStorage 恢复。
+
+### 2) 目标 Kit 站点必须允许被 iframe 嵌入
+
+若 iframe 一直加载失败，多数是被安全策略拦截：
+
+- `X-Frame-Options: DENY / SAMEORIGIN`
+- 或 `Content-Security-Policy` 未允许 `frame-ancestors` 包含 weblink 域名
+
+Cloudflare Pages 可通过 `_headers` 配置（示例）：
+
+```txt
+/*
+  Content-Security-Policy: frame-ancestors 'self' https://weblink.pages.dev
+```
+
+请把 `https://weblink.pages.dev` 替换为你实际部署 weblink 的域名。
