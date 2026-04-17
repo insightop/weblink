@@ -1,8 +1,8 @@
-# Webhard
+# Weblink
 
 基于 web 技术的硬件调试工具集合
 
-地址：https://webhard.pages.dev
+地址：https://weblink.pages.dev
 
 ## 功能
 
