@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { KIT_MODULES } from '@/features/kits/registry/kitModules'
 import { useKitWorkspaceStore } from '@/stores/kitWorkspace'
 import KitIcon from '@/features/kits/components/KitIcon.vue'
@@ -13,6 +13,16 @@ onMounted(() => {
 })
 
 const activeTab = computed(() => store.activeTab)
+
+// 让 iframe 仅在“首次激活”时创建，之后切换用 v-show 隐藏以保持状态
+const seenTabIds = ref(new Set())
+watch(
+  () => store.activeTabId,
+  (id) => {
+    if (id) seenTabIds.value.add(id)
+  },
+  { immediate: true },
+)
 
 function getKitTabs(kitKey) {
   return store.tabs
@@ -99,13 +109,7 @@ function onKitPlusClick(m) {
       </div>
 
       <div class="workspace__body">
-        <KitIframePane
-          v-if="activeTab"
-          :tab="activeTab"
-          :kit="{ name: activeTab.title, baseUrl: activeTab.url }"
-        />
-
-        <div v-else class="placeholder">
+        <div v-if="store.tabs.length === 0" class="placeholder">
           <div class="placeholder__card">
             <div class="placeholder__icon" aria-hidden="true">
               <svg viewBox="0 0 64 64" fill="none">
@@ -121,6 +125,22 @@ function onKitPlusClick(m) {
             </div>
             <div class="placeholder__title">选择一个 Kit 开始</div>
             <div class="placeholder__text">从左侧点击即可打开工具页。</div>
+          </div>
+        </div>
+
+        <div v-else class="tab-stage">
+          <div
+            v-for="t in store.tabs"
+            :key="t.id"
+            class="tab-stage__pane"
+            :class="{ 'tab-stage__pane--active': t.id === store.activeTabId }"
+          >
+            <KitIframePane
+              v-if="seenTabIds.has(t.id)"
+              v-show="t.id === store.activeTabId"
+              :tab="t"
+              :kit="{ name: t.title, baseUrl: t.url }"
+            />
           </div>
         </div>
       </div>
@@ -260,6 +280,19 @@ function onKitPlusClick(m) {
   min-height: 0;
   padding: 0;
   background: #fff;
+  position: relative;
+}
+.tab-stage {
+  position: absolute;
+  inset: 0;
+}
+.tab-stage__pane {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+.tab-stage__pane--active {
+  display: block;
 }
 .placeholder {
   height: 100%;
