@@ -31,7 +31,7 @@ function normalizeUrl(input) {
 
 export const useKitWorkspaceStore = defineStore('kitWorkspace', {
   state: () => ({
-    tabs: /** @type {Array<{id:string,kitKey:string,title:string,url:string,createdAt:number,lastActiveAt:number,reloadNonce:number,instanceId:string}>} */ ([]),
+    tabs: /** @type {Array<{id:string,kitKey:string,title:string,icon?:string,instanceIndex?:number,url:string,createdAt:number,lastActiveAt:number,reloadNonce:number,instanceId:string}>} */ ([]),
     activeTabId: /** @type {string|null} */ (null),
   }),
 
@@ -55,6 +55,8 @@ export const useKitWorkspaceStore = defineStore('kitWorkspace', {
           id: String(t.id ?? createId('tab')),
           kitKey: String(t.kitKey ?? ''),
           title: String(t.title ?? 'Kit'),
+          icon: typeof t.icon === 'string' ? t.icon : undefined,
+          instanceIndex: Number(t.instanceIndex ?? 0) || 0,
           url: normalizeUrl(t.url),
           createdAt: Number(t.createdAt ?? now()),
           lastActiveAt: Number(t.lastActiveAt ?? now()),
@@ -62,6 +64,23 @@ export const useKitWorkspaceStore = defineStore('kitWorkspace', {
           instanceId: String(t.instanceId ?? createId('inst')),
         }))
         .filter((t) => !!t.url)
+
+      // 兼容旧数据：为缺失的 icon 从 kitModules 补齐
+      for (const t of this.tabs) {
+        if (t.icon) continue
+        const meta = KIT_MODULES.find((m) => m.key === t.kitKey)
+        if (meta?.icon) t.icon = meta.icon
+      }
+
+      // 兼容旧数据：为缺失的 instanceIndex 填充一个稳定序号（按创建时间）
+      const ordered = this.tabs.slice().sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0))
+      const counters = new Map()
+      for (const t of ordered) {
+        const cur = counters.get(t.kitKey) ?? 0
+        const next = Math.max(cur + 1, t.instanceIndex || 0)
+        counters.set(t.kitKey, next)
+        if (!t.instanceIndex) t.instanceIndex = next
+      }
 
       const candidate = typeof data.activeTabId === 'string' ? data.activeTabId : null
       this.activeTabId = this.tabs.some((t) => t.id === candidate) ? candidate : this.tabs[0]?.id ?? null
@@ -96,7 +115,9 @@ export const useKitWorkspaceStore = defineStore('kitWorkspace', {
       const tab = {
         id,
         kitKey,
-        title: `${meta.name} #${sameCount + 1}`,
+        title: meta.name,
+        icon: meta.icon,
+        instanceIndex: sameCount + 1,
         url: u.toString(),
         createdAt,
         lastActiveAt: createdAt,
@@ -126,6 +147,13 @@ export const useKitWorkspaceStore = defineStore('kitWorkspace', {
       if (wasActive) {
         this.activeTabId = nextTabs[idx - 1]?.id ?? nextTabs[0]?.id ?? null
       }
+      this.persist()
+    },
+
+    closeAllTabs() {
+      if (!this.tabs.length) return
+      this.tabs = []
+      this.activeTabId = null
       this.persist()
     },
 

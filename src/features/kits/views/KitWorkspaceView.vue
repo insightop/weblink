@@ -2,6 +2,7 @@
 import { computed, onMounted } from 'vue'
 import { KIT_MODULES } from '@/features/kits/registry/kitModules'
 import { useKitWorkspaceStore } from '@/stores/kitWorkspace'
+import KitIcon from '@/features/kits/components/KitIcon.vue'
 import KitTabStrip from '@/features/kits/components/KitTabStrip.vue'
 import KitIframePane from '@/features/kits/components/KitIframePane.vue'
 
@@ -71,6 +72,7 @@ function onKitPlusClick(m) {
             @click="onKitCardClick(m)"
           >
             <div class="kit__head">
+              <KitIcon :icon="m.icon" :name="m.name" :size="18" class="kit__icon" />
               <div class="kit__name">{{ m.name }}</div>
             </div>
             <div class="kit__desc">{{ m.desc }}</div>
@@ -97,6 +99,7 @@ function onKitPlusClick(m) {
           @activate="store.setActive"
           @close="store.closeTab"
           @reload="store.reloadTab"
+          @close-all="store.closeAllTabs"
         />
       </div>
 
@@ -228,6 +231,9 @@ function onKitPlusClick(m) {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+.kit__icon {
+  flex: 0 0 auto;
 }
 .kit__name {
   font-weight: 700;
