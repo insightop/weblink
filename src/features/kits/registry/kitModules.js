@@ -38,4 +38,11 @@ export const KIT_MODULES = [
     icon: 'download',
     url: 'https://weblink-downloadkit.pages.dev',
   },
+  {
+    key: 'wirelesskit',
+    name: 'Wireless Kit',
+    desc: 'Web Bluetooth / Web NFC 无线调试',
+    icon: 'wireless',
+    url: 'https://wirelesskit.pages.dev',
+  },
 ]
