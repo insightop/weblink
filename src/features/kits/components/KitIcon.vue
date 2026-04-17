@@ -28,6 +28,9 @@ const ICONS = {
     'M8 7h8l1 2h2v9H5V9h2l1-2Zm4 4.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z',
   ),
   download: common('M13 2 5 14h7l-1 8 8-12h-7l1-8Z'),
+  wireless: common(
+    'M12 18.8a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm-4.2-2.5a6.2 6.2 0 0 1 8.4 0M5.1 13.5a10 10 0 0 1 13.8 0M2.7 10.3a13.5 13.5 0 0 1 18.6 0',
+  ),
 }
 
 const TONES = {
@@ -36,6 +39,7 @@ const TONES = {
   gnss: { fg: 'rgba(16, 185, 129, 0.95)', bg: 'rgba(16, 185, 129, 0.10)', bd: 'rgba(16, 185, 129, 0.20)' },
   capture: { fg: 'rgba(245, 158, 11, 0.95)', bg: 'rgba(245, 158, 11, 0.10)', bd: 'rgba(245, 158, 11, 0.22)' },
   download: { fg: 'rgba(71, 85, 105, 0.95)', bg: 'rgba(71, 85, 105, 0.10)', bd: 'rgba(71, 85, 105, 0.20)' },
+  wireless: { fg: 'rgba(59, 130, 246, 0.95)', bg: 'rgba(59, 130, 246, 0.10)', bd: 'rgba(59, 130, 246, 0.20)' },
 }
 
 const iconSpec = ICONS[props.icon] ?? ICONS.download
