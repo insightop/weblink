@@ -34,6 +34,15 @@ const ICONS = {
   webrtckit: common(
     'M15.2 10.4a3.2 3.2 0 1 0-6.4 0 3.2 3.2 0 0 0 6.4 0ZM12 4.5v2.2M12 17.3v2.2M4.5 12h2.2M17.3 12h2.2M6.6 6.6l1.6 1.6M15.8 15.8l1.6 1.6M6.6 17.4l1.6-1.6M15.8 6.2l1.6-1.6',
   ),
+  flashkit: common(
+    'M13 2 3 14h8l-1 8 10-12h-8l1-8Z',
+  ),
+  cankit: common(
+    'M6 9.5h12M6 14.5h12M9.5 7v10M14.5 7v10M7 7h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z',
+  ),
+  ipkit: common(
+    'M4.5 8h15v8h-15V8Zm2.5 2.5h10M7 12h10M7 15.5h10M9 8v8M15 8v8',
+  ),
 }
 
 const TONES = {
@@ -44,6 +53,9 @@ const TONES = {
   download: { fg: 'rgba(71, 85, 105, 0.95)', bg: 'rgba(71, 85, 105, 0.10)', bd: 'rgba(71, 85, 105, 0.20)' },
   wireless: { fg: 'rgba(59, 130, 246, 0.95)', bg: 'rgba(59, 130, 246, 0.10)', bd: 'rgba(59, 130, 246, 0.20)' },
   webrtckit: { fg: 'rgba(34, 197, 94, 0.95)', bg: 'rgba(34, 197, 94, 0.10)', bd: 'rgba(34, 197, 94, 0.22)' },
+  flashkit: { fg: 'rgba(168, 85, 247, 0.95)', bg: 'rgba(168, 85, 247, 0.10)', bd: 'rgba(168, 85, 247, 0.22)' },
+  cankit: { fg: 'rgba(234, 88, 12, 0.95)', bg: 'rgba(234, 88, 12, 0.10)', bd: 'rgba(234, 88, 12, 0.22)' },
+  ipkit: { fg: 'rgba(14, 165, 233, 0.95)', bg: 'rgba(14, 165, 233, 0.10)', bd: 'rgba(14, 165, 233, 0.22)' },
 }
 
 const iconSpec = ICONS[props.icon] ?? ICONS.download
