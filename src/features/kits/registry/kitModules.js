@@ -52,4 +52,25 @@ export const KIT_MODULES = [
     icon: 'webrtckit',
     url: 'https://webrtckit.pages.dev',
   },
+  {
+    key: 'flashkit',
+    name: 'Flash Kit',
+    desc: '矩阵式板载存储编程（SPI NOR、I²C EEPROM 等，WebUSB）',
+    icon: 'flashkit',
+    url: 'https://weblink-flashkit.pages.dev',
+  },
+  {
+    key: 'cankit',
+    name: 'CAN Kit',
+    desc: 'Web Serial slcan USB-CAN 调试',
+    icon: 'cankit',
+    url: 'https://cankit.pages.dev',
+  },
+  {
+    key: 'ipkit',
+    name: 'IP Kit',
+    desc: 'HTTP / WebSocket / DoH 网络协议调试',
+    icon: 'ipkit',
+    url: 'https://ipkit.pages.dev',
+  },
 ]

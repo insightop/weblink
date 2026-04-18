@@ -48,13 +48,18 @@ npm run lint
 
 ### 1) 配置各 Kit 的部署地址
 
-在 `src/features/kits/registry/kitRegistry.ts` 中为以下 key 配置 `baseUrl`：
+在 `src/features/kits/registry/kitModules.js` 中为各 kit 配置 `url`：
 
-- `serialkit`
-- `modbuskit`
-- `gnsskit`
-- `capturekit`
-- `downloadkit`
+- `serialkit` → `https://serialkit.pages.dev`
+- `modbuskit` → `https://modbuskit.pages.dev`
+- `gnsskit` → `https://gnsskit.pages.dev`
+- `capturekit` → `https://capturekit.pages.dev`
+- `downloadkit` → `https://weblink-downloadkit.pages.dev`
+- `wirelesskit` → `https://wirelesskit.pages.dev`
+- `webrtckit` → `https://webrtckit.pages.dev`
+- `flashkit` → `https://weblink-flashkit.pages.dev`
+- `cankit` → `https://cankit.pages.dev`
+- `ipkit` → `https://ipkit.pages.dev`
 
 支持同一 kit 打开多个实例（标签页），并会在刷新后从 localStorage 恢复。
 
