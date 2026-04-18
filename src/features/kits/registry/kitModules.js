@@ -45,4 +45,11 @@ export const KIT_MODULES = [
     icon: 'wireless',
     url: 'https://wirelesskit.pages.dev',
   },
+  {
+    key: 'webrtckit',
+    name: 'WebRTC Kit',
+    desc: 'WebRTC P2P / 信令调试与 mesh 联调',
+    icon: 'webrtckit',
+    url: 'https://webrtckit.pages.dev',
+  },
 ]
