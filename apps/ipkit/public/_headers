@@ -1,0 +1,9 @@
+# 允许被嵌入为 iframe 的「父页面」来源（Content-Security-Policy: frame-ancestors）
+# - 'self'：同域直接打开 ipkit
+# - weblink 生产与 Pages 预览子域（*.weblink.pages.dev 含 PR/分支预览）
+# - 本地开发：在 localhost / 127.0.0.1 跑 weblink 时嵌入线上或本地 ipkit
+# 若你为 weblink 使用自定义域名，请在此追加 https://你的域名
+
+/*
+  Content-Security-Policy: frame-ancestors 'self' https://weblink.pages.dev https://*.weblink.pages.dev http://localhost:5173 http://localhost:5174 http://localhost:4173 http://127.0.0.1:5173 http://127.0.0.1:5174 http://127.0.0.1:4173
+  X-Content-Type-Options: nosniff

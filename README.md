@@ -4,6 +4,19 @@
 
 地址：https://weblink.pages.dev
 
+## Monorepo（`feat/monorepo`）
+
+本仓库已迁移为 **pnpm workspace**：应用在 `apps/`，共享库在 `packages/`。
+
+- 安装依赖：`pnpm install`
+- 启动聚合首页：`pnpm dev`（[`apps/home`](apps/home)）
+- 启动根目录遗留工作台：`pnpm dev:legacy`（见 [`docs/monorepo-legacy-root.md`](docs/monorepo-legacy-root.md)）
+- 全量构建：`pnpm build`
+- 架构摘要：[`docs/architecture.md`](docs/architecture.md)
+- 版本与变更：Changesets（`pnpm changeset`）
+
+各 kit 包名形如 `@weblink/serialkit`、`@weblink/downloadkit` 等。
+
 ## 功能
 
 1. Serial
@@ -18,29 +31,11 @@
 
 ## 开发
 
-- 安装依赖
-
-```sh
-npm install
-```
-
-- 运行（编译&热更新）
-
-```sh
-npm run dev
-```
-
-- 编译（打包）
-
-```sh
-npm run build
-```
-
-- 格式化
-
-```sh
-npm run lint
-```
+- 安装依赖：`pnpm install`（推荐；勿混用 npm 与 pnpm）
+- 运行聚合首页：`pnpm dev`
+- 运行遗留根目录应用：`pnpm dev:legacy`
+- 编译全部包：`pnpm build`
+- 格式化：`pnpm format`（根目录已配置 Prettier）
 
 ## Kits 工作台（iframe 内嵌多 Kit）
 

@@ -1,0 +1,3 @@
+[submodule "src/download/webstlink"]
+	path = src/download/webstlink
+	url = https://github.com/devanlai/webstlink/

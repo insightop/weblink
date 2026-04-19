@@ -1,29 +1,36 @@
 {
-  "name": "weblink",
+  "name": "weblink-monorepo",
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --fix",
-    "format": "prettier --write src/"
-  },
-  "dependencies": {
-    "pinia": "^3.0.3",
-    "vue": "^3.5.17",
-    "vue-router": "^4.5.1"
+    "dev": "pnpm --filter @weblink/home dev",
+    "dev:home": "pnpm --filter @weblink/home dev",
+    "dev:legacy": "vite",
+    "build": "pnpm -r run build",
+    "build:home": "pnpm --filter @weblink/home build",
+    "lint": "pnpm -r --if-present run lint",
+    "test": "pnpm -r --if-present run test",
+    "format": "prettier --write \"**/*.{js,mjs,cjs,ts,vue,json,md,css}\"",
+    "changeset": "changeset"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.11",
     "@eslint/js": "^9.29.0",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/eslint-config-prettier": "^10.2.0",
     "eslint": "^9.29.0",
     "eslint-plugin-vue": "~10.2.0",
     "globals": "^16.2.0",
-    "prettier": "3.5.3",
+    "pinia": "^3.0.3",
+    "prettier": "^3.5.3",
     "vite": "^7.0.0",
-    "vite-plugin-vue-devtools": "^7.7.7"
+    "vite-plugin-vue-devtools": "^7.7.7",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1"
+  },
+  "pnpm": {
+    "overrides": {}
   }
 }

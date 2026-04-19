@@ -1,0 +1,133 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>STM32 Web Flash</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero__badge">STM32 Bootloader • Web Serial</div>
+        <h1>STM32 Web Flash</h1>
+        <p class="hero__lead">
+          Flash a custom firmware binary to a connected STM32 running the
+          factory UART bootloader. Plug in, connect, and program.
+        </p>
+      </header>
+
+      <section class="card">
+        <div class="row">
+          <div>
+            <label>Serial connection</label>
+            <div class="controls">
+              <button id="connectBtn">Connect</button>
+              <button id="disconnectBtn" class="ghost" disabled>Disconnect</button>
+            </div>
+            <div class="hint" id="serialStatus">Disconnected</div>
+          </div>
+          <div>
+            <label>Baud rate</label>
+            <input id="baudRate" type="number" value="115200" min="1200" step="100" />
+            <div class="hint">Bootloader auto-baud detects the 0x7F init byte.</div>
+          </div>
+          <div>
+            <label>Start address</label>
+            <input id="startAddress" type="text" value="0x08000000" />
+            <div class="hint">Must be 4-byte aligned for write operations.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="row">
+          <div>
+            <label>Firmware binary</label>
+            <input id="firmwareFile" type="file" accept=".bin" />
+            <div class="hint" id="fileInfo">Select a file, typically firmware.bin</div>
+          </div>
+          <div class="toggle">
+            <input id="massErase" type="checkbox" checked />
+            <label for="massErase">Mass erase before flashing</label>
+          </div>
+          <div class="toggle">
+            <input id="autoGo" type="checkbox" checked />
+            <label for="autoGo">Jump to application after flash</label>
+          </div>
+          <div class="toggle">
+            <input id="autoConsole" type="checkbox" checked />
+            <label for="autoConsole">Auto-open console after flash</label>
+          </div>
+          <div class="toggle">
+            <input id="autoBoot" type="checkbox" checked />
+            <label for="autoBoot">Auto-enter bootloader (DTR/RTS)</label>
+          </div>
+        </div>
+        <div class="hint">
+          Send GPIO sequence RTS high → pulse DTR → RTS low.
+          Wire RTS to BOOT0 and DTR to NRST. (Some browsers expose these as
+          RequestToSend/DataTerminalReady.)
+        </div>
+        <div class="controls">
+          <button id="flashBtn" class="primary" disabled>Flash firmware</button>
+        </div>
+        <div class="progress">
+          <div class="progress__bar" id="progressBar"></div>
+        </div>
+        <div class="hint" id="progressLabel">Idle</div>
+      </section>
+
+      <section class="card">
+        <label>Log</label>
+        <pre id="log"></pre>
+      </section>
+
+      <section class="card">
+        <div class="row">
+          <div>
+            <label>Serial console</label>
+            <div class="controls">
+              <button id="consoleOpenBtn" class="ghost" disabled>Connect console</button>
+              <button id="consoleCloseBtn" class="ghost" disabled>Disconnect console</button>
+              <button id="consolePauseBtn" class="ghost" disabled>Pause</button>
+            </div>
+            <div class="hint" id="consoleStatus">Console closed</div>
+          </div>
+          <div>
+            <label>Console baud rate</label>
+            <input id="consoleBaudRate" type="number" value="115200" min="1200" step="100" />
+            <div class="hint">Console uses 8-N-1 (typical app UART).</div>
+          </div>
+        </div>
+        <div class="console">
+          <pre id="consoleLog" class="console__output"></pre>
+        </div>
+        <div class="console__input">
+          <input id="consoleInput" type="text" placeholder="Type and press Send..." disabled />
+          <button id="consoleSendBtn" class="primary" disabled>Send</button>
+        </div>
+      </section>
+
+      <section class="card info">
+        <h2>Bootloader checklist</h2>
+        <ul>
+          <li>[Optional for some boards] Set BOOT0 high (or use your board boot jumper) then reset.</li>
+          <li>Connect over USB-to-UART (CDC) and select the port.</li>
+          <li>Factory UART bootloader expects 8 data bits, even parity, 1 stop bit.</li>
+          <li>Use a browser that supports Web Serial (Chrome/Edge).</li>
+        </ul>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Copyright © 2026 Yan Ke. Licensed under the Apache-2.0 License.
+          <a href="https://github.com/yanxke/stm32webflash" target="_blank" rel="noopener">Source code</a>
+        </p>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

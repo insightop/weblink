@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GNSS Kit</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="/src/styles/base.css" />
+  <link rel="stylesheet" href="/src/gnss/gnss-page.css" />
+  <script type="module" src="/src/main.js"></script>
+</head>
+
+<body>
+  <div class="app-layout gnss-page" id="gnssAppLayout">
+    <main class="main-panel">
+      <header class="toolbar gnss-toolbar">
+        <div class="gnss-toolbar__left">
+          <button id="gnssTogglePort" class="btn btn--primary" type="button">
+            <i class="fas fa-satellite-dish"></i>
+            <span>连接 GNSS</span>
+          </button>
+          <span class="gnss-toolbar__hint" id="gnssParsedHint" aria-live="polite"></span>
+        </div>
+        <div class="toolbar-group gnss-toolbar__right">
+          <label class="gnss-field">
+            <span class="gnss-field__label">波特率</span>
+            <select id="gnssBaudRate" class="gnss-field__control"></select>
+          </label>
+        </div>
+      </header>
+
+      <section class="card-grid-container" id="gnssParsedContainer">
+        <div class="device-card-grid gnss-parsed__grid" id="gnssParsedGrid"></div>
+      </section>
+    </main>
+
+    <div class="resize-handle resize-handle--vertical" id="gnssRightResizeHandle" role="separator" aria-label="调整右侧面板宽度"
+      tabindex="0"></div>
+
+    <div class="right-column" id="gnssRightColumn">
+      <button type="button" class="right-panel-toggle" id="gnssRightPanelToggle" aria-label="折叠右侧面板">
+        折叠
+      </button>
+      <aside class="log-panel gnss-side-panel" id="gnssSidePanel">
+        <section class="raw-panel gnss-raw-panel" id="gnssRawPanel">
+          <div class="raw-panel__header">
+            <span class="raw-panel__title">原始数据</span>
+            <button type="button" class="raw-panel__clear" id="gnssClear" title="清空原始数据" aria-label="清空原始数据">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            <button type="button" class="raw-panel__export" id="gnssExport" title="导出原始数据" aria-label="导出原始数据">
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+          <div class="raw-panel__content" id="gnssRaw">
+            <div class="gnss-raw__lines" id="gnssRawLines"></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</body>
+
+</html>

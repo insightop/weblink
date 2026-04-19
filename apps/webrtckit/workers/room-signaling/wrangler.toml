@@ -1,0 +1,32 @@
+# 独立 Worker：承载 Durable Object 与 migrations（Pages 项目 wrangler 不支持 migrations）
+# 部署：npx wrangler deploy --config workers/room-signaling/wrangler.toml
+name = "webrtckit-room-worker"
+main = "src/index.ts"
+compatibility_date = "2025-11-01"
+
+# 智能放置：按流量把 fetch 调度到更靠近上游的位置（DO 自身仍有独立放置）
+# https://developers.cloudflare.com/workers/configuration/placement/
+[placement]
+mode = "smart"
+
+# Workers Logs + Traces，head 采样降低量费（可调 0～1）
+# https://developers.cloudflare.com/workers/observability/logs/workers-logs/
+# https://developers.cloudflare.com/workers/observability/traces/
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 0.25
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.1
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RoomSignaling"]
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "RoomSignaling"

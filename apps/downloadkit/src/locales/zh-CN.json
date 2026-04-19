@@ -1,0 +1,201 @@
+{
+  "app": {
+    "title": "Download Kit"
+  },
+  "help": {
+    "tooltip": "帮助"
+  },
+  "language": {
+    "label": "语言",
+    "auto": "跟随系统",
+    "zh": "中文",
+    "en": "English"
+  },
+  "zones": {
+    "target": "目标",
+    "flasher": "烧录器",
+    "firmware": "固件",
+    "download": "下载"
+  },
+  "flasherPage": {
+    "downloadBlocked": "请先选择烧录器连接并加载固件文件",
+    "selectTargetAndFlasher": "请先选择目标与烧录器",
+    "flashNotImplemented": "该烧录器暂未实现下载流程",
+    "downloadCompleted": "下载流程已结束",
+    "connected": "已连接",
+    "notSelected": "未选择",
+    "runtimeUnavailable": "当前烧录器不可用。{hint}",
+    "noConnectionNeeded": "当前烧录器不需要建立连接",
+    "selectConnectionFirst": "请先选择烧录器连接",
+    "deviceSelectionTimeout": "设备选择超时，请重试并在弹窗中确认或取消。",
+    "deviceNotSelected": "设备：未选择",
+    "deviceSelecting": "设备：选择中...",
+    "deviceNotConnected": "设备：未连接",
+    "deviceFailed": "设备：连接失败"
+  },
+  "firmware": {
+    "input": "输入模式",
+    "modeSingle": "单段",
+    "modeMulti": "多段（{count} 槽）",
+    "modeDynamic": "动态多段（{min}～{max} 行）",
+    "addRow": "添加行",
+    "removeRow": "删除本行",
+    "minRowsNotMet": "请至少为各行选择固件文件以满足最少段数要求",
+    "noFile": "未选择文件（.hex / .bin / .elf）",
+    "dragHint": "选择固件文件或拖放到此处",
+    "tableFile": "固件文件",
+    "tableAddress": "烧录地址",
+    "addressHiddenHint": "—",
+    "addressResolvedHint": "烧录地址由 Intel HEX 内嵌地址或芯片默认基址决定，此处不可编辑。",
+    "selectFile": "选择文件",
+    "clearFile": "清除文件",
+    "totalSize": "总大小：{size}",
+    "unavailable": "当前模式不可用。{hint}",
+    "flashAddress": "烧录地址",
+    "slotOptional": "可选",
+    "slotRequired": "请为必填槽位选择固件文件",
+    "hexMultiSlotHint": "多段烧录时每个槽位请使用 .bin；如需 Intel HEX，请仅使用单段 app。",
+    "elfNotImplemented": "暂不支持 ELF 文件解析",
+    "slots": {
+      "app": "应用程序 (app)",
+      "bootloader": "Bootloader",
+      "partitionTable": "分区表",
+      "otaData": "OTA 数据"
+    }
+  },
+  "download": {
+    "idle": "下载",
+    "verifying": "校验中",
+    "again": "再次下载",
+    "completed": "已完成",
+    "failed": "失败",
+    "counterLabel": "计数：",
+    "clearStats": "清除计数"
+  },
+  "logMessages": {
+    "stage": "阶段：{stage}",
+    "progress": "进度 {percent}%（已写入 {written} / 共 {total}，{speed}，剩余时间 {eta}）",
+    "esp32ProbeOk": "ESP32 探测成功：{chipName}，波特率 {baudRate}",
+    "starting": "开始下载",
+    "usingPlugin": "使用插件：{name}",
+    "succeeded": "下载成功",
+    "failed": "下载失败：{message}"
+  },
+  "log": {
+    "empty": "暂无日志",
+    "context": "详情",
+    "title": "日志",
+    "show": "展开",
+    "hide": "收起",
+    "all": "全部",
+    "none": "无",
+    "clear": "清空",
+    "export": "导出",
+    "filterLevels": "按级别筛选日志",
+    "level": {
+      "trace": "跟踪",
+      "debug": "调试",
+      "info": "信息",
+      "warning": "警告",
+      "error": "错误"
+    }
+  },
+  "browser": {
+    "names": {
+      "safari": "Safari",
+      "chrome": "Chrome",
+      "edge": "Edge",
+      "arc": "Arc",
+      "firefox": "Firefox",
+      "opera": "Opera",
+      "samsung": "Samsung Internet",
+      "webview": "内置浏览器",
+      "unknown": "当前浏览器"
+    },
+    "overlay": {
+      "titleWithName": "目前暂不支持{name}浏览器",
+      "bodyWithName": "请使用Chrome、Edge、Arc等浏览器访问",
+      "copyLink": "复制当前链接",
+      "copied": "已复制",
+      "copyFailed": "复制失败，请手动复制地址栏中的链接",
+      "openHint": "若未能自动跳转，请手动拷贝链接后到对应的浏览器中打开",
+      "invalidPageUrlForSchemes": "当前地址不是 http/https，无法生成一键跳转链接，请使用「拷贝链接」手动打开。"
+    },
+    "tileCaption": {
+      "chrome": "使用 Chrome 访问",
+      "edge": "使用 Edge 访问",
+      "arc": "使用 Arc 访问",
+      "copy": "拷贝 URL"
+    }
+  },
+  "target": {
+    "autoPicked": "已按本次会话记忆自动选择目标：{type}",
+    "title": "选择目标",
+    "freq": "主频 (MHz)",
+    "flash": "Flash (KB)",
+    "sram": "SRAM (KB)",
+    "cancel": "取消",
+    "confirm": "使用所选目标",
+    "remember": "记住选择（页面刷新后失效）",
+    "selectionCancelled": "已取消目标型号选择",
+    "selectionCancelledLog": "已取消目标选择（{plugin}）",
+    "supportedSeriesPrefix": "支持系列：",
+    "columns": {
+      "family": "家族",
+      "clock": "主频",
+      "flash": "Flash",
+      "ram": "RAM"
+    },
+    "units": {
+      "mhz": "MHz",
+      "kb": "KB"
+    }
+  },
+  "esp": {
+    "flashPlanInvalid": "ESP32 固件格式无效或缺少数据，请重新选择 .bin/.hex 文件。",
+    "probeFailed": "ESP32 连接或探测失败，请检查进入下载模式、接线与波特率。",
+    "connectionFailed": "ESP32 串口会话未建立，请重新选择设备后重试。",
+    "flashFailed": "ESP32 写入 Flash 失败，请检查连接稳定性与镜像地址。",
+    "resetFailed": "ESP32 复位失败，可尝试手动按复位键或重新上电。"
+  },
+  "dfu": {
+    "probeFailed": "DFU 设备连接或探测失败，请确认设备已进入 DFU 模式。",
+    "syncFailed": "DFU 状态同步失败，请重新连接设备后重试。",
+    "eraseFailed": "DFU 擦除失败，请检查目标地址与设备保护状态。",
+    "flashFailed": "DFU 写入失败，请检查 USB 连接稳定性后重试。",
+    "resetFailed": "DFU 复位或断开失败，可手动重插设备。"
+  },
+  "pluginConfig": {
+    "title": "烧录参数",
+    "serial": {
+      "baudRate": {
+        "label": "波特率 (baud)",
+        "help": "串口打开速率，常用 115200 / 460800"
+      }
+    },
+    "esp32": {
+      "baudRate": {
+        "label": "波特率 (baud)",
+        "help": "与 Web Serial 打开速率一致；常用 460800 / 921600"
+      },
+      "esptoolDebugLogging": {
+        "label": "esptool 调试日志",
+        "help": "在控制台输出 esptool-js 详细调试信息（排障用）"
+      }
+    },
+    "stlink": {
+      "debugInterface": {
+        "label": "调试接口",
+        "help": "选择 SWD 或 JTAG 连接方式",
+        "option": {
+          "swd": "SWD",
+          "jtag": "JTAG"
+        }
+      },
+      "debugClockHz": {
+        "label": "调试时钟 (Hz)",
+        "help": "ST-Link 调试时钟频率，过高可能导致不稳定"
+      }
+    }
+  }
+}
