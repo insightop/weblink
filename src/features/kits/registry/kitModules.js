@@ -73,4 +73,11 @@ export const KIT_MODULES = [
     icon: 'ipkit',
     url: 'https://ipkit.pages.dev',
   },
+  {
+    key: 'vkvmkit',
+    name: 'VKVM Kit',
+    desc: '浏览器 VirtualKVM 调试工具',
+    icon: 'vkvmkit',
+    url: 'https://vkvmkit.pages.dev',
+  },
 ]

@@ -43,6 +43,9 @@ const ICONS = {
   ipkit: common(
     'M4.5 8h15v8h-15V8Zm2.5 2.5h10M7 12h10M7 15.5h10M9 8v8M15 8v8',
   ),
+  vkvmkit: common(
+    'M6 6h12a2 2 0 0 1 2 2v7H4V8a2 2 0 0 1 2-2Zm2 3h8M9 18h6M11 20h2',
+  ),
 }
 
 const TONES = {
@@ -56,6 +59,7 @@ const TONES = {
   flashkit: { fg: 'rgba(168, 85, 247, 0.95)', bg: 'rgba(168, 85, 247, 0.10)', bd: 'rgba(168, 85, 247, 0.22)' },
   cankit: { fg: 'rgba(234, 88, 12, 0.95)', bg: 'rgba(234, 88, 12, 0.10)', bd: 'rgba(234, 88, 12, 0.22)' },
   ipkit: { fg: 'rgba(14, 165, 233, 0.95)', bg: 'rgba(14, 165, 233, 0.10)', bd: 'rgba(14, 165, 233, 0.22)' },
+  vkvmkit: { fg: 'rgba(13, 148, 136, 0.95)', bg: 'rgba(13, 148, 136, 0.10)', bd: 'rgba(13, 148, 136, 0.22)' },
 }
 
 const iconSpec = ICONS[props.icon] ?? ICONS.download
