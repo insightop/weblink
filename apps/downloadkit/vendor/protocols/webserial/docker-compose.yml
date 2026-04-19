@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+services:
+  stm32webflash:
+    image: stm32webflash:local
+    build:
+      context: .
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docs:/usr/share/nginx/html:ro

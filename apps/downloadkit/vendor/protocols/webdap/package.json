@@ -1,0 +1,71 @@
+{
+  "name": "dapjs",
+  "version": "2.3.0",
+  "description": "JavaScript interface to on-chip debugger (CMSIS-DAP)",
+  "homepage": "https://github.com/ARMmbed/dapjs",
+  "license": "MIT",
+  "main": "dist/dap.umd.js",
+  "module": "dist/dap.esm.js",
+  "types": "types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ARMmbed/dapjs.git"
+  },
+  "author": "Michal Moskal <michal@moskal.me>",
+  "contributors": [
+    {
+      "name": "Arkadiusz Zaluski",
+      "email": "arkadiusz.zaluski@arm.com"
+    },
+    {
+      "name": "Matthew Else",
+      "email": "matthew.else@arm.com"
+    },
+    {
+      "name": "Rob Moran",
+      "email": "rob.moran@arm.com"
+    }
+  ],
+  "keywords": [
+    "dap",
+    "daplink",
+    "cmsis",
+    "usb",
+    "webusb"
+  ],
+  "scripts": {
+    "build": "rollup -c && typedoc src",
+    "watch": "rollup -c -w",
+    "watch:web": "rollup -c rollup.web.config.mjs -w"
+  },
+  "engines": {
+    "node": ">=8.14.0"
+  },
+  "dependencies": {
+    "@types/node-hid": "^1.2.0",
+    "@types/usb": "^1.5.1",
+    "@types/w3c-web-usb": "^1.0.10"
+  },
+  "devDependencies": {
+    "@rollup/plugin-eslint": "^9.0.5",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@stylistic/eslint-plugin-js": "^1.5.4",
+    "@types/node": "^20.11.20",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-jsdoc": "^48.0.2",
+    "node-hid": "^2.1.1",
+    "progress": "^2.0.3",
+    "rollup": "^4.18.0",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "rollup-plugin-serve": "^1.1.1",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "tslib": "^2.6.2",
+    "typedoc": "^0.25.7",
+    "typescript": "^5.3.3",
+    "usb": "^2.11.0"
+  }
+}

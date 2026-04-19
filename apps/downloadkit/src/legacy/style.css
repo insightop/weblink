@@ -1,0 +1,26 @@
+/* 日志区域自动换行（Tailwind已用whitespace-pre-wrap，但可再次保证） */
+.log {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 美化进度条 */
+#progress-inner {
+  background: linear-gradient(90deg, #34d399 0%, #059669 100%);
+  box-shadow: 0 0 8px 2px #34d39988, 0 1px 8px #05966944;
+  border-radius: 9999px;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s;
+  position: relative;
+}
+
+.relative.w-full.h-4.bg-gray-200.rounded-lg.mb-6.overflow-hidden.shadow-inner {
+  border: 1.5px solid #a7f3d0;
+  background: linear-gradient(90deg, #e0f2fe 0%, #d1fae5 100%);
+  box-shadow: 0 2px 12px #a7f3d088 inset, 0 1px 8px #d1fae544;
+  border-radius: 9999px;
+}
+
+#eta {
+  text-shadow: 0 1px 4px #fff, 0 0px 2px #05966988;
+  letter-spacing: 0.05em;
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@weblink/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Design tokens (CSS variables) for Weblink web apps",
+  "exports": {
+    "./theme.css": "./src/theme.css",
+    "./index.css": "./src/index.css"
+  },
+  "files": ["src"]
+}

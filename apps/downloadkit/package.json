@@ -1,0 +1,53 @@
+{
+  "name": "@weblink/downloadkit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts,.vue"
+  },
+  "dependencies": {
+    "@weblink/tokens": "workspace:*",
+    "@weblink/ui-vue": "workspace:*",
+    "@weblink/utils": "workspace:*",
+    "@browser-logos/chrome": "^2.0.0",
+    "@browser-logos/edge": "^2.0.7",
+    "@lucide/lab": "^0.1.2",
+    "@lucide/vue": "^1.7.0",
+    "@vicons/ionicons5": "^0.13.0",
+    "dapjs": "^2.3.0",
+    "dompurify": "^3.3.3",
+    "esptool-js": "^0.6.0",
+    "idb": "^8.0.3",
+    "marked": "^17.0.5",
+    "naive-ui": "^2.44.1",
+    "pinia": "^2.3.1",
+    "pino": "^10.3.1",
+    "simple-icons": "^14.15.0",
+    "splitpanes": "^4.0.4",
+    "vue": "^3.5.13",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/w3c-web-serial": "^1.0.8",
+    "@types/w3c-web-usb": "^1.0.14",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/eslint-config-typescript": "^14.4.0",
+    "eslint": "^9.22.0",
+    "eslint-plugin-vue": "^10.0.0",
+    "fake-indexeddb": "^6.2.5",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.2.2",
+    "vitest": "^3.0.8",
+    "vue-eslint-parser": "^10.4.0",
+    "vue-tsc": "^2.2.8"
+  }
+}

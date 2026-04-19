@@ -1,0 +1,79 @@
+name: "Upstream Sync"
+
+on:
+  schedule:
+    - cron: "0 5 * * 2"
+
+  workflow_dispatch: # click the button on Github repo!
+    inputs:
+      sync_test_mode: # Adds a boolean option that appears during manual workflow run for easy test mode config
+        description: "Fork Sync Test Mode"
+        type: boolean
+        default: false
+
+jobs:
+  sync_from_upstream:
+    runs-on: ubuntu-latest
+    name: "Sync latest commits from upstream repo"
+    outputs:
+      has_new_commits: ${{ steps.sync.outputs.has_new_commits }}
+
+    steps:
+      # REQUIRED step
+      # Step 1: run a standard checkout action, provided by github
+      - name: Checkout target repo
+        uses: actions/checkout@v6
+        with:
+          # optional: set the branch to checkout,
+          # sync action checks out your 'target_sync_branch' anyway
+          ref: ${{ vars.SYNC_BRANCH }}
+          # REQUIRED if your upstream repo is private (see wiki)
+          persist-credentials: false
+
+      # REQUIRED step
+      # Step 2: run the sync action
+      - name: Sync upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.3
+        with:
+          target_sync_branch: ${{ vars.SYNC_BRANCH }}
+          # REQUIRED 'target_repo_token' exactly like this!
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          upstream_sync_branch: ${{ vars.UPSTREAM_BRANCH }}
+          upstream_sync_repo: ${{ vars.UPSTREAM_REPO }}
+
+          # Set test_mode true during manual dispatch to run tests instead of the true action!!
+          test_mode: ${{ inputs.sync_test_mode }}
+
+      # Step 3: Display a sample message based on the sync output var 'has_new_commits'
+      - name: New commits found
+        if: steps.sync.outputs.has_new_commits == 'true'
+        run: echo "New commits were found to sync."
+
+      - name: No new commits
+        if: steps.sync.outputs.has_new_commits == 'false'
+        run: echo "There were no new commits."
+
+      - name: Show value of 'has_new_commits'
+        run: echo ${{ steps.sync.outputs.has_new_commits }}
+
+  create_pull_request:
+    runs-on: ubuntu-latest
+    name: "Create PR from ${{ vars.SYNC_BRANCH }} to ${{ vars.TARGET_BRANCH }}"
+    needs: sync_from_upstream
+    if: needs.sync_from_upstream.outputs.has_new_commits == 'true'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # 获取所有历史记录，以便比较分支差异
+      # Step 2: Create PR
+      - name: GitHub Action for creating Pull Requests
+        uses: devops-infra/action-pull-request@v1.0.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: ${{ vars.SYNC_BRANCH }}
+          target_branch: ${{ vars.TARGET_BRANCH }}
+          title: "Sync upstream changes"
+          body: "Automated PR from upstream sync"

@@ -1,0 +1,25 @@
+# Cloudflare Pages：不可包含 [[migrations]]；Durable Object 定义在独立 Worker（见 workers/room-signaling/）
+name = "webrtckit"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-11-01"
+
+# Pages Functions 的智能放置与可观测性（与独立 Worker 可分别调采样率）
+[placement]
+mode = "smart"
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 0.25
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.1
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "RoomSignaling"
+# 须与 workers/room-signaling/wrangler.toml 中 name 一致，且需先部署该 Worker
+script_name = "webrtckit-room-worker"
