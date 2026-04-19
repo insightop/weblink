@@ -60,6 +60,7 @@ npm run lint
 - `flashkit` → `https://weblink-flashkit.pages.dev`
 - `cankit` → `https://cankit.pages.dev`
 - `ipkit` → `https://ipkit.pages.dev`
+- `vkvmkit` → `https://vkvmkit.pages.dev`
 
 支持同一 kit 打开多个实例（标签页），并会在刷新后从 localStorage 恢复。
 
