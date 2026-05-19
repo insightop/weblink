@@ -34,4 +34,4 @@ jobs:
         run: pnpm test
 
       - name: Build
-        run: turbo run build --filter='!@weblink/electron' --filter='!@weblink/tauri'
+        run: pnpm build:ci
