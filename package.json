@@ -7,13 +7,20 @@
   "scripts": {
     "dev": "turbo dev --filter=@weblink/web",
     "dev:web": "turbo dev --filter=@weblink/web",
+    "dev:tauri": "turbo dev --filter=@weblink/tauri",
+    "dev:electron": "turbo dev --filter=@weblink/electron",
     "dev:legacy": "vite",
     "build": "turbo run build",
+    "build:packages": "turbo run build --filter='./packages/*'",
+    "build:kits": "turbo run build --filter='./kits/*'",
     "build:web": "turbo build --filter=@weblink/web",
+    "build:electron": "turbo build --filter=@weblink/electron",
+    "build:tauri": "turbo build --filter=@weblink/tauri",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{js,mjs,cjs,ts,vue,json,md,css}\"",
+    "clean": "turbo run clean && rm -rf node_modules/.cache",
     "changeset": "changeset"
   },
   "devDependencies": {

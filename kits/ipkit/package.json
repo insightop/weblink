@@ -3,18 +3,19 @@
   "private": true,
   "version": "0.1.0",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./dist/index.js"
   },
   "type": "module",
   "description": "浏览器内 HTTP / WebSocket / DoH 等网络协议调试台",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@weblink/ui-vue": "workspace:*",

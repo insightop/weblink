@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./dist/index.js"
   },
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
+    "build": "vite build",
     "pages:build": "npm run deploy:worker && npm run build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
@@ -16,7 +16,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "pages:dev": "npm run build && wrangler pages dev ./dist --compatibility-date=2025-01-01",
-    "deploy:worker": "wrangler deploy --config workers/room-signaling/wrangler.toml"
+    "deploy:worker": "wrangler deploy --config workers/room-signaling/wrangler.toml",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@weblink/tokens": "workspace:*",

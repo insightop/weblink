@@ -15,5 +15,8 @@
     "@eslint/js": "^10.0.1",
     "globals": "^16.2.0",
     "typescript-eslint": "^8.58.2"
+  },
+  "scripts": {
+    "clean": "rm -rf dist node_modules/.cache"
   }
 }

@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node ./scripts/placeholder-build.mjs",
-    "dev": "node ./scripts/placeholder-build.mjs"
+    "dev": "node ./scripts/placeholder-build.mjs",
+    "clean": "rm -rf dist"
   }
 }

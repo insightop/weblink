@@ -3,17 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./dist/index.js"
   },
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc -b",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@weblink/tokens": "workspace:*",

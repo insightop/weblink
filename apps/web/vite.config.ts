@@ -9,4 +9,16 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/@weblink/")) {
+            const match = id.match(/@weblink\/([^/]+)/);
+            if (match) return `kit-${match[1]}`;
+          }
+        },
+      },
+    },
+  },
 });
