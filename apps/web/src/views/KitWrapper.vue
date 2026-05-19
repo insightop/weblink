@@ -1,66 +1,77 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, h } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { NResult, NButton } from "naive-ui";
+import { NResult, NButton, NSpin } from "naive-ui";
 import { findKit } from "@/config/kitRegistry";
 
 const route = useRoute();
 const kitId = computed(() => route.params.kitId as string);
 const kitConfig = computed(() => findKit(kitId.value));
 
-const KitComponent = computed(() => {
-  if (!kitConfig.value) return null;
+// 异步加载的组件
+const AsyncComponent = ref<any>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
+
+const kitLoaders: Record<string, () => Promise<any>> = {
+  serialkit: () => import("@weblink/serialkit"),
+  cankit: () => import("@weblink/cankit"),
+  capturekit: () => import("@weblink/capturekit"),
+  downloadkit: () => import("@weblink/downloadkit"),
+  flashkit: () => import("@weblink/flashkit"),
+  ipkit: () => import("@weblink/ipkit"),
+  webrtckit: () => import("@weblink/webrtckit"),
+  wirelesskit: () => import("@weblink/wirelesskit"),
+};
+
+// iframe kit 的 URL
+const iframeUrl = computed(() => {
+  if (!kitConfig.value) return "";
   const config = kitConfig.value;
-
   if (config.stack === "js" || config.stack === "svelte") {
-    // iframe 兜底：JS 和 Svelte kit
-    return defineAsyncComponent(() =>
-      Promise.resolve({
-        setup() {
-          const url =
-            import.meta.env.DEV && config.localPort
-              ? `http://localhost:${config.localPort}`
-              : config.prodUrl;
-          return () =>
-            h("div", { style: "height: 100%; width: 100%" }, [
-              h("iframe", {
-                src: url,
-                style: "width: 100%; height: 100%; border: none",
-                allow: "serial;usb;hid;bluetooth;nfc;camera;microphone",
-                sandbox: "allow-scripts allow-same-origin allow-forms allow-popups",
-              }),
-            ]);
-        },
-      }),
-    );
+    return import.meta.env.DEV && config.localPort
+      ? `http://localhost:${config.localPort}`
+      : config.prodUrl;
   }
-
-  // Vue kit：动态 import
-  const loaders: Record<string, () => Promise<any>> = {
-    serialkit: () => import("@weblink/serialkit"),
-    cankit: () => import("@weblink/cankit"),
-    capturekit: () => import("@weblink/capturekit"),
-    downloadkit: () => import("@weblink/downloadkit"),
-    flashkit: () => import("@weblink/flashkit"),
-    ipkit: () => import("@weblink/ipkit"),
-    webrtckit: () => import("@weblink/webrtckit"),
-    wirelesskit: () => import("@weblink/wirelesskit"),
-  };
-
-  const loader = loaders[config.id];
-  if (!loader) return null;
-
-  return defineAsyncComponent(() =>
-    loader().then((mod) => ({
-      setup() {
-        return () => h(mod.App);
-      },
-    })),
-  );
+  return "";
 });
 
+const isIframeKit = computed(() => {
+  return kitConfig.value?.stack === "js" || kitConfig.value?.stack === "svelte";
+});
+
+async function loadKit(id: string) {
+  AsyncComponent.value = null;
+  error.value = null;
+  loading.value = true;
+
+  try {
+    const loader = kitLoaders[id];
+    if (!loader) {
+      error.value = "Kit loader not found";
+      return;
+    }
+    const mod = await loader();
+    AsyncComponent.value = mod.App;
+  } catch (e: any) {
+    error.value = e?.message ?? "Failed to load kit";
+  } finally {
+    loading.value = false;
+  }
+}
+
+// 监听路由变化，加载对应 kit
+watch(
+  kitId,
+  (id) => {
+    if (id && kitConfig.value && !isIframeKit.value) {
+      loadKit(id);
+    }
+  },
+  { immediate: true },
+);
+
 const kitNotFound = computed(() => !kitConfig.value);
-const kitUnavailable = computed(() => kitConfig.value && !KitComponent.value);
 </script>
 
 <template>
@@ -70,27 +81,43 @@ const kitUnavailable = computed(() => kitConfig.value && !KitComponent.value);
         <NButton tag="a" href="/" type="primary">Back to Home</NButton>
       </template>
     </NResult>
-    <NResult v-else-if="kitUnavailable" status="info" title="Kit Coming Soon">
+
+    <NResult v-else-if="error" status="error" title="Load Failed" :description="error">
       <template #footer>
         <NButton tag="a" href="/" type="primary">Back to Home</NButton>
       </template>
     </NResult>
-    <Suspense v-else>
-      <template #default>
-        <KitComponent v-if="KitComponent" />
-      </template>
-      <template #fallback>
-        <div class="loading">Loading...</div>
-      </template>
-    </Suspense>
+
+    <template v-else-if="isIframeKit">
+      <iframe
+        v-if="iframeUrl"
+        :src="iframeUrl"
+        class="kit-iframe"
+        allow="serial;usb;hid;bluetooth;nfc;camera;microphone"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      />
+    </template>
+
+    <template v-else>
+      <div v-if="loading" class="loading">
+        <NSpin size="large" />
+      </div>
+      <AsyncComponent v-else-if="AsyncComponent" />
+    </template>
   </div>
 </template>
 
 <style scoped>
 .kit-wrapper {
   height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
+}
+.kit-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
 }
 .loading {
   display: flex;
