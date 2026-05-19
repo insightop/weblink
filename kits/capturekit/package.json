@@ -1,0 +1,33 @@
+{
+  "name": "@weblink/capturekit",
+  "version": "1.0.0",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "private": true,
+  "type": "module",
+  "description": "浏览器多媒体设备调试（相机 / 麦克风 / 扬声器）",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@weblink/utils": "workspace:*",
+    "vue": "^3.5.32"
+  },
+  "devDependencies": {
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.6"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@weblink/cankit",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc -b",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@weblink/tokens": "workspace:*",
+    "@weblink/utils": "workspace:*",
+    "vue": "^3.5.32"
+  },
+  "devDependencies": {
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
+    "@types/node": "^24.12.2",
+    "@types/w3c-web-serial": "^1.0.8",
+    "@types/w3c-web-usb": "^1.0.14",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.6"
+  }
+}

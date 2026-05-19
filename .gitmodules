@@ -1,9 +1,0 @@
-[submodule "src/libs/webdap"]
-	path = src/libs/webdap
-	url = https://github.com/ARMmbed/dapjs
-[submodule "src/libs/webstlink"]
-	path = src/libs/webstlink
-	url = https://github.com/devanlai/webstlink
-[submodule "src/libs/webdfu"]
-	path = src/libs/webdfu
-	url = https://github.com/devanlai/webdfu

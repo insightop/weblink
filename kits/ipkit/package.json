@@ -1,0 +1,38 @@
+{
+  "name": "@weblink/ipkit",
+  "private": true,
+  "version": "0.1.0",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "type": "module",
+  "description": "浏览器内 HTTP / WebSocket / DoH 等网络协议调试台",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@weblink/ui-vue": "workspace:*",
+    "@weblink/utils": "workspace:*",
+    "naive-ui": "^2.44.1",
+    "pinia": "^2.3.1",
+    "vue": "^3.5.32",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
+    "@types/node": "^24.12.2",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.6"
+  }
+}

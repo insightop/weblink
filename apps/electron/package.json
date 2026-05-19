@@ -1,0 +1,41 @@
+{
+  "name": "@weblink/electron",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "package": "electron-vite build && electron-builder",
+    "package:win": "electron-vite build && electron-builder --win",
+    "package:mac": "electron-vite build && electron-builder --mac"
+  },
+  "dependencies": {
+    "@electron-toolkit/utils": "^3.0.0"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^25.0.0",
+    "@swc/core": "^1.0.0",
+    "electron-vite": "^6.0.0-beta.1"
+  },
+  "build": {
+    "appId": "com.insightop.weblink",
+    "productName": "Weblink",
+    "win": {
+      "target": "portable",
+      "icon": "resources/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "resources/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "resources/icon.png"
+    },
+    "files": ["out/**/*"]
+  }
+}

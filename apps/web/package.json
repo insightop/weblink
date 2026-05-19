@@ -1,0 +1,35 @@
+{
+  "name": "@weblink/web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc -b --noEmit"
+  },
+  "dependencies": {
+    "@weblink/tokens": "workspace:*",
+    "@weblink/serialkit": "workspace:*",
+    "@weblink/cankit": "workspace:*",
+    "@weblink/downloadkit": "workspace:*",
+    "@weblink/capturekit": "workspace:*",
+    "@weblink/flashkit": "workspace:*",
+    "@weblink/ipkit": "workspace:*",
+    "@weblink/webrtckit": "workspace:*",
+    "@weblink/wirelesskit": "workspace:*",
+    "naive-ui": "^2.44.1",
+    "vue": "^3.5.32",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
+    "@types/node": "^24.12.2",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vue-tsc": "^3.2.6"
+  }
+}

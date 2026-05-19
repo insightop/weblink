@@ -1,0 +1,14 @@
+<script setup lang="ts">
+import { NConfigProvider, darkTheme, useOsTheme, enUS, dateEnUS } from "naive-ui";
+import { computed } from "vue";
+import { RouterView } from "vue-router";
+
+const osTheme = useOsTheme();
+const theme = computed(() => (osTheme.value === "dark" ? darkTheme : null));
+</script>
+
+<template>
+  <NConfigProvider :theme="theme" :locale="enUS" :date-locale="dateEnUS">
+    <RouterView />
+  </NConfigProvider>
+</template>
