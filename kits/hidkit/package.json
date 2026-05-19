@@ -1,0 +1,11 @@
+{
+  "name": "@weblink/hidkit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Placeholder app — HID kit (implementation TBD)",
+  "type": "module",
+  "scripts": {
+    "build": "node ./scripts/placeholder-build.mjs",
+    "dev": "node ./scripts/placeholder-build.mjs"
+  }
+}
