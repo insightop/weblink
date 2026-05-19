@@ -1,0 +1,11 @@
+{
+  "name": "@weblink/vkvmkit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Placeholder app — VirtualKVM kit (implementation TBD)",
+  "type": "module",
+  "scripts": {
+    "build": "node ./scripts/placeholder-build.mjs",
+    "dev": "node ./scripts/placeholder-build.mjs"
+  }
+}

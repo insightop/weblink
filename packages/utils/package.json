@@ -7,7 +7,13 @@
     ".": "./src/index.ts",
     "./format": "./src/format.ts",
     "./browser": "./src/browser.ts",
-    "./ui": "./src/ui.ts"
+    "./ui": "./src/ui.ts",
+    "./hex": "./src/hex.ts",
+    "./time": "./src/time.ts",
+    "./codec": "./src/codec.ts",
+    "./error": "./src/error.ts",
+    "./web-api": "./src/web-api.ts",
+    "./logger": "./src/logger.ts"
   },
   "files": ["src"],
   "scripts": {

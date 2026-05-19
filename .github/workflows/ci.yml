@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, feat/monorepo]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -29,11 +29,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm -r --if-present run lint
+        run: pnpm lint
         continue-on-error: true
 
       - name: Test
-        run: pnpm -r --if-present run test
+        run: pnpm test
 
       - name: Build
-        run: pnpm -r run build
+        run: pnpm build

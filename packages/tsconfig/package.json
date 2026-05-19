@@ -2,5 +2,10 @@
   "name": "@weblink/tsconfig",
   "version": "0.0.0",
   "private": true,
+  "exports": {
+    "./base.json": "./base.json",
+    "./vue-app.json": "./vue-app.json",
+    "./node.json": "./node.json"
+  },
   "files": ["*.json"]
 }
