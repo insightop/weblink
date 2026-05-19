@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车载里程计</title>
+    <!-- Bootstrap 5 CSS - 主CDN -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdn.staticfile.org/twitter-bootstrap/5.3.2/css/bootstrap.min.css';">
+    <!-- Bootstrap Icons - 主CDN -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+        onerror="this.onerror=null;this.href='https://cdn.staticfile.org/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css';">
+    <!-- Animate.css for animations - 主CDN -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/animate.css/4.1.1/animate.min.css"
+        onerror="this.onerror=null;this.href='https://cdn.staticfile.org/animate.css/4.1.1/animate.min.css';">
+    <!-- DataTables Bootstrap 5 - 主CDN -->
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.bootcdn.net/ajax/libs/datatables/1.13.7/css/dataTables.bootstrap5.min.css"
+        onerror="this.onerror=null;this.href='https://cdn.staticfile.org/datatables/1.13.7/css/dataTables.bootstrap5.min.css';">
+    <script type="text/javascript" charset="utf8" src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.0/jquery.min.js"
+        onerror="this.onerror=null;this.src='https://cdn.staticfile.org/jquery/3.7.0/jquery.min.js';"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.bootcdn.net/ajax/libs/datatables/1.13.7/js/jquery.dataTables.min.js"
+        onerror="this.onerror=null;this.src='https://cdn.staticfile.org/datatables/1.13.7/js/jquery.dataTables.min.js';"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.bootcdn.net/ajax/libs/datatables/1.13.7/js/dataTables.bootstrap5.min.js"
+        onerror="this.onerror=null;this.src='https://cdn.staticfile.org/datatables/1.13.7/js/dataTables.bootstrap5.min.js';"></script>
+
+    <!-- 本地css -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- 本地js -->
+    <script type="module" src="main.js"></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZS0HV7R27M"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-ZS0HV7R27M');
+    </script>
+
+</head>
+
+
+<body>
+    <div class="container-fluid">
+        <div class="row mb-4 mt-3">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <button id="togglePort" class="btn btn-primary">
+                        <i class="bi bi-link-45deg"></i>
+                        <span>连接DTU</span>
+                    </button>
+                    <button id="get" class="btn btn-success" disabled>
+                        <i class="bi bi-database"></i>
+                        <span>读取数据</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <button id="reboot" class="btn btn-outline-primary" disabled>
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span>重启终端</span>
+                    </button>
+                    <button id="reset" class="btn btn-outline-primary" disabled>
+                        <i class="bi bi-trash"></i>
+                        <span>清除数据</span>
+                    </button>
+                    <button id="set" class="btn btn-outline-primary" disabled>
+                        <i class="bi bi-download"></i>
+                        <span>下发数据</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DataTables表格 -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <table id="dataTable" class="table table-striped table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="bi bi-cpu"></i> UID</th>
+                                    <th><i class="bi bi-clock"></i> 开机时长</th>
+                                    <th><i class="bi bi-play-circle"></i> 运行时长</th>
+                                    <th><i class="bi bi-geo-alt"></i> 行驶里程</th>
+                                    <th><i class="bi bi-clock-history"></i> 累计开机</th>
+                                    <th><i class="bi bi-stopwatch"></i> 累计运行</th>
+                                    <th><i class="bi bi-route"></i> 累计里程</th>
+                                    <th><i class="bi bi-thermometer-half"></i> 温度</th>
+                                    <th><i class="bi bi-satellite"></i> 卫星数</th>
+                                    <th><i class="bi bi-crosshair"></i> 定位精度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 数据行将由DataTables动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <button id="toggleLogs" class="btn btn-outline-secondary">
+                    <i class="bi bi-chevron-down"></i>
+                    <span>显示日志</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="logs-container mt-3" style="display: none;">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>最新数据</span>
+                            <span id="timestamp" class="text-muted small">--</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="dataLog" class="log"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <span>系统日志</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="systemLog" class="log"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 悬浮按钮组 -->
+    <div class="isp-btn-group">
+        <button id="downloadBtn" class="btn btn-outline-primary rounded-circle" title="烧录固件"
+            style="width: 48px; height: 48px;">
+            <i class="bi bi-file-earmark-arrow-down"></i>
+        </button>
+    </div>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"
+        onerror="this.onerror=null;this.src='https://cdn.staticfile.org/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js';"></script>
+</body>
+
+</html>
