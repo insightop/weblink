@@ -17,7 +17,8 @@
   },
   "files": ["src"],
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "clean": "rm -rf dist node_modules/.cache"
   },
   "devDependencies": {
     "typescript": "^5.8.0",

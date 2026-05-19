@@ -10,18 +10,18 @@
       "cache": false
     },
     "typecheck": {
-      "dependsOn": ["^build"],
       "outputs": []
     },
     "lint": {
-      "dependsOn": ["^build"],
       "outputs": []
     },
     "test": {
-      "dependsOn": ["^build"],
       "outputs": []
     },
     "format": {
+      "cache": false
+    },
+    "clean": {
       "cache": false
     }
   }

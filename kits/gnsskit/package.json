@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.js\"",
     "format": "prettier --write \"index.html\" \"src/**/*.{js,html,css}\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "chart.js": "^4.5.1",

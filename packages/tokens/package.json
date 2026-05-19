@@ -7,5 +7,8 @@
     "./theme.css": "./src/theme.css",
     "./index.css": "./src/index.css"
   },
-  "files": ["src"]
+  "files": ["src"],
+  "scripts": {
+    "clean": "rm -rf dist node_modules/.cache"
+  }
 }
