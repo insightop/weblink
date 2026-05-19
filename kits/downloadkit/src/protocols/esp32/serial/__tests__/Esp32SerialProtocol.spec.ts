@@ -14,12 +14,14 @@ vi.mock("@/features/flasher/services/flasherLogger", () => ({
 
 const writeFlashMock = vi.fn();
 vi.mock("@/protocols/esp32/adapters/EsptoolJsAdapter", () => ({
-  EsptoolJsAdapter: vi.fn().mockImplementation(() => ({
-    connect: vi.fn(async () => ({ chipName: "ESP32-MOCK" })),
-    writeFlash: writeFlashMock,
-    reset: vi.fn(async () => undefined),
-    disconnect: vi.fn(async () => undefined),
-  })),
+  EsptoolJsAdapter: vi.fn().mockImplementation(function () {
+    return {
+      connect: vi.fn(async () => ({ chipName: "ESP32-MOCK" })),
+      writeFlash: writeFlashMock,
+      reset: vi.fn(async () => undefined),
+      disconnect: vi.fn(async () => undefined),
+    };
+  }),
 }));
 
 function createTransport(): SerialTransport {
