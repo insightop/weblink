@@ -1,0 +1,27 @@
+{
+  "name": "@weblink/utils",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./format": "./src/format.ts",
+    "./browser": "./src/browser.ts",
+    "./ui": "./src/ui.ts",
+    "./hex": "./src/hex.ts",
+    "./time": "./src/time.ts",
+    "./codec": "./src/codec.ts",
+    "./error": "./src/error.ts",
+    "./web-api": "./src/web-api.ts",
+    "./logger": "./src/logger.ts"
+  },
+  "files": ["src"],
+  "scripts": {
+    "test": "vitest run",
+    "clean": "rm -rf dist node_modules/.cache"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  }
+}

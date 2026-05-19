@@ -1,0 +1,35 @@
+{
+  "name": "@weblink/gnsskit",
+  "version": "1.0.0",
+  "description": "GNSS Kit",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint \"src/**/*.js\"",
+    "format": "prettier --write \"index.html\" \"src/**/*.{js,html,css}\"",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "nmea-simple": "^3.3.0"
+  },
+  "devDependencies": {
+    "@weblink/tsconfig": "workspace:*",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Insightop/weblink-gnsskit.git"
+  },
+  "keywords": ["gnss", "nmea", "web-serial"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Insightop/weblink-gnsskit/issues"
+  },
+  "homepage": "https://github.com/Insightop/weblink-gnsskit#readme"
+}

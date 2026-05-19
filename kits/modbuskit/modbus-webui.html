@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modbus WebUI</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+    <footer class="border-t w-full">
+      <div class="w-full px-4 py-8 text-sm text-muted-foreground">
+        <!-- Parent: left rail + fluid right. Stacks on small screens -->
+        <div class="grid gap-8 grid-cols-1 md:[grid-template-columns:minmax(16rem,20vw)_1fr]">
+          <!-- LEFT: title + about -->
+          <aside class="space-y-4 md:pr-8">
+            <h1 class="text-xl text-foreground tracking-wide">
+              modbus-webui <span class="text-muted-foreground">v%APP_VERSION%</span>
+            </h1>
+            <h2>Single-file Modbus workbench—profiles, name tables, shortcuts.</h2>
+            <section aria-labelledby="about">
+              <h3 id="about" class="mb-2 font-semibold text-foreground">About</h3>
+              <p class="mb-2">
+                Runs entirely in your browser; powered by the
+                <a
+                  class="underline"
+                  href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Serial_API"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Web Serial API</a
+                >
+                using
+                <a
+                  class="underline"
+                  href="https://www.npmjs.com/package/modbus-webserial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >modbus-webserial</a
+                >.
+              </p>
+              <p>
+                Source:&nbsp;
+                <a
+                  class="underline break-words"
+                  href="%GITHUB_URL%"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >GitHub: modbus-webui</a
+                >
+              </p>
+            </section>
+            <section aria-labelledby="legacy-export">
+              <h3 id="about" class="mb-2 font-semibold text-foreground">Lost your library from before 26.9.2025?</h3>
+              <p class="mb-2">
+                The domain changed as of 26.9.2025, so if you had a library saved on the old domain it will not be directly available from this page. You can import it by:
+                <ol class="list-decimal list-inside space-y-1">
+                <li>Open <strong>Import/Export</strong></li>
+                <li>Click <strong>Import localStorage from old domain</strong></li>
+                <li>Follow popup and click <strong>Send to new site</strong></li>
+                <br />
+                We apologize for the inconvenience. 
+            </section>
+          </aside>
+
+          <!-- RIGHT: auto-fit sections that grow to consume full width -->
+          <div class="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(22rem,1fr))]">
+            <!-- Help / Basic usage -->
+            <section aria-labelledby="help">
+              <h3 id="help" class="mb-2 font-semibold text-foreground">Help / Basic usage</h3>
+              <ol class="list-decimal list-inside space-y-1">
+                <li>Click <strong>Connect</strong> and choose your serial port.</li>
+                <li>
+                  Set port parameters (baud rate, parity, etc.) and click <strong>Open</strong>.
+                </li>
+                <li>
+                  Use the <strong>Read</strong> and <strong>Write</strong> panels to work with coils
+                  and registers.
+                </li>
+                <li>
+                  Save frequent actions as <strong>Shortcuts</strong> and run them from the
+                  Shortcuts panel.
+                </li>
+                <li>
+                  Use <strong>Name Tables</strong> to label addresses;
+                  <strong>Profiles</strong> keep your device-specific setup.
+                </li>
+              </ol>
+              <p class="mt-2 opacity-70">We’ll expand this section with examples and tips.</p>
+            </section>
+
+            <!-- Name Tables -->
+            <section aria-labelledby="nametables">
+              <h3 id="nametables" class="mb-2 font-semibold text-foreground">Name Tables</h3>
+              <ul class="list-disc list-inside space-y-1">
+                <li>
+                  <strong>Shared library:</strong> Name tables are global; any profile can choose
+                  which set to use.
+                </li>
+                <li>
+                  <strong>Covers all areas:</strong> Coils, discrete inputs, holding registers, and
+                  input registers.
+                </li>
+                <li>
+                  <strong>Address-based:</strong> Each name is linked to an address (you can enter
+                  addresses as decimal or hex). Gaps are fine.
+                </li>
+                <li>
+                  <strong>Edit easily:</strong> Open the Name Tables modal to edit one area or
+                  copy/paste an entire set in JSON.
+                </li>
+              </ul>
+            </section>
+
+            <!-- Profiles -->
+            <section aria-labelledby="profiles">
+              <h3 id="profiles" class="mb-2 font-semibold text-foreground">Profiles</h3>
+              <ul class="list-disc list-inside space-y-1">
+                <li>
+                  <strong>What they hold:</strong> Your selected name-table set, connection
+                  settings, and saved write shortcuts.
+                </li>
+                <li>
+                  <strong>Live changes:</strong> Edits apply to the active profile immediately—no
+                  separate “save profile” step.
+                </li>
+                <li>
+                  <strong>Switching:</strong> Changing profiles doesn’t close the serial connection;
+                  disconnect explicitly if needed.
+                </li>
+                <li>
+                  <strong>Names:</strong> Tag-style identifiers (capitals/underscores). The input
+                  field enforces the format.
+                </li>
+              </ul>
+            </section>
+
+            <!-- Storage & Versioning -->
+            <section aria-labelledby="storage">
+              <h3 id="storage" class="mb-2 font-semibold text-foreground">Storage & Versioning</h3>
+              <ul class="list-disc list-inside space-y-1">
+                <li>
+                  <strong>Your library:</strong> All data (name tables, profiles, the active
+                  profile) is kept together as a single “library”.
+                </li>
+                <li>
+                  <strong>Persistence:</strong> The library is saved in your browser storage
+                  automatically or when you choose to save.
+                </li>
+                <li>
+                  <strong>Versioned:</strong> Stored data has a version number so future updates can
+                  migrate it safely.
+                </li>
+                <li>
+                  <strong>Import/Export:</strong> Planned; advanced users can manage the stored
+                  library manually for now.
+                </li>
+              </ul>
+            </section>
+
+            <!-- Browser support -->
+            <section aria-labelledby="support">
+              <h3 id="support" class="mb-2 font-semibold text-foreground">Browser support</h3>
+              <ul class="list-disc list-inside space-y-1">
+                <li>
+                  <strong>Requires Web Serial:</strong> Works on Chromium-based desktop browsers. A
+                  notice appears if it isn’t available.
+                </li>
+                <li>
+                  <strong>Permissions:</strong> You choose a port each session; after a page reload
+                  you may need to pick it again.
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

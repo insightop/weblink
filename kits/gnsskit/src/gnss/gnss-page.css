@@ -1,0 +1,318 @@
+/* GNSS 页：沿用主页 app-layout，左侧解析网格 + 右侧原始数据（可折叠） */
+
+.gnss-page .gnss-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.gnss-toolbar__left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+.gnss-toolbar__right {
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.gnss-toolbar__hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  min-height: 1.25em;
+  flex: 1;
+  min-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gnss-toolbar__hint--error {
+  color: var(--color-danger);
+}
+
+/* 波特率：与主页工具条控件风格一致的胶囊框 + 内嵌 select */
+.gnss-field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0 12px;
+  height: 36px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: var(--bg-panel);
+  box-sizing: border-box;
+}
+
+.gnss-field__label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.gnss-field__control {
+  min-width: 5.5rem;
+  height: 28px;
+  padding: 0 6px;
+  margin: 0;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  appearance: auto;
+}
+
+.gnss-field__control:focus {
+  outline: none;
+}
+
+/* 右侧仅原始数据：单栏占满 */
+.gnss-side-panel.log-panel {
+  grid-template-rows: 1fr;
+}
+
+.gnss-side-panel .raw-panel {
+  grid-row: 1;
+  min-height: 0;
+  border-bottom: none;
+}
+
+.gnss-side-panel .raw-panel__content {
+  min-height: 0;
+}
+
+/* 原始行样式（与旧版一致） */
+.gnss-raw__lines {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.gnss-raw__line {
+  padding: 2px 0;
+  border-left: 3px solid rgba(139, 92, 246, 0.6);
+  padding-left: 6px;
+}
+
+.gnss-raw__meta {
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+
+/* 解析卡片网格：固定 3 列（大屏） */
+.gnss-parsed__grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gnss-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  overflow: visible;
+  background: var(--bg-panel);
+}
+
+.gnss-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-header);
+}
+
+.gnss-card__type-icon {
+  font-size: 12px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.gnss-card__type-icon.nmea-signal-tier--green,
+.gnss-card__type-icon.gsv-tier--green {
+  color: var(--nmea-signal-green);
+}
+
+.gnss-card__type-icon.nmea-signal-tier--blue,
+.gnss-card__type-icon.gsv-tier--blue {
+  color: var(--nmea-signal-blue);
+}
+
+.gnss-card__type-icon.nmea-signal-tier--yellow,
+.gnss-card__type-icon.gsv-tier--yellow {
+  color: var(--nmea-signal-yellow);
+}
+
+.gnss-card__type-icon.nmea-signal-tier--red,
+.gnss-card__type-icon.gsv-tier--red {
+  color: var(--nmea-signal-red);
+}
+
+.gnss-card__header-main {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 55%;
+}
+
+.gnss-card--gsv .gnss-card__header-main {
+  max-width: none;
+  flex-shrink: 0;
+}
+
+.gnss-card__header-aside {
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  flex: 1;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.gnss-card__chart {
+  flex: 1;
+  min-width: 48px;
+  height: 36px;
+  position: relative;
+}
+
+.gnss-card__chart canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.gnss-card__title {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.gnss-card__summary {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gnss-card--gsv .gnss-card__summary {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  min-width: 0;
+  max-width: none;
+  margin-left: 2px;
+}
+
+.gnss-card__body {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.gnss-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: 2px 0;
+  font-size: var(--font-size-xs);
+}
+
+.gnss-row__label {
+  color: var(--text-muted);
+}
+
+.gnss-row__label--tip {
+  position: relative;
+  z-index: 0;
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--text-muted);
+}
+
+.gnss-row__label--tip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 4000;
+  left: 0;
+  bottom: calc(100% + 6px);
+  padding: 8px 10px;
+  max-width: min(300px, 85vw);
+  width: max-content;
+  box-sizing: border-box;
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+  white-space: normal;
+  word-break: break-word;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease, visibility 0.12s;
+}
+
+.gnss-row__label--tip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.gnss-row__value {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* GSV：与主页诊断类似的键值行，右侧数值更紧凑、少占宽 */
+.gnss-card--gsv .gnss-row {
+  gap: 6px;
+  padding: 1px 0;
+}
+
+.gnss-card--gsv .gnss-row__label {
+  flex: 0 0 auto;
+}
+
+.gnss-card--gsv .gnss-row:not(:first-child) .gnss-row__label {
+  max-width: 40%;
+}
+
+.gnss-card--gsv .gnss-row__value {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  font-size: 11px;
+  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 980px) {
+  .gnss-parsed__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .gnss-parsed__grid {
+    grid-template-columns: 1fr;
+  }
+}

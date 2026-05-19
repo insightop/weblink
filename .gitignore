@@ -1,5 +1,5 @@
 # Logs
-logs
+/logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -14,6 +14,9 @@ dist-ssr
 coverage
 *.local
 
+# Turborepo
+.turbo
+
 /cypress/videos/
 /cypress/screenshots/
 
@@ -21,10 +24,23 @@ coverage
 .vscode/*
 !.vscode/extensions.json
 .idea
+.cursor
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
+# Environment files
+.env
+.env.*
+
+# Security
+*.pem
+*.key
+
 *.tsbuildinfo
+
+# Lock files (only root pnpm-lock.yaml should exist)
+**/package-lock.json
+!pnpm-lock.yaml

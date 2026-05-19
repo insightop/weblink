@@ -1,0 +1,22 @@
+{
+  "name": "@weblink/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "peerDependencies": {
+    "eslint": "^10.0.0",
+    "eslint-plugin-vue": "^10.0.0",
+    "typescript-eslint": "^8.0.0"
+  },
+  "dependencies": {
+    "@eslint/js": "^10.0.1",
+    "globals": "^16.2.0",
+    "typescript-eslint": "^8.58.2"
+  },
+  "scripts": {
+    "clean": "rm -rf dist node_modules/.cache"
+  }
+}

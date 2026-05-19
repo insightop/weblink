@@ -1,0 +1,201 @@
+{
+  "app": {
+    "title": "Download Kit"
+  },
+  "help": {
+    "tooltip": "Help"
+  },
+  "language": {
+    "label": "Language",
+    "auto": "System",
+    "zh": "中文",
+    "en": "English"
+  },
+  "zones": {
+    "target": "Target",
+    "flasher": "Programmer",
+    "firmware": "Firmware",
+    "download": "Download"
+  },
+  "flasherPage": {
+    "downloadBlocked": "Select a programmer connection and load firmware first.",
+    "selectTargetAndFlasher": "Select a target and programmer first.",
+    "flashNotImplemented": "This programmer does not implement flashing yet.",
+    "downloadCompleted": "Download finished.",
+    "connected": "Connected",
+    "notSelected": "Not selected",
+    "runtimeUnavailable": "Current programmer unavailable. {hint}",
+    "noConnectionNeeded": "This programmer does not require a connection step.",
+    "selectConnectionFirst": "Select a programmer connection first.",
+    "deviceSelectionTimeout": "Device selection timed out. Retry and confirm or cancel in the chooser.",
+    "deviceNotSelected": "Device: not selected",
+    "deviceSelecting": "Device: selecting...",
+    "deviceNotConnected": "Device: not connected",
+    "deviceFailed": "Device: connect failed"
+  },
+  "firmware": {
+    "input": "Input",
+    "modeSingle": "Single segment",
+    "modeMulti": "Multi-segment ({count} slots)",
+    "modeDynamic": "Dynamic segments ({min}–{max} rows)",
+    "addRow": "Add row",
+    "removeRow": "Remove row",
+    "minRowsNotMet": "Select firmware for enough rows to satisfy the minimum segment count",
+    "noFile": "No file (.hex / .bin / .elf)",
+    "dragHint": "Choose a firmware file or drag it here",
+    "tableFile": "Firmware file",
+    "tableAddress": "Flash address",
+    "addressHiddenHint": "—",
+    "addressResolvedHint": "Flash address comes from Intel HEX or the chip default base; not editable here.",
+    "selectFile": "Select file",
+    "clearFile": "Clear file",
+    "totalSize": "Total size: {size}",
+    "unavailable": "This mode is unavailable. {hint}",
+    "flashAddress": "Flash address",
+    "slotOptional": "optional",
+    "slotRequired": "Select a file for each required slot",
+    "hexMultiSlotHint": "Use .bin per slot for multi-segment flashing. Intel HEX is only supported for a single app slot.",
+    "elfNotImplemented": "ELF files are not supported yet",
+    "slots": {
+      "app": "Application (app)",
+      "bootloader": "Bootloader",
+      "partitionTable": "Partition table",
+      "otaData": "OTA data"
+    }
+  },
+  "download": {
+    "idle": "Download",
+    "verifying": "Verifying",
+    "again": "Download again",
+    "completed": "Completed",
+    "failed": "Failed",
+    "counterLabel": "Counter:",
+    "clearStats": "Clear stats"
+  },
+  "logMessages": {
+    "stage": "Stage: {stage}",
+    "progress": "Progress {percent}% ({written} / {total}, {speed}, ETA {eta})",
+    "esp32ProbeOk": "ESP32 probe OK: {chipName}, baud {baudRate}",
+    "starting": "Starting download",
+    "usingPlugin": "Using plugin: {name}",
+    "succeeded": "Download succeeded",
+    "failed": "Download failed: {message}"
+  },
+  "log": {
+    "empty": "No logs yet",
+    "context": "Details",
+    "title": "Logs",
+    "show": "Show",
+    "hide": "Hide",
+    "all": "All",
+    "none": "None",
+    "clear": "Clear",
+    "export": "Export",
+    "filterLevels": "Filter logs by level",
+    "level": {
+      "trace": "Trace",
+      "debug": "Debug",
+      "info": "Info",
+      "warning": "Warning",
+      "error": "Error"
+    }
+  },
+  "browser": {
+    "names": {
+      "safari": "Safari",
+      "chrome": "Chrome",
+      "edge": "Edge",
+      "arc": "Arc",
+      "firefox": "Firefox",
+      "opera": "Opera",
+      "samsung": "Samsung Internet",
+      "webview": "embedded browser",
+      "unknown": "This browser"
+    },
+    "overlay": {
+      "titleWithName": "Not supported: {name} browser access",
+      "bodyWithName": "Please use Chrome, Edge, Arc, or similar browsers to visit this site.",
+      "copyLink": "Copy page link",
+      "copied": "Copied",
+      "copyFailed": "Could not copy. Copy the address from the bar manually.",
+      "openHint": "If the page does not open automatically, copy the link and open it in the corresponding browser.",
+      "invalidPageUrlForSchemes": "This address is not http/https, so one-click links cannot be built. Use the copy action instead."
+    },
+    "tileCaption": {
+      "chrome": "Open in Chrome",
+      "edge": "Open in Edge",
+      "arc": "Open in Arc",
+      "copy": "Copy URL"
+    }
+  },
+  "target": {
+    "autoPicked": "Target auto-selected from this session: {type}",
+    "title": "Select target",
+    "freq": "Freq (MHz)",
+    "flash": "Flash (KB)",
+    "sram": "SRAM (KB)",
+    "cancel": "Cancel",
+    "confirm": "Use selected target",
+    "remember": "Remember choice (clears on page refresh)",
+    "selectionCancelled": "Target selection was cancelled",
+    "selectionCancelledLog": "Target selection cancelled ({plugin})",
+    "supportedSeriesPrefix": "Supported series: ",
+    "columns": {
+      "family": "Family",
+      "clock": "Clock",
+      "flash": "Flash",
+      "ram": "RAM"
+    },
+    "units": {
+      "mhz": "MHz",
+      "kb": "KB"
+    }
+  },
+  "esp": {
+    "flashPlanInvalid": "Invalid ESP32 firmware payload or missing data. Re-select a .bin/.hex file.",
+    "probeFailed": "ESP32 probe/connection failed. Check boot mode, wiring, and baud rate.",
+    "connectionFailed": "ESP32 serial session not established. Reselect the device and retry.",
+    "flashFailed": "ESP32 flash write failed. Check connection stability and image addresses.",
+    "resetFailed": "ESP32 reset failed. Try the reset button or power cycle."
+  },
+  "dfu": {
+    "probeFailed": "DFU probe failed. Ensure device is in DFU mode.",
+    "syncFailed": "Failed to synchronize DFU state. Reconnect and retry.",
+    "eraseFailed": "DFU erase failed. Check target address and protection state.",
+    "flashFailed": "DFU write failed. Check USB connection stability and retry.",
+    "resetFailed": "DFU reset/detach failed. You may need to replug device manually."
+  },
+  "pluginConfig": {
+    "title": "Flasher settings",
+    "serial": {
+      "baudRate": {
+        "label": "Baud rate",
+        "help": "Serial open speed, common values: 115200 / 460800"
+      }
+    },
+    "esp32": {
+      "baudRate": {
+        "label": "Baud rate",
+        "help": "Must match Web Serial open speed; common: 460800 / 921600"
+      },
+      "esptoolDebugLogging": {
+        "label": "esptool debug logging",
+        "help": "Verbose esptool-js console output (for troubleshooting)"
+      }
+    },
+    "stlink": {
+      "debugInterface": {
+        "label": "Debug interface",
+        "help": "Choose SWD or JTAG transport mode",
+        "option": {
+          "swd": "SWD",
+          "jtag": "JTAG"
+        }
+      },
+      "debugClockHz": {
+        "label": "Debug clock (Hz)",
+        "help": "ST-Link debug clock frequency; too high may be unstable"
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "name": "@weblink/downloadkit",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@weblink/tokens": "workspace:*",
+    "@weblink/ui-vue": "workspace:*",
+    "@weblink/utils": "workspace:*",
+    "@browser-logos/chrome": "^2.0.0",
+    "@browser-logos/edge": "^2.0.7",
+    "@lucide/lab": "^0.1.2",
+    "@lucide/vue": "^1.7.0",
+    "@vicons/ionicons5": "^0.13.0",
+    "dapjs": "^2.3.0",
+    "dompurify": "^3.3.3",
+    "esptool-js": "^0.6.0",
+    "idb": "^8.0.3",
+    "marked": "^17.0.5",
+    "naive-ui": "^2.44.1",
+    "pinia": "^2.3.1",
+    "pino": "^10.3.1",
+    "simple-icons": "^14.15.0",
+    "splitpanes": "^4.0.4",
+    "vue": "^3.5.32",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
+    "@types/node": "^24.12.2",
+    "@types/w3c-web-serial": "^1.0.8",
+    "@types/w3c-web-usb": "^1.0.14",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "fake-indexeddb": "^6.2.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.6"
+  }
+}
