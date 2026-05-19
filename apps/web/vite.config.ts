@@ -2,7 +2,8 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "node:url";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  base: process.env.VITE_BASE_PATH ?? "/",
   plugins: [vue()],
   resolve: {
     alias: {
@@ -21,4 +22,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));
