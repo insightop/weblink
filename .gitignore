@@ -9,8 +9,11 @@ lerna-debug.log*
 
 node_modules
 .DS_Store
+# Build output
 dist
 dist-ssr
+apps/electron/out
+apps/tauri/src-tauri/target
 coverage
 *.local
 
