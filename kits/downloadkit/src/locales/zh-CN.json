@@ -169,8 +169,7 @@
     "title": "烧录参数",
     "serial": {
       "baudRate": {
-        "label": "波特率 (baud)",
-        "help": "串口打开速率，常用 115200 / 460800"
+        "label": "波特率 (baud)"
       }
     },
     "esp32": {

@@ -169,8 +169,7 @@
     "title": "Flasher settings",
     "serial": {
       "baudRate": {
-        "label": "Baud rate",
-        "help": "Serial open speed, common values: 115200 / 460800"
+        "label": "Baud rate"
       }
     },
     "esp32": {
