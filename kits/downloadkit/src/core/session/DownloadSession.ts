@@ -1,9 +1,9 @@
-import { ErrorCode, type DownloadError } from "@/core/errors/ErrorCode";
-import { transitionStage } from "@/core/stateMachine/downloadMachine";
-import type { DownloadStage, StageProgress } from "@/core/types/download";
-import { i18n } from "@/i18n";
-import type { FlasherProtocol } from "@/protocols/types";
-import type { Transport } from "@/transports/types";
+import { ErrorCode, type DownloadError } from "../errors/ErrorCode";
+import { transitionStage } from "../stateMachine/downloadMachine";
+import type { DownloadStage, StageProgress } from "../types/download";
+import { i18n } from "../../i18n";
+import type { FlasherProtocol } from "../../protocols/types";
+import type { Transport } from "../../transports/types";
 
 export interface DownloadSessionDeps {
   transport: Transport;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dnsStatusDescription, parseDohJson } from "@/domain/doh/parseDohResponse";
+import { dnsStatusDescription, parseDohJson } from "./parseDohResponse";
 
 describe("parseDohJson", () => {
   it("parses valid json", () => {

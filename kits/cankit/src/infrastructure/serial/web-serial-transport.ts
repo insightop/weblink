@@ -1,4 +1,4 @@
-import { CanKitError } from "@/domain/errors/can-kit-error.js";
+import { CanKitError } from "../../domain/errors/can-kit-error.js";
 
 export function assertSerialSupported(): void {
   if (typeof navigator === "undefined" || !("serial" in navigator)) {

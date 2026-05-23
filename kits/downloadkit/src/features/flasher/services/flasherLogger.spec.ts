@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { useFlasherStore } from "@/features/flasher/stores/flasher.store";
-import { flasherLogger } from "@/features/flasher/services/flasherLogger";
+import { useFlasherStore } from "../stores/flasher.store";
+import { flasherLogger } from "./flasherLogger";
 
 describe("flasherLogger", () => {
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe("flasherLogger", () => {
     expect(store.logs.length).toBe(1);
     expect(store.logs[0].level).toBe("info");
     expect(store.logs[0].message).toBe("Connected");
-    expect(typeof store.logs[0].timestamp).toBe("string");
+    expect(typeof store.logs[0].ts).toBe("number");
   });
 
   it("writes all level APIs", () => {

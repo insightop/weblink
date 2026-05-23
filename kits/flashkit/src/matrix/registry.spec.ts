@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { assertBusSupported, getBridge, initMatrixRegistry } from "@/matrix/registry";
-import { FlashKitError } from "@/domain/errors/FlashKitError";
-import type { BridgeBackendId } from "@/matrix/types";
+import { assertBusSupported, getBridge, initMatrixRegistry } from "./registry";
+import { FlashKitError } from "../domain/errors/FlashKitError";
+import type { BridgeBackendId } from "./types";
 
 beforeEach(() => {
   initMatrixRegistry();

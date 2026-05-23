@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { DownloadSession } from "@/core/session/DownloadSession";
-import type { FlasherProtocol } from "@/protocols/types";
-import type { FlashPlan } from "@/core/types/download";
-import type { Transport } from "@/transports/types";
+import { DownloadSession } from "./DownloadSession";
+import type { FlasherProtocol } from "../../protocols/types";
+import type { FlashPlan } from "../types/download";
+import type { Transport } from "../../transports/types";
 
 const fakePlan: FlashPlan = {
   name: "fake",

@@ -1,10 +1,10 @@
-import type { PluginConfigObject } from "@/plugins/config/pluginConfig.types";
-import { normalizeConfigBySchema } from "@/plugins/config/pluginConfig.validators";
-import { stm32FixedAddressPolicy } from "@/plugins/firmwareInputPresets";
-import type { FlasherPlugin } from "@/plugins/types";
-import { Ch32SerialProtocol } from "@/protocols/ch32/serial/Ch32SerialProtocol";
-import { WebSerialTransport } from "@/transports/serial/WebSerialTransport";
-import type { SerialTransport } from "@/transports/types";
+import type { PluginConfigObject } from "../config/pluginConfig.types";
+import { normalizeConfigBySchema } from "../config/pluginConfig.validators";
+import { stm32FixedAddressPolicy } from "../firmwareInputPresets";
+import type { FlasherPlugin } from "../types";
+import { Ch32SerialProtocol } from "../../protocols/ch32/serial/Ch32SerialProtocol";
+import { WebSerialTransport } from "../../transports/serial/WebSerialTransport";
+import type { SerialTransport } from "../../transports/types";
 
 const SERIAL_CONFIG_SCHEMA = {
   fields: [

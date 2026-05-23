@@ -1,4 +1,4 @@
-import type { SerialTransport } from "@/transports/types";
+import type { SerialSignals, SerialTransport } from "../types";
 
 export class WebSerialTransport implements SerialTransport {
   readonly name = "web-serial";
@@ -109,5 +109,10 @@ export class WebSerialTransport implements SerialTransport {
   getPort(): SerialPort {
     if (!this.port) throw new Error("Serial port is not opened");
     return this.port;
+  }
+
+  async setSignals(signals: SerialSignals): Promise<void> {
+    if (!this.port) throw new Error("Serial port is not opened");
+    await this.port.setSignals(signals);
   }
 }

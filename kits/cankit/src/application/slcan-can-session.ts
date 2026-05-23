@@ -1,19 +1,19 @@
-import type { RxFrameRow } from "@/domain/can/types.js";
-import { CanKitError } from "@/domain/errors/can-kit-error.js";
+import type { RxFrameRow } from "../domain/can/types.js";
+import { CanKitError } from "../domain/errors/can-kit-error.js";
 import {
   buildBitrateCommand,
   buildCloseCommand,
   buildOpenCommand,
   DEFAULT_LINE_ENDING,
   type LineEnding,
-} from "@/domain/slcan/slcan-commands.js";
-import { encodeTransmitLine, tryDecodeDataFrameLine } from "@/domain/slcan/slcan-codec.js";
-import { iterateLinesFromUtf8Stream } from "@/infrastructure/serial/line-reader.js";
+} from "../domain/slcan/slcan-commands.js";
+import { encodeTransmitLine, tryDecodeDataFrameLine } from "../domain/slcan/slcan-codec.js";
+import { iterateLinesFromUtf8Stream } from "../infrastructure/serial/line-reader.js";
 import {
   assertSerialSupported,
   WebSerialTransport,
-} from "@/infrastructure/serial/web-serial-transport.js";
-import { logDebug } from "@/shared/logger.js";
+} from "../infrastructure/serial/web-serial-transport.js";
+import { logDebug } from "../shared/logger.js";
 import type { ConnectOptions, SessionEvent } from "./can-session.types.js";
 
 /** Web Serial + slcan 文本协议会话 */

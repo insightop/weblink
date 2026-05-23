@@ -1,4 +1,4 @@
-import type { MatrixCell } from "@/matrix/types";
+import type { MatrixCell } from "../types";
 
 /** FT232H 单通道 MPSSE（常见 PID 0x6014） */
 export const ftdiMpsseMatrixCells: MatrixCell[] = [

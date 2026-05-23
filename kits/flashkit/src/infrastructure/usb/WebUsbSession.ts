@@ -1,5 +1,5 @@
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
-import { USB_BULK_IN_EP, USB_BULK_OUT_EP } from "@/infrastructure/usb/WebUsbTypes";
+import { FlashKitError, FlashKitErrorCode } from "../../domain/errors/FlashKitError";
+import { USB_BULK_IN_EP, USB_BULK_OUT_EP } from "./WebUsbTypes";
 
 const USB_TIMEOUT_MS = 1000;
 

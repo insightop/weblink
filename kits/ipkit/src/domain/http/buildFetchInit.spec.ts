@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildFetchInit } from "@/domain/http/buildFetchInit";
+import { buildFetchInit } from "./buildFetchInit";
 
 describe("buildFetchInit", () => {
   it("builds GET without body", () => {

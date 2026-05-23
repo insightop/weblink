@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import type { FlashPlan } from "@/core/types/download";
-import { Esp32SerialProtocol } from "@/protocols/esp32/serial/Esp32SerialProtocol";
-import type { SerialTransport } from "@/transports/types";
+import type { FlashPlan } from "../../../../core/types/download";
+import { Esp32SerialProtocol } from "../Esp32SerialProtocol";
+import type { SerialTransport } from "../../../../transports/types";
 
 vi.mock("@/features/flasher/services/flasherLogger", () => ({
   flasherLogger: {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { maxAbs, sampleToWaveformY } from "@/domain/media/waveMath";
+import { maxAbs, sampleToWaveformY } from "../../../domain/media/waveMath";
 
 const props = defineProps<{
   running: boolean;

@@ -1,4 +1,4 @@
-import { CanKitError } from "@/domain/errors/can-kit-error.js";
+import { CanKitError } from "../../domain/errors/can-kit-error.js";
 
 /** 常见 gs_usb（candleLight / OpenMoko 等），与内核 gs_usb 列举一致 */
 export const GS_USB_DEFAULT_FILTERS: USBDeviceFilter[] = [

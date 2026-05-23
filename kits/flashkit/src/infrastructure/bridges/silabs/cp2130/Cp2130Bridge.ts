@@ -1,13 +1,13 @@
-import type { BridgeBackend } from "@/infrastructure/bridges/BridgeBackend";
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import type { I2cPort } from "@/domain/i2c/I2cPort";
-import { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
-import { Cp2130SpiAdapter } from "@/infrastructure/bridges/silabs/cp2130/Cp2130SpiAdapter";
+import type { BridgeBackend } from "../../BridgeBackend";
+import type { SpiPort } from "../../../../domain/spi/SpiPort";
+import type { I2cPort } from "../../../../domain/i2c/I2cPort";
+import { WebUsbSession } from "../../../usb/WebUsbSession";
+import { Cp2130SpiAdapter } from "./Cp2130SpiAdapter";
 import {
   CP2130_SPI_CLOCK_3MHZ,
   Cp2130VendorCommand,
-} from "@/infrastructure/bridges/silabs/cp2130/cp2130Constants";
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
+} from "./cp2130Constants";
+import { FlashKitError, FlashKitErrorCode } from "../../../../domain/errors/FlashKitError";
 
 /** CS 模式：独占自动片选（与 Silicon Labs 参考枚举一致） */
 const CP2130_CS_EXCLUSIVE = 2;

@@ -1,5 +1,5 @@
-import { IpKitError, IpKitErrorCode } from "@/domain/errors/IpKitError";
-import { createLogger } from "@/infrastructure/logger/createLogger";
+import { IpKitError, IpKitErrorCode } from "../../domain/errors/IpKitError";
+import { createLogger } from "../logger/createLogger";
 
 const log = createLogger("webSocket");
 

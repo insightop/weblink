@@ -2,10 +2,10 @@
 import { useI18n } from "vue-i18n";
 import { NButton, NButtonGroup } from "naive-ui";
 import { FlashOutline } from "@vicons/ionicons5";
-import FunctionZone from "@/features/flasher/components/FunctionZone.vue";
-import PluginConfigPanel from "@/features/flasher/components/PluginConfigPanel.vue";
-import type { FlasherOption } from "@/features/flasher/services/flasherFacade";
-import type { PluginConfigObject, PluginConfigSchema } from "@/plugins/config/pluginConfig.types";
+import FunctionZone from "./FunctionZone.vue";
+import PluginConfigPanel from "./PluginConfigPanel.vue";
+import type { FlasherOption } from "../services/flasherFacade";
+import type { PluginConfigObject, PluginConfigSchema } from "../../../plugins/config/pluginConfig.types";
 
 const { t } = useI18n();
 

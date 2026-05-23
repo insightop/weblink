@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { NCard, NText, NSpace } from "naive-ui";
-import HttpRequestEditor from "@/features/http-lab/components/HttpRequestEditor.vue";
-import HttpResponseViewer from "@/features/http-lab/components/HttpResponseViewer.vue";
-import { useHttpLabStore } from "@/features/http-lab/stores/httpLab.store";
-import { useAbortableTask } from "@/shared/composables/useAbortController";
+import HttpRequestEditor from "../components/HttpRequestEditor.vue";
+import HttpResponseViewer from "../components/HttpResponseViewer.vue";
+import { useHttpLabStore } from "../stores/httpLab.store";
+import { useAbortableTask } from "../../../shared/composables/useAbortController";
 
 const store = useHttpLabStore();
 const { createSignal } = useAbortableTask();

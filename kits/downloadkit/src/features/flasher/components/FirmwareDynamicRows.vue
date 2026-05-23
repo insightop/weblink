@@ -3,10 +3,10 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { NButton, NInput, NText, NUpload, NUploadDragger, type UploadFileInfo } from "naive-ui";
 import { AddOutline, CloseCircle, TrashOutline } from "@vicons/ionicons5";
-import type { FirmwareInputPolicy } from "@/plugins/types";
-import type { FirmwareRowDraft } from "@/core/firmware/firmwareRowDraft";
-import { createFirmwareRow } from "@/core/firmware/firmwareRowDraft";
-import { formatBytes } from "@/shared/format/formatBytes";
+import type { FirmwareInputPolicy } from "../../../plugins/types";
+import type { FirmwareRowDraft } from "../../../core/firmware/firmwareRowDraft";
+import { createFirmwareRow } from "../../../core/firmware/firmwareRowDraft";
+import { formatBytes } from "../../../shared/format/formatBytes";
 
 const props = defineProps<{
   policy: FirmwareInputPolicy;

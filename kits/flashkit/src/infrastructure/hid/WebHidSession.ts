@@ -1,5 +1,5 @@
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
-import { flashKitLogger } from "@/shared/logging/flashKitLogger";
+import { FlashKitError, FlashKitErrorCode } from "../../domain/errors/FlashKitError";
+import { flashKitLogger } from "../../shared/logging/flashKitLogger";
 
 function assertHidSupported(): void {
   if (!("hid" in navigator)) {

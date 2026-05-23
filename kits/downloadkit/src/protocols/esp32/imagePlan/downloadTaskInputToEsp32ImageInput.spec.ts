@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { downloadTaskInputToEsp32ImageInput } from "@/protocols/esp32/imagePlan/downloadTaskInputToEsp32ImageInput";
-import type { DownloadTaskInput } from "@/core/types/download";
+import { downloadTaskInputToEsp32ImageInput } from "./downloadTaskInputToEsp32ImageInput";
+import type { DownloadTaskInput } from "../../../core/types/download";
 
 function baseTask(): Omit<DownloadTaskInput, "firmware"> {
   return { flasherType: "serial", chipFamily: "esp32" };

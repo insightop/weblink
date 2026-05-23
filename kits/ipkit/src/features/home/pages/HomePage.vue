@@ -2,8 +2,8 @@
 import { NCard, NText, NSpace, NTag, NButton } from "naive-ui";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { detectCapabilities } from "@/infrastructure/browser/detectCapabilities";
-import { globalIpToolRegistry } from "@/tools/registry";
+import { detectCapabilities } from "../../../infrastructure/browser/detectCapabilities";
+import { globalIpToolRegistry } from "../../../tools/registry";
 
 const router = useRouter();
 const caps = computed(() => detectCapabilities());

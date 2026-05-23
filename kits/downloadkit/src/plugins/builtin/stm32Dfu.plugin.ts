@@ -1,9 +1,9 @@
-import { Stm32DfuProtocol } from "@/protocols/stm32/dfu/Stm32DfuProtocol";
-import { STM32_DFU_PROFILE, toUsbFilters } from "@/protocols/stm32/dfu/adapters/dfuDeviceProfiles";
-import { stm32FixedAddressPolicy } from "@/plugins/firmwareInputPresets";
-import type { FlasherPlugin } from "@/plugins/types";
-import type { UsbTransport } from "@/transports/types";
-import { WebUsbTransport } from "@/transports/usb/WebUsbTransport";
+import { Stm32DfuProtocol } from "../../protocols/stm32/dfu/Stm32DfuProtocol";
+import { STM32_DFU_PROFILE, toUsbFilters } from "../../protocols/stm32/dfu/adapters/dfuDeviceProfiles";
+import { stm32FixedAddressPolicy } from "../firmwareInputPresets";
+import type { FlasherPlugin } from "../types";
+import type { UsbTransport } from "../../transports/types";
+import { WebUsbTransport } from "../../transports/usb/WebUsbTransport";
 
 /**
  * STM32 ROM DFU (system bootloader) is commonly exposed as 0483:DF11.

@@ -2,7 +2,7 @@
   "name": "@weblink/capturekit",
   "version": "1.0.0",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./src/index.ts"
   },
   "private": true,
   "type": "module",

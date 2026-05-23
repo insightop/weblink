@@ -1,4 +1,4 @@
-import type { SpiNorProfile } from "@/domain/spi/nor/SpiNorProfile";
+import type { SpiNorProfile } from "../SpiNorProfile";
 
 /** Winbond W25Q32JV（常见 4MB SPI NOR，指令与多数 Winbond 25Q 系列一致） */
 export const winbondW25q32: SpiNorProfile = {

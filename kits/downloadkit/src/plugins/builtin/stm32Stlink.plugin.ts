@@ -1,10 +1,10 @@
-import type { PluginConfigObject } from "@/plugins/config/pluginConfig.types";
-import { normalizeConfigBySchema } from "@/plugins/config/pluginConfig.validators";
-import { stm32UserAddressPolicy } from "@/plugins/firmwareInputPresets";
-import type { FlasherPlugin } from "@/plugins/types";
-import { Stm32StlinkProtocol } from "@/protocols/stm32/stlink/Stm32StlinkProtocol";
-import { WebUsbTransport } from "@/transports/usb/WebUsbTransport";
-import type { UsbTransport } from "@/transports/types";
+import type { PluginConfigObject } from "../config/pluginConfig.types";
+import { normalizeConfigBySchema } from "../config/pluginConfig.validators";
+import { stm32UserAddressPolicy } from "../firmwareInputPresets";
+import type { FlasherPlugin } from "../types";
+import { Stm32StlinkProtocol } from "../../protocols/stm32/stlink/Stm32StlinkProtocol";
+import { WebUsbTransport } from "../../transports/usb/WebUsbTransport";
+import type { UsbTransport } from "../../transports/types";
 
 const STLINK_CONFIG_SCHEMA = {
   fields: [

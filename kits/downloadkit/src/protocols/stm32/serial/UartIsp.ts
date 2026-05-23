@@ -1,6 +1,10 @@
 // UART ISP implementation for STM32 (AN3155 style).
 // Ported from legacy `uart_isp.js` into a typed TS module, without HEX parsing.
 
+import type { BootAttemptInfo, BootModeOptions, BootSequence, SerialSignals } from "../../../transports/serial/boot-mode/BootSequence";
+import { STM32_UART_ISP_SEQUENCES } from "../../../transports/serial/boot-mode/BootSequence";
+import { executeSequenceSignals } from "../../../transports/serial/boot-mode/enterBootMode";
+
 const STM32_COMMANDS = {
   GET: 0x00,
   GET_VERSION: 0x01,
@@ -20,12 +24,18 @@ const ACK = 0x79;
 const NACK = 0x1f;
 const SYNC_BYTE = 0x7f;
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export default class UARTISP {
   private port: SerialPort | null = null;
   private reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
   private writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
   private readBuffer: Uint8Array = new Uint8Array(0);
   private abortController: AbortController | null = null;
+  /** probe() 阶段握手成功的 boot sequence，供 resetToNormalBoot() 推算复位信号。 */
+  private matchedBootSequence: BootSequence | null = null;
 
   async open(port: SerialPort): Promise<void> {
     if (!port.readable || !port.writable) {
@@ -141,7 +151,13 @@ export default class UARTISP {
     this.abortController = null;
   }
 
-  async handshake(maxRetries = 10): Promise<void> {
+  async handshake(maxRetries = 10, bootMode?: BootModeOptions): Promise<void> {
+    if (bootMode && this.port) {
+      await this.handshakeWithBootMode(bootMode);
+      return;
+    }
+
+    // Legacy handshake (no boot mode entry)
     this.abortController = new AbortController();
     const signal = this.abortController.signal;
 
@@ -177,6 +193,117 @@ export default class UARTISP {
     }
 
     this.abortController = null;
+  }
+
+  /** 遍历 boot sequence：执行 DTR/RTS 信号 → 用 UARTISP 自身的 writer/reader 握手。 */
+  private async handshakeWithBootMode(bootMode: BootModeOptions): Promise<void> {
+    this.abortController = new AbortController();
+    const signal = this.abortController.signal;
+
+    const sequences = this.resolveBootSequences(bootMode);
+    let attempts = 0;
+
+    try {
+      for (const sequence of sequences) {
+        for (let retry = 1; retry <= sequence.handshakeRetries; retry++) {
+          if (signal.aborted) throw new Error("操作被用户取消");
+          attempts++;
+
+          bootMode.onAttempt?.({
+            sequenceName: sequence.name,
+            attempt: retry,
+            totalAttempts: sequence.handshakeRetries,
+            description:
+              sequence.steps.map((s) => s.description).join(" → ") || "(no pin control)",
+          });
+
+          try {
+            // 1. DTR/RTS 信号控制（不碰串口流，无锁冲突）
+            await executeSequenceSignals(this.port!, sequence);
+
+            // 2. 用 UARTISP 持有的 writer/reader 进行协议握手
+            await this.clearSerialBuffer();
+            await this.sendByte(SYNC_BYTE);
+            await this.waitForHandshakeResponse(sequence.handshakeTimeoutMs, signal);
+
+            this.matchedBootSequence = sequence;
+            this.abortController = null;
+            return;
+          } catch (error) {
+            const err = error as Error;
+            if (err.message === "操作被用户取消") {
+              throw err;
+            }
+            // 继续尝试下一组引脚组合
+          }
+
+          await delay(100);
+        }
+      }
+    } finally {
+      this.abortController = null;
+    }
+
+    throw new Error(
+      `无法进入 Bootloader 模式，已尝试 ${attempts} 种引脚组合。请手动将 MCU 置于 Bootloader 模式后重试。`,
+    );
+  }
+
+  private resolveBootSequences(bootMode: BootModeOptions): BootSequence[] {
+    const base = bootMode.sequences ?? STM32_UART_ISP_SEQUENCES;
+    if (!bootMode.preferredSequence) return base;
+    return [...base].sort((a, b) => {
+      if (a.name === bootMode.preferredSequence) return -1;
+      if (b.name === bootMode.preferredSequence) return 1;
+      return 0;
+    });
+  }
+
+  /**
+   * 根据握手成功的 boot sequence 反推复位信号，让 MCU 退出 bootloader 从 Flash 启动。
+   *
+   * boot sequence 定义了两态：
+   *   step1: [resetPin]=R_active,         [bootPin]=B_active    // 复位 + BOOT0=1
+   *   step2: [resetPin]=release,          [bootPin]=B_active    // 释放 + BOOT0=1
+   *
+   * 反推复位：
+   *   step1: [resetPin]=R_active,         [bootPin]=!B_active   // 复位 + BOOT0=0
+   *   step2: [resetPin]=release,          [bootPin]=!B_active   // 释放 + BOOT0=0
+   */
+  async resetToNormalBoot(): Promise<void> {
+    const seq = this.matchedBootSequence;
+    if (!seq || !this.port || seq.steps.length < 2) return;
+
+    const s1 = seq.steps[0].signals;
+    const s2 = seq.steps[1].signals;
+
+    // 找出复位引脚（两态间变化）和 boot 引脚（两态间不变）
+    const keys = [...new Set([...Object.keys(s1), ...Object.keys(s2)])] as (keyof SerialSignals)[];
+    let resetSig: keyof SerialSignals | undefined;
+    let bootSig: keyof SerialSignals | undefined;
+
+    for (const k of keys) {
+      if (s1[k] !== s2[k]) {
+        resetSig = k;
+      } else if (k in s1) {
+        bootSig = k;
+      }
+    }
+
+    if (!resetSig) return;
+
+    // step1: BOOT0=0 + 复位
+    const p1: SerialSignals = { [resetSig]: s1[resetSig] ?? false };
+    if (bootSig) p1[bootSig] = !s1[bootSig];
+
+    // step2: BOOT0=0 + 释放复位
+    const p2: SerialSignals = { [resetSig]: s2[resetSig] ?? false };
+    if (bootSig) p2[bootSig] = !s1[bootSig];
+
+    await this.port.setSignals(p1);
+    await delay(50);
+    await this.port.setSignals(p2);
+    await delay(50);
   }
 
   async getChipId(maxRetries = 10): Promise<Uint8Array> {

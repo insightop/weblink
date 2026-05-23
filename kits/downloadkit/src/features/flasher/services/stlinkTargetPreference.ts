@@ -1,4 +1,4 @@
-import type { StlinkTargetVariant } from "@/transports/adapters/stlink.adapter";
+import type { StlinkTargetVariant } from "../../../transports/adapters/stlink.adapter";
 
 /** In-memory session only; cleared on refresh or when target/flasher/firmware changes. */
 export interface StlinkTargetPreferenceV1 {

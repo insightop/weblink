@@ -1,4 +1,4 @@
-import type { I2cEepromProfile } from "@/domain/i2c/eeprom/I2cEepromProfile";
+import type { I2cEepromProfile } from "../I2cEepromProfile";
 
 export const at24c256: I2cEepromProfile = {
   id: "atmel-at24c256",

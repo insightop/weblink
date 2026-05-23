@@ -1,7 +1,7 @@
-import { IpKitError, IpKitErrorCode } from "@/domain/errors/IpKitError";
-import { parseDohJson } from "@/domain/doh/parseDohResponse";
-import type { DnsJsonDocument } from "@/domain/doh/parseDohResponse";
-import { createLogger } from "@/infrastructure/logger/createLogger";
+import { IpKitError, IpKitErrorCode } from "../../domain/errors/IpKitError";
+import { parseDohJson } from "../../domain/doh/parseDohResponse";
+import type { DnsJsonDocument } from "../../domain/doh/parseDohResponse";
+import { createLogger } from "../logger/createLogger";
 
 const log = createLogger("dohFetch");
 

@@ -1,8 +1,8 @@
-import type { RxFrameRow } from "@/domain/can/types.js";
-import { GS_HOST_FRAME_SIZE } from "@/domain/gsusb/gs-usb-constants.js";
-import { decodeGsHostFrame, encodeGsHostFrameTx } from "@/domain/gsusb/gs-usb-frame-codec.js";
-import { GsUsbTransport } from "@/infrastructure/usb/gs-usb-transport.js";
-import { logDebug } from "@/shared/logger.js";
+import type { RxFrameRow } from "../domain/can/types.js";
+import { GS_HOST_FRAME_SIZE } from "../domain/gsusb/gs-usb-constants.js";
+import { decodeGsHostFrame, encodeGsHostFrameTx } from "../domain/gsusb/gs-usb-frame-codec.js";
+import { GsUsbTransport } from "../infrastructure/usb/gs-usb-transport.js";
+import { logDebug } from "../shared/logger.js";
 import type { GsUsbConnectOptions, SessionEvent } from "./can-session.types.js";
 
 export class GsUsbCanSession {

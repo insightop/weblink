@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parseHexAddressString, resolveDynamicFirmwareAddress } from "@/core/firmware/resolveSegmentAddresses";
-import type { FirmwareInputPolicy } from "@/plugins/types";
+import { parseHexAddressString, resolveDynamicFirmwareAddress } from "./resolveSegmentAddresses";
+import type { FirmwareInputPolicy } from "../../plugins/types";
 
 const editablePolicy: FirmwareInputPolicy = {
   minRows: 1,

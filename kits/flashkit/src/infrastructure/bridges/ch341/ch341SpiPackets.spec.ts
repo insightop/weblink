@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCh341aSpiTransaction, buildPluckCs } from "@/infrastructure/bridges/ch341/ch341SpiPackets";
+import { buildCh341aSpiTransaction, buildPluckCs } from "./ch341SpiPackets";
 
 describe("ch341SpiPackets", () => {
   it("builds pluck_cs with default delay", () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { SerialTransport } from "@/transports/types";
-import { Gd32SerialProtocol } from "@/protocols/gd32/serial/Gd32SerialProtocol";
+import type { SerialTransport } from "../../../../transports/types";
+import { Gd32SerialProtocol } from "../Gd32SerialProtocol";
 
 function mkTransport(): SerialTransport {
   return {

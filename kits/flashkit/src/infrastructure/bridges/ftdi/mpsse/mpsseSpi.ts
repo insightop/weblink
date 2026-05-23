@@ -5,7 +5,7 @@ import {
   MPSSE_LOOPBACK_END,
   MPSSE_SET_BITS_LOW,
   MPSSE_TCK_DIVISOR,
-} from "@/infrastructure/bridges/ftdi/ftdiConstants";
+} from "../ftdiConstants";
 
 /** ADBUS：SK=0, MOSI=1, MISO=2, CS#=3（空闲 CS 为高） */
 const DIR_ADBUS_SPI = 0x0b;

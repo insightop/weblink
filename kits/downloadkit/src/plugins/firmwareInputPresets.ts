@@ -1,4 +1,4 @@
-import type { FirmwareInputPolicy } from "@/plugins/types";
+import type { FirmwareInputPolicy } from "./types";
 
 /**
  * 预设策略说明见 {@link FirmwareInputPolicy} 字段注释与真值表。

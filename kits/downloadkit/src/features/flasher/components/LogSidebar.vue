@@ -7,13 +7,13 @@ import {
   FunnelOutline,
   ShareSocialOutline,
 } from "@vicons/ionicons5";
-import { LucideBroomIcon } from "@/shared/icons/lucideBroomIcon";
+import { LucideBroomIcon } from "../../../shared/icons/lucideBroomIcon";
 import { useI18n } from "vue-i18n";
 import { LogConsole } from "@weblink/ui-vue";
-import { useFlasherStore } from "@/features/flasher/stores/flasher.store";
-import type { LogEntry, LogLevel } from "@/features/flasher/types/log";
-import { exportLogsJson } from "@/features/flasher/services/logExport";
-import { LOG_LEVELS, getLogLevelPresentation } from "@/features/flasher/presentation/logLevelPresentation";
+import { useFlasherStore } from "../stores/flasher.store";
+import type { LogEntry, LogLevel } from "../types/log";
+import { exportLogsJson } from "../services/logExport";
+import { LOG_LEVELS, getLogLevelPresentation } from "../presentation/logLevelPresentation";
 
 function levelLabelKey(level: LogLevel): string {
   return getLogLevelPresentation(level).i18nKey;

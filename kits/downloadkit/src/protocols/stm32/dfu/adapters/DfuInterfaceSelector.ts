@@ -1,5 +1,5 @@
-import type { DfuInterfaceInfo, DfuseMemoryDescriptor, DfuseSector } from "@/protocols/stm32/dfu/types/dfu.types";
-import { readInterfaceNameMap, type InterfaceNameMap } from "@/protocols/stm32/dfu/adapters/DfuUsbDescriptorReader";
+import type { DfuInterfaceInfo, DfuseMemoryDescriptor, DfuseSector } from "../types/dfu.types";
+import { readInterfaceNameMap, type InterfaceNameMap } from "./DfuUsbDescriptorReader";
 
 const PROTOCOL_RUNTIME = 0x01;
 const PROTOCOL_DFU = 0x02;

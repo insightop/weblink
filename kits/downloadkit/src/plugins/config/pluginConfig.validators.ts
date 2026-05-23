@@ -4,7 +4,7 @@ import type {
   PluginNumberField,
   PluginPresetNumberField,
   PluginSelectField,
-} from "@/plugins/config/pluginConfig.types";
+} from "./pluginConfig.types";
 
 function validateNumberField(field: PluginNumberField, value: unknown): number {
   const n = typeof value === "number" ? value : Number(value);

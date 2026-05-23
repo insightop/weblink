@@ -1,17 +1,17 @@
-import { ErrorCode } from "@/core/errors/ErrorCode";
-import { getFirmwareSegmentsFromTask } from "@/core/firmware/normalizeFirmwareToSegments";
-import type { DownloadTaskInput, FlashPlan, StageProgress } from "@/core/types/download";
+import { ErrorCode } from "../../../core/errors/ErrorCode";
+import { getFirmwareSegmentsFromTask } from "../../../core/firmware/normalizeFirmwareToSegments";
+import type { DownloadTaskInput, FlashPlan, StageProgress } from "../../../core/types/download";
 import {
   mapDfuProbeError,
   mapDfuResetError,
   mapDfuSyncError,
   mapDfuWriteError,
   toDownloadError,
-} from "@/protocols/stm32/dfu/adapters/DfuErrorMapper";
-import { WebDfuAdapter } from "@/protocols/stm32/dfu/adapters/WebDfuAdapter";
-import type { FlasherProtocol, ProbeResult } from "@/protocols/types";
-import type { UsbTransport } from "@/transports/types";
-import { resolveGd32DfuChipName } from "@/protocols/gd32/dfu/adapters/gd32DfuDeviceMap";
+} from "../../stm32/dfu/adapters/DfuErrorMapper";
+import { WebDfuAdapter } from "../../stm32/dfu/adapters/WebDfuAdapter";
+import type { FlasherProtocol, ProbeResult } from "../../types";
+import type { UsbTransport } from "../../../transports/types";
+import { resolveGd32DfuChipName } from "./adapters/gd32DfuDeviceMap";
 
 const DEFAULT_TRANSFER_SIZE = 2048;
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { SplitPane, LogConsole } from "@weblink/ui-vue";
-import ConnectionPanel from "@/features/serialConsole/components/ConnectionPanel.vue";
-import RxPanel from "@/features/serialConsole/components/RxPanel.vue";
-import TxPanel from "@/features/serialConsole/components/TxPanel.vue";
-import { isWebSerialSupported, isSecureContextForSerial } from "@/infrastructure/serial/webSerial";
-import { useSerialConsole } from "@/features/serialConsole/composables/useSerialConsole";
+import ConnectionPanel from "../components/ConnectionPanel.vue";
+import RxPanel from "../components/RxPanel.vue";
+import TxPanel from "../components/TxPanel.vue";
+import { isWebSerialSupported, isSecureContextForSerial } from "../../../infrastructure/serial/webSerial";
+import { useSerialConsole } from "../composables/useSerialConsole";
 
 const rightOpen = ref(true);
 

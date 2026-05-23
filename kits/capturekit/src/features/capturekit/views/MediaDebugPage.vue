@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import DevicePermissionHint from "@/features/capturekit/components/DevicePermissionHint.vue";
-import CameraPanel from "@/features/capturekit/components/CameraPanel.vue";
-import MicrophonePanel from "@/features/capturekit/components/MicrophonePanel.vue";
-import SpeakerPanel from "@/features/capturekit/components/SpeakerPanel.vue";
-import { useEnumerateDevices } from "@/features/capturekit/composables/useEnumerateDevices";
+import DevicePermissionHint from "../components/DevicePermissionHint.vue";
+import CameraPanel from "../components/CameraPanel.vue";
+import MicrophonePanel from "../components/MicrophonePanel.vue";
+import SpeakerPanel from "../components/SpeakerPanel.vue";
+import { useEnumerateDevices } from "../composables/useEnumerateDevices";
 
 const { devices, error, refresh: refreshDevices } = useEnumerateDevices();
 </script>

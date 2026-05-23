@@ -1,7 +1,7 @@
-import type { BridgeBackend } from "@/infrastructure/bridges/BridgeBackend";
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import type { I2cPort } from "@/domain/i2c/I2cPort";
-import { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
+import type { BridgeBackend } from "../BridgeBackend";
+import type { SpiPort } from "../../../domain/spi/SpiPort";
+import type { I2cPort } from "../../../domain/i2c/I2cPort";
+import { WebUsbSession } from "../../usb/WebUsbSession";
 import {
   CH341A_CMD_I2C_STREAM,
   CH341A_CMD_I2C_STM_END,
@@ -11,9 +11,9 @@ import {
   CH341A_CMD_UIO_STM_END,
   CH341A_CMD_UIO_STM_OUT,
   CH341A_STM_I2C_100K,
-} from "@/infrastructure/bridges/ch341/ch341Constants";
-import { Ch341SpiAdapter } from "@/infrastructure/bridges/ch341/Ch341SpiAdapter";
-import { Ch341I2cAdapter } from "@/infrastructure/bridges/ch341/Ch341I2cAdapter";
+} from "./ch341Constants";
+import { Ch341SpiAdapter } from "./Ch341SpiAdapter";
+import { Ch341I2cAdapter } from "./Ch341I2cAdapter";
 
 export class Ch341VendorBulkBridge implements BridgeBackend {
   readonly id = "ch341-vendor-bulk" as const;

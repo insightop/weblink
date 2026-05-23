@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { UsbTransport } from "@/transports/types";
-import { Stm32DfuProtocol } from "@/protocols/stm32/dfu/Stm32DfuProtocol";
+import type { UsbTransport } from "../../../../transports/types";
+import { Stm32DfuProtocol } from "../Stm32DfuProtocol";
 
 function mkTransport(): UsbTransport {
   return {

@@ -1,12 +1,12 @@
 import { computed, onUnmounted, ref, shallowRef } from "vue";
-import type { RxFrameRow } from "@/domain/can/types.js";
-import { CanKitError } from "@/domain/errors/can-kit-error.js";
-import { SlcanCanSession } from "@/application/slcan-can-session.js";
-import { GsUsbCanSession } from "@/application/gs-usb-can-session.js";
-import type { ConnectOptions } from "@/application/can-session.types.js";
-import { DEFAULT_MAX_RX_FRAMES } from "@/application/can-session.types.js";
-import { logError } from "@/shared/logger.js";
-import { requestGsUsbDevice } from "@/infrastructure/usb/web-usb-guards.js";
+import type { RxFrameRow } from "../../domain/can/types.js";
+import { CanKitError } from "../../domain/errors/can-kit-error.js";
+import { SlcanCanSession } from "../slcan-can-session.js";
+import { GsUsbCanSession } from "../gs-usb-can-session.js";
+import type { ConnectOptions } from "../can-session.types.js";
+import { DEFAULT_MAX_RX_FRAMES } from "../can-session.types.js";
+import { logError } from "../../shared/logger.js";
+import { requestGsUsbDevice } from "../../infrastructure/usb/web-usb-guards.js";
 
 export type TransportMode = "slcan" | "gs_usb";
 

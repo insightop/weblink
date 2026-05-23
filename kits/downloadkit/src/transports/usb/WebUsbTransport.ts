@@ -1,4 +1,4 @@
-import type { UsbTransport } from "@/transports/types";
+import type { UsbTransport } from "../types";
 
 export class WebUsbTransport implements UsbTransport {
   readonly name = "web-usb";

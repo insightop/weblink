@@ -1,5 +1,5 @@
-import type { IpKitCapabilities } from "@/infrastructure/browser/detectCapabilities";
-import type { IpToolDefinition } from "@/tools/types";
+import type { IpKitCapabilities } from "../infrastructure/browser/detectCapabilities";
+import type { IpToolDefinition } from "./types";
 
 export class IpToolRegistry {
   private readonly tools = new Map<string, IpToolDefinition>();

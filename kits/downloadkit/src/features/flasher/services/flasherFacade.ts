@@ -1,15 +1,15 @@
-import { DownloadSession } from "@/core/session/DownloadSession";
-import { isUserCancelledError } from "@/core/errors/ErrorCode";
-import { detectBrowserCapabilities, getBrowserSupportHint } from "@/plugins/capabilities";
-import { globalPluginRegistry } from "@/plugins/registry";
-import type { ChipFamily, FlasherPlugin, FlasherType, PluginResolveCriteria, PluginRuntimeDeps } from "@/plugins/types";
-import { normalizeConfigBySchema } from "@/plugins/config/pluginConfig.validators";
-import type { PluginConfigObject } from "@/plugins/config/pluginConfig.types";
-import type { Transport } from "@/transports/types";
-import { useFlasherStore } from "@/features/flasher/stores/flasher.store";
-import { flasherLogger } from "@/features/flasher/services/flasherLogger";
-import { i18n } from "@/i18n";
-import { formatBytes, formatSpeed } from "@/shared/format/formatBytes";
+import { DownloadSession } from "../../../core/session/DownloadSession";
+import { isUserCancelledError } from "../../../core/errors/ErrorCode";
+import { detectBrowserCapabilities, getBrowserSupportHint } from "../../../plugins/capabilities";
+import { globalPluginRegistry } from "../../../plugins/registry";
+import type { ChipFamily, FlasherPlugin, FlasherType, PluginResolveCriteria, PluginRuntimeDeps } from "../../../plugins/types";
+import { normalizeConfigBySchema } from "../../../plugins/config/pluginConfig.validators";
+import type { PluginConfigObject } from "../../../plugins/config/pluginConfig.types";
+import type { Transport } from "../../../transports/types";
+import { useFlasherStore } from "../stores/flasher.store";
+import { flasherLogger } from "./flasherLogger";
+import { i18n } from "../../../i18n";
+import { formatBytes, formatSpeed } from "../../../shared/format/formatBytes";
 
 function t(key: string, values?: Record<string, unknown>): string {
   return String(i18n.global.t(key, (values ?? {}) as Record<string, unknown>));

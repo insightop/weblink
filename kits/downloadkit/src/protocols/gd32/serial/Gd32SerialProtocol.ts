@@ -1,9 +1,10 @@
-import UARTISP from "@/protocols/stm32/serial/UartIsp";
-import { getFirmwareSegmentsFromTask } from "@/core/firmware/normalizeFirmwareToSegments";
-import type { DownloadTaskInput, FlashPlan, StageProgress } from "@/core/types/download";
-import { ErrorCode, type DownloadError } from "@/core/errors/ErrorCode";
-import type { FlasherProtocol, ProbeResult } from "@/protocols/types";
-import type { SerialTransport } from "@/transports/types";
+import UARTISP from "../../stm32/serial/UartIsp";
+import { getFirmwareSegmentsFromTask } from "../../../core/firmware/normalizeFirmwareToSegments";
+import type { DownloadTaskInput, FlashPlan, StageProgress } from "../../../core/types/download";
+import { ErrorCode, type DownloadError } from "../../../core/errors/ErrorCode";
+import type { FlasherProtocol, ProbeResult } from "../../types";
+import type { SerialTransport } from "../../../transports/types";
+import { flasherLogger } from "../../../features/flasher/services/flasherLogger";
 
 export class Gd32SerialProtocol implements FlasherProtocol {
   private readonly uart = new UARTISP();
@@ -23,7 +24,13 @@ export class Gd32SerialProtocol implements FlasherProtocol {
         await this.uart.open(this.transport.getPort());
         this.connected = true;
       }
-      await this.uart.handshake();
+      await this.uart.handshake(10, {
+        onAttempt: (info) => {
+          flasherLogger.info(
+            `Boot 进入尝试: ${info.sequenceName} (${info.attempt}/${info.totalAttempts}) — ${info.description}`,
+          );
+        },
+      });
       const id = await this.uart.getChipId(10);
       const idHex = Array.from(id)
         .map((byte) => byte.toString(16).padStart(2, "0"))

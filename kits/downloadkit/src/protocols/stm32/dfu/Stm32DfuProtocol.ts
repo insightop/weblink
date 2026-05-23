@@ -1,16 +1,16 @@
-import { ErrorCode } from "@/core/errors/ErrorCode";
-import { getFirmwareSegmentsFromTask } from "@/core/firmware/normalizeFirmwareToSegments";
-import type { DownloadTaskInput, FlashPlan, StageProgress } from "@/core/types/download";
+import { ErrorCode } from "../../../core/errors/ErrorCode";
+import { getFirmwareSegmentsFromTask } from "../../../core/firmware/normalizeFirmwareToSegments";
+import type { DownloadTaskInput, FlashPlan, StageProgress } from "../../../core/types/download";
 import {
   mapDfuProbeError,
   mapDfuResetError,
   mapDfuSyncError,
   mapDfuWriteError,
   toDownloadError,
-} from "@/protocols/stm32/dfu/adapters/DfuErrorMapper";
-import { WebDfuAdapter } from "@/protocols/stm32/dfu/adapters/WebDfuAdapter";
-import type { FlasherProtocol, ProbeResult } from "@/protocols/types";
-import type { UsbTransport } from "@/transports/types";
+} from "./adapters/DfuErrorMapper";
+import { WebDfuAdapter } from "./adapters/WebDfuAdapter";
+import type { FlasherProtocol, ProbeResult } from "../../types";
+import type { UsbTransport } from "../../../transports/types";
 
 const DEFAULT_TRANSFER_SIZE = 2048;
 

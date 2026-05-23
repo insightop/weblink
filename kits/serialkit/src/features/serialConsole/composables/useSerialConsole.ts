@@ -1,10 +1,10 @@
 import { computed, onUnmounted, ref } from "vue";
-import { SerialSession, type ConnectionState } from "@/infrastructure/serial/serialSession";
-import type { SerialUserError } from "@/infrastructure/serial/serialErrors";
-import { requestSerialPort } from "@/infrastructure/serial/webSerial";
+import { SerialSession, type ConnectionState } from "../../../infrastructure/serial/serialSession";
+import type { SerialUserError } from "../../../infrastructure/serial/serialErrors";
+import { requestSerialPort } from "../../../infrastructure/serial/webSerial";
 import { createStreamingDecoder, encodeText, type LineEnding } from "@weblink/utils/codec";
 import { formatHex, parseHex } from "@weblink/utils/hex";
-import { ByteLineFramer } from "@/domain/serial/framing";
+import { ByteLineFramer } from "../../../domain/serial/framing";
 import { useLogStore } from "@weblink/ui-vue";
 
 const MAX_RX_LINES = 2000;

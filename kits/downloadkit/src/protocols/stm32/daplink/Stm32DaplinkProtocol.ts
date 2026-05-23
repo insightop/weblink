@@ -1,9 +1,9 @@
-import { getFirmwareSegmentsFromTask } from "@/core/firmware/normalizeFirmwareToSegments";
-import type { DownloadTaskInput, FlashPlan, StageProgress } from "@/core/types/download";
-import { ErrorCode, type DownloadError } from "@/core/errors/ErrorCode";
-import type { FlasherProtocol, ProbeResult } from "@/protocols/types";
-import { createDaplinkAdapter, type DaplinkAdapter } from "@/transports/adapters/daplink.adapter";
-import type { UsbTransport } from "@/transports/types";
+import { getFirmwareSegmentsFromTask } from "../../../core/firmware/normalizeFirmwareToSegments";
+import type { DownloadTaskInput, FlashPlan, StageProgress } from "../../../core/types/download";
+import { ErrorCode, type DownloadError } from "../../../core/errors/ErrorCode";
+import type { FlasherProtocol, ProbeResult } from "../../types";
+import { createDaplinkAdapter, type DaplinkAdapter } from "../../../transports/adapters/daplink.adapter";
+import type { UsbTransport } from "../../../transports/types";
 
 export class Stm32DaplinkProtocol implements FlasherProtocol {
   private readonly adapter: DaplinkAdapter;

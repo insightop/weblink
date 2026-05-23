@@ -1,5 +1,5 @@
-import type { SpiNorProfile } from "@/domain/spi/nor/SpiNorProfile";
-import { winbondW25q32 } from "@/domain/spi/nor/profiles/winbondW25q32";
+import type { SpiNorProfile } from "./SpiNorProfile";
+import { winbondW25q32 } from "./profiles/winbondW25q32";
 
 const all: SpiNorProfile[] = [winbondW25q32];
 

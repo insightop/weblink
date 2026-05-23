@@ -3,7 +3,7 @@ import { ref } from "vue";
 import {
   probeWebTransport,
   type WebTransportProbeResult,
-} from "@/infrastructure/net/webTransportClient";
+} from "../../../infrastructure/net/webTransportClient";
 
 export const useWtLabStore = defineStore("wtLab", () => {
   const url = ref("https://echo.webtransport.day/");

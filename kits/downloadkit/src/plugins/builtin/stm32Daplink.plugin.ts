@@ -1,8 +1,8 @@
-import { Stm32DaplinkProtocol } from "@/protocols/stm32/daplink/Stm32DaplinkProtocol";
-import { WebUsbTransport } from "@/transports/usb/WebUsbTransport";
-import { stm32UserAddressPolicy } from "@/plugins/firmwareInputPresets";
-import type { FlasherPlugin } from "@/plugins/types";
-import type { Transport, UsbTransport } from "@/transports/types";
+import { Stm32DaplinkProtocol } from "../../protocols/stm32/daplink/Stm32DaplinkProtocol";
+import { WebUsbTransport } from "../../transports/usb/WebUsbTransport";
+import { stm32UserAddressPolicy } from "../firmwareInputPresets";
+import type { FlasherPlugin } from "../types";
+import type { Transport, UsbTransport } from "../../transports/types";
 
 /** ARM mbed / DAPLink CMSIS-DAP：与 dapjs 官方 WebUSB 示例一致（vendorId 0x0d28）。 */
 const DAPLINK_USB_FILTERS: USBDeviceFilter[] = [{ vendorId: 0x0d28 }];

@@ -1,4 +1,4 @@
-import type { ChipFamily, FirmwareInputPolicy } from "@/plugins/types";
+import type { ChipFamily, FirmwareInputPolicy } from "../../plugins/types";
 
 /** 解析 UI 中的地址字符串（支持 `0x` 前缀或纯十六进制）。无效时返回 `null`。 */
 export function parseHexAddressString(raw: string | undefined | null): number | null {

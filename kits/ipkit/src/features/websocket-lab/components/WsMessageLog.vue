@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { NList, NListItem, NThing, NTag, NSpace } from "naive-ui";
-import type { WsLogEntry } from "@/features/websocket-lab/stores/wsLab.store";
+import type { WsLogEntry } from "../stores/wsLab.store";
 
 defineProps<{
   entries: WsLogEntry[];

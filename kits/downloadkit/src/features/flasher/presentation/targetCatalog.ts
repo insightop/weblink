@@ -1,4 +1,4 @@
-import type { ChipFamily } from "@/plugins/types";
+import type { ChipFamily } from "../../../plugins/types";
 
 export interface TargetMeta {
   id: ChipFamily;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MeshGraph } from "@/domain/rtc/meshGraph";
+import { MeshGraph } from "./meshGraph";
 
 describe("MeshGraph", () => {
   it("ignores self", () => {

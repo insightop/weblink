@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import DeviceCard from "@/features/capturekit/components/DeviceCard.vue";
-import { useCameraStream } from "@/features/capturekit/composables/useCameraStream";
-import { formatDeviceLabel } from "@/domain/media/deviceLabels";
-import { mapMediaError } from "@/domain/media/errors";
-import { primeVideoPermission } from "@/infrastructure/media/mediaDevicesFacade";
+import DeviceCard from "./DeviceCard.vue";
+import { useCameraStream } from "../composables/useCameraStream";
+import { formatDeviceLabel } from "../../../domain/media/deviceLabels";
+import { mapMediaError } from "../../../domain/media/errors";
+import { primeVideoPermission } from "../../../infrastructure/media/mediaDevicesFacade";
 
 const props = defineProps<{
   devices: MediaDeviceInfo[];

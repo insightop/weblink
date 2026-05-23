@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { NButton, NCard, NInput, NSelect, NSpace, NText, NAlert } from "naive-ui";
 import { computed } from "vue";
-import { DNS_JSON_TYPES, type DnsJsonType } from "@/domain/doh/buildDnsJsonUrl";
-import { DOH_PRESETS, useDohLabStore } from "@/features/doh-lab/stores/dohLab.store";
-import { useAbortableTask } from "@/shared/composables/useAbortController";
+import { DNS_JSON_TYPES, type DnsJsonType } from "../../../domain/doh/buildDnsJsonUrl";
+import { DOH_PRESETS, useDohLabStore } from "../stores/dohLab.store";
+import { useAbortableTask } from "../../../shared/composables/useAbortController";
 
 const store = useDohLabStore();
 const { createSignal } = useAbortableTask();

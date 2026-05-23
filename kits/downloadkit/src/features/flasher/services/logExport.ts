@@ -1,21 +1,21 @@
-import type { LogEntry } from "@/features/flasher/types/log";
+import type { LogEntry } from "../types/log";
 
 export interface LogExportRow {
   id: string;
-  timestamp: string;
+  ts: number;
   level: string;
   message: string;
-  context: unknown;
+  data: unknown;
 }
 
 /** Pure serialization for tests and stable export shape. */
 export function buildLogExportRows(logs: LogEntry[]): LogExportRow[] {
-  return logs.map(({ id, timestamp, level, message, context }) => ({
+  return logs.map(({ id, ts, level, message, data }) => ({
     id,
-    timestamp,
+    ts,
     level,
     message,
-    context: context === undefined ? null : context,
+    data: data === undefined ? null : data,
   }));
 }
 
@@ -36,7 +36,7 @@ export function exportLogsJson(logs: LogEntry[], fileNamePrefix = "logs"): void 
     text = JSON.stringify(
       payload.map((row) => ({
         ...row,
-        context: row.context != null ? String(row.context) : null,
+        data: row.data != null ? String(row.data) : null,
       })),
       null,
       2,

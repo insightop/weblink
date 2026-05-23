@@ -1,5 +1,5 @@
-import type { FirmwareRowDraft } from "@/core/firmware/firmwareRowDraft";
-import type { PersistedFirmwareRow } from "@/features/flasher/persistence/schema";
+import type { FirmwareRowDraft } from "../../../core/firmware/firmwareRowDraft";
+import type { PersistedFirmwareRow } from "./schema";
 
 export function toPersistedFirmwareRows(rows: FirmwareRowDraft[]): PersistedFirmwareRow[] {
   return rows.map((row) => ({

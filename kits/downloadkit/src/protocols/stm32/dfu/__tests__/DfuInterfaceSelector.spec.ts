@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { listDfuInterfaces, pickBestDfuInterface } from "@/protocols/stm32/dfu/adapters/DfuInterfaceSelector";
+import { listDfuInterfaces, pickBestDfuInterface } from "../adapters/DfuInterfaceSelector";
 
 describe("DfuInterfaceSelector", () => {
   it("keeps protocol 0x00 legacy DFU interfaces", () => {

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { useFlasherStore } from "@/features/flasher/stores/flasher.store";
-import { prepareFlasherForCurrentSelection, getFlasherRuntimeInfo } from "@/features/flasher/services/flasherFacade";
-import { flasherLogger } from "@/features/flasher/services/flasherLogger";
+import { useFlasherStore } from "../stores/flasher.store";
+import { prepareFlasherForCurrentSelection, getFlasherRuntimeInfo } from "../services/flasherFacade";
+import { flasherLogger } from "../services/flasherLogger";
 
 const store = useFlasherStore();
 const modes = ["serial", "usb-dfu", "st-link", "dap-link"] as const;

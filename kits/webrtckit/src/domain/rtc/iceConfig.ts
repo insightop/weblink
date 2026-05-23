@@ -1,4 +1,4 @@
-import type { RTCIceServer } from "@/domain/rtc/iceTypes";
+import type { RTCIceServer } from "./iceTypes";
 
 /** Default public STUN — replace in production if policy requires */
 export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { transitionStage } from "@/core/stateMachine/downloadMachine";
+import { transitionStage } from "./downloadMachine";
 
 describe("downloadMachine", () => {
   it("rejects illegal transition", () => {

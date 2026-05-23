@@ -5,7 +5,7 @@ import {
   CH341A_CMD_I2C_STM_OUT,
   CH341A_CMD_I2C_STM_STA,
   CH341A_CMD_I2C_STM_STO,
-} from "@/infrastructure/bridges/ch341/ch341Constants";
+} from "./ch341Constants";
 
 /**
  * 构造与 WCH 示例（单 AA 头）一致的 I²C 流：随机读（16-bit 片内地址）常见 AT24Cxxx。

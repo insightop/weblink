@@ -1,14 +1,14 @@
-import { getFirmwareSegmentsFromTask } from "@/core/firmware/normalizeFirmwareToSegments";
-import type { DownloadTaskInput, FlashPlan, StageProgress } from "@/core/types/download";
-import type { FlasherProtocol, ProbeResult } from "@/protocols/types";
-import { ErrorCode, type DownloadError, isUserCancelledError } from "@/core/errors/ErrorCode";
-import type { PluginConfigObject } from "@/plugins/config/pluginConfig.types";
-import type { UsbTransport } from "@/transports/types";
+import { getFirmwareSegmentsFromTask } from "../../../core/firmware/normalizeFirmwareToSegments";
+import type { DownloadTaskInput, FlashPlan, StageProgress } from "../../../core/types/download";
+import type { FlasherProtocol, ProbeResult } from "../../types";
+import { ErrorCode, type DownloadError, isUserCancelledError } from "../../../core/errors/ErrorCode";
+import type { PluginConfigObject } from "../../../plugins/config/pluginConfig.types";
+import type { UsbTransport } from "../../../transports/types";
 import {
   createStlinkAdapter,
   type StlinkAdapter,
   type StlinkTargetVariant,
-} from "@/transports/adapters/stlink.adapter";
+} from "../../../transports/adapters/stlink.adapter";
 
 export class Stm32StlinkProtocol implements FlasherProtocol {
   private adapter: StlinkAdapter | null = null;

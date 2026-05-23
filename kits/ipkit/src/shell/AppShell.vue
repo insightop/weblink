@@ -2,8 +2,8 @@
 import { NLayout, NLayoutSider, NLayoutContent, NMenu, NText, NDivider } from "naive-ui";
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { detectCapabilities } from "@/infrastructure/browser/detectCapabilities";
-import { globalIpToolRegistry } from "@/tools/registry";
+import { detectCapabilities } from "../infrastructure/browser/detectCapabilities";
+import { globalIpToolRegistry } from "../tools/registry";
 
 const route = useRoute();
 const router = useRouter();

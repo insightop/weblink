@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NForm, NFormItem, NInput, NSelect, NSpace, NButton } from "naive-ui";
 import { computed } from "vue";
-import { useHttpLabStore } from "@/features/http-lab/stores/httpLab.store";
+import { useHttpLabStore } from "../stores/httpLab.store";
 
 const store = useHttpLabStore();
 

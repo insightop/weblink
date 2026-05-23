@@ -1,6 +1,6 @@
-import { IpKitError, IpKitErrorCode } from "@/domain/errors/IpKitError";
-import type { Result } from "@/domain/result";
-import { err, ok } from "@/domain/result";
+import { IpKitError, IpKitErrorCode } from "../errors/IpKitError";
+import type { Result } from "../result";
+import { err, ok } from "../result";
 
 const ALLOWED_METHODS = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] as const;
 

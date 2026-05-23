@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildDnsJsonUrl } from "@/domain/doh/buildDnsJsonUrl";
+import { buildDnsJsonUrl } from "./buildDnsJsonUrl";
 
 describe("buildDnsJsonUrl", () => {
   it("builds cloudflare query url", () => {

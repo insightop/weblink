@@ -1,5 +1,5 @@
-import { ErrorCode, type DownloadError } from "@/core/errors/ErrorCode";
-import { i18n } from "@/i18n";
+import { ErrorCode, type DownloadError } from "../../../../core/errors/ErrorCode";
+import { i18n } from "../../../../i18n";
 
 function t(key: string): string {
   return String(i18n.global.t(key));

@@ -4,7 +4,7 @@ import {
   listDfuInterfaces,
   parseDfuseMemoryDescriptor,
   pickBestDfuInterface,
-} from "@/protocols/stm32/dfu/adapters/DfuInterfaceSelector";
+} from "./DfuInterfaceSelector";
 import {
   DFU_REQUEST,
   DFU_STATE,
@@ -14,7 +14,7 @@ import {
   type DfuStatus,
   type DfuseDownloadOptions,
   type DfuseMemoryDescriptor,
-} from "@/protocols/stm32/dfu/types/dfu.types";
+} from "../types/dfu.types";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { NButton, NCard, NInput, NSpace, NText, NAlert } from "naive-ui";
 import { ref } from "vue";
-import WsMessageLog from "@/features/websocket-lab/components/WsMessageLog.vue";
-import { useWsLabStore } from "@/features/websocket-lab/stores/wsLab.store";
+import WsMessageLog from "../components/WsMessageLog.vue";
+import { useWsLabStore } from "../stores/wsLab.store";
 
 const store = useWsLabStore();
 const outgoing = ref("");

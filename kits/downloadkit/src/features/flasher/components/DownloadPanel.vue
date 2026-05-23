@@ -9,10 +9,10 @@ import {
   DownloadOutline,
   SyncOutline,
 } from "@vicons/ionicons5";
-import { LucideBroomIcon } from "@/shared/icons/lucideBroomIcon";
-import FunctionZone from "@/features/flasher/components/FunctionZone.vue";
+import { LucideBroomIcon } from "../../../shared/icons/lucideBroomIcon";
+import FunctionZone from "./FunctionZone.vue";
 import type { Component } from "vue";
-import type { DownloadResult, RuntimePhase } from "@/features/flasher/stores/flasher.store";
+import type { DownloadResult, RuntimePhase } from "../stores/flasher.store";
 
 const props = defineProps<{
   canStart: boolean;

@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import type { FirmwareInputPanelExpose } from "@/features/flasher/components/firmwareInputPanelExpose";
+import type { FirmwareInputPanelExpose } from "./firmwareInputPanelExpose";
 import { useI18n } from "vue-i18n";
 import { NText } from "naive-ui";
 import { DocumentAttachOutline } from "@vicons/ionicons5";
-import type { DownloadTaskInput } from "@/core/types/download";
-import { buildFirmwareSegmentsPayload } from "@/core/firmware/buildFirmwareSegmentsPayload";
-import { createEmptyRows } from "@/core/firmware/firmwareRowDraft";
-import type { FirmwareRowDraft } from "@/core/firmware/firmwareRowDraft";
-import FunctionZone from "@/features/flasher/components/FunctionZone.vue";
-import FirmwareDynamicRows from "@/features/flasher/components/FirmwareDynamicRows.vue";
-import { useFlasherStore } from "@/features/flasher/stores/flasher.store";
-import { globalPluginRegistry } from "@/plugins/registry";
-import { detectBrowserCapabilities, getBrowserSupportHint } from "@/plugins/capabilities";
-import { flasherLogger } from "@/features/flasher/services/flasherLogger";
-import type { PersistedFirmwareRow } from "@/features/flasher/persistence/schema";
-import { fromPersistedFirmwareRows, toPersistedFirmwareRows } from "@/features/flasher/persistence/mappers";
-import type { FirmwareInputPolicy } from "@/plugins/types";
-import { formatBytes } from "@/shared/format/formatBytes";
+import type { DownloadTaskInput } from "../../../core/types/download";
+import { buildFirmwareSegmentsPayload } from "../../../core/firmware/buildFirmwareSegmentsPayload";
+import { createEmptyRows } from "../../../core/firmware/firmwareRowDraft";
+import type { FirmwareRowDraft } from "../../../core/firmware/firmwareRowDraft";
+import FunctionZone from "./FunctionZone.vue";
+import FirmwareDynamicRows from "./FirmwareDynamicRows.vue";
+import { useFlasherStore } from "../stores/flasher.store";
+import { globalPluginRegistry } from "../../../plugins/registry";
+import { detectBrowserCapabilities, getBrowserSupportHint } from "../../../plugins/capabilities";
+import { flasherLogger } from "../services/flasherLogger";
+import type { PersistedFirmwareRow } from "../persistence/schema";
+import { fromPersistedFirmwareRows, toPersistedFirmwareRows } from "../persistence/mappers";
+import type { FirmwareInputPolicy } from "../../../plugins/types";
+import { formatBytes } from "../../../shared/format/formatBytes";
 
 const store = useFlasherStore();
 const { t } = useI18n();

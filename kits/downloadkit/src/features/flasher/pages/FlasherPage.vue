@@ -4,15 +4,15 @@ import { useI18n } from "vue-i18n";
 import { NFloatButton, NIcon } from "naive-ui";
 import { DocumentTextOutline } from "@vicons/ionicons5";
 import { Pane, Splitpanes } from "splitpanes";
-import TargetSelector from "@/features/flasher/components/TargetSelector.vue";
-import FlasherSelector from "@/features/flasher/components/FlasherSelector.vue";
-import FirmwareInputPanel from "@/features/flasher/components/FirmwareInputPanel.vue";
-import type { FirmwareInputPanelExpose } from "@/features/flasher/components/firmwareInputPanelExpose";
-import DownloadPanel from "@/features/flasher/components/DownloadPanel.vue";
-import LogSidebar from "@/features/flasher/components/LogSidebar.vue";
-import TargetVariantDialog from "@/features/flasher/components/TargetVariantDialog.vue";
-import LanguageSwitcher from "@/features/flasher/components/LanguageSwitcher.vue";
-import { useFlasherStore } from "@/features/flasher/stores/flasher.store";
+import TargetSelector from "../components/TargetSelector.vue";
+import FlasherSelector from "../components/FlasherSelector.vue";
+import FirmwareInputPanel from "../components/FirmwareInputPanel.vue";
+import type { FirmwareInputPanelExpose } from "../components/firmwareInputPanelExpose";
+import DownloadPanel from "../components/DownloadPanel.vue";
+import LogSidebar from "../components/LogSidebar.vue";
+import TargetVariantDialog from "../components/TargetVariantDialog.vue";
+import LanguageSwitcher from "../components/LanguageSwitcher.vue";
+import { useFlasherStore } from "../stores/flasher.store";
 import {
   getCurrentDeviceDetails,
   getCurrentPluginMeta,
@@ -20,15 +20,18 @@ import {
   getFlasherRuntimeInfo,
   prepareFlasherForCurrentSelection,
   startFlash,
-} from "@/features/flasher/services/flasherFacade";
-import { flasherLogger } from "@/features/flasher/services/flasherLogger";
-import { createStlinkTargetSession, tryAutoPickTarget } from "@/features/flasher/services/stlinkTargetPreference";
-import type { StlinkTargetVariant } from "@/transports/adapters/stlink.adapter";
-import { i18n } from "@/i18n";
-import type { PluginConfigObject } from "@/plugins/config/pluginConfig.types";
-import { flasherPersistenceRepository } from "@/features/flasher/persistence/repository";
-import type { PersistedFlasherSession } from "@/features/flasher/persistence/schema";
-import type { ChipFamily } from "@/plugins/types";
+} from "../services/flasherFacade";
+import { flasherLogger } from "../services/flasherLogger";
+import { createStlinkTargetSession, tryAutoPickTarget } from "../services/stlinkTargetPreference";
+import type { StlinkTargetVariant } from "../../../transports/adapters/stlink.adapter";
+import { i18n } from "../../../i18n";
+import type { PluginConfigObject } from "../../../plugins/config/pluginConfig.types";
+import { flasherPersistenceRepository } from "../persistence/repository";
+import type { PersistedFlasherSession } from "../persistence/schema";
+import type { ChipFamily } from "../../../plugins/types";
+import { registerBuiltinPlugins } from "../../../plugins/builtin/registerBuiltinPlugins";
+
+registerBuiltinPlugins();
 
 const { t } = useI18n();
 const store = useFlasherStore();
@@ -396,6 +399,8 @@ onMounted(async () => {
 }
 .split-layout {
   min-height: 100vh;
+  display: flex;
+  flex-direction: row;
 }
 .main {
   padding: 24px;

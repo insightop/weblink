@@ -1,4 +1,4 @@
-import type { BridgeBackendId, BusKind, MatrixCell } from "@/matrix/types";
+import type { BridgeBackendId, BusKind, MatrixCell } from "../../matrix/types";
 
 /** 用户可见的「编程器/模块」选项（不暴露 vendor、WebUSB/WebHID 等技术细节） */
 export const WORKBENCH_ADAPTER_OPTIONS = [

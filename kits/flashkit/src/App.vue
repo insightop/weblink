@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WorkbenchView from "@/features/workbench/WorkbenchView.vue";
+import WorkbenchView from "./features/workbench/WorkbenchView.vue";
 </script>
 
 <template>

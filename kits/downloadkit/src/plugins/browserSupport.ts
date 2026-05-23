@@ -1,4 +1,4 @@
-import type { BrowserCapabilities } from "@/plugins/types";
+import type { BrowserCapabilities } from "./types";
 import { inferPlatformKind, type PlatformKind } from "@weblink/utils/browser";
 
 /** Token for i18n `browser.names.{key}` only; not used for capability gating. */

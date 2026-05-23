@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { useFlasherStore } from "@/features/flasher/stores/flasher.store";
-import { createStlinkTargetSession } from "@/features/flasher/services/stlinkTargetPreference";
-import type { StlinkTargetVariant } from "@/transports/adapters/stlink.adapter";
+import { useFlasherStore } from "./flasher.store";
+import { createStlinkTargetSession } from "../services/stlinkTargetPreference";
+import type { StlinkTargetVariant } from "../../../transports/adapters/stlink.adapter";
 
 describe("flasher.store", () => {
   beforeEach(() => {

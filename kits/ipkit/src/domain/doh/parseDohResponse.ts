@@ -1,6 +1,6 @@
-import { IpKitError, IpKitErrorCode } from "@/domain/errors/IpKitError";
-import type { Result } from "@/domain/result";
-import { err, ok } from "@/domain/result";
+import { IpKitError, IpKitErrorCode } from "../errors/IpKitError";
+import type { Result } from "../result";
+import { err, ok } from "../result";
 
 /** Cloudflare / Google dns-json 响应的最小可展示结构 */
 export interface DnsJsonAnswer {

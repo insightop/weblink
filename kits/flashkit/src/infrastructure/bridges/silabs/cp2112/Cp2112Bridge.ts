@@ -1,8 +1,8 @@
-import type { BridgeBackend } from "@/infrastructure/bridges/BridgeBackend";
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import type { I2cPort } from "@/domain/i2c/I2cPort";
-import { WebHidSession } from "@/infrastructure/hid/WebHidSession";
-import { Cp2112I2cAdapter } from "@/infrastructure/bridges/silabs/cp2112/Cp2112I2cAdapter";
+import type { BridgeBackend } from "../../BridgeBackend";
+import type { SpiPort } from "../../../../domain/spi/SpiPort";
+import type { I2cPort } from "../../../../domain/i2c/I2cPort";
+import { WebHidSession } from "../../../hid/WebHidSession";
+import { Cp2112I2cAdapter } from "./Cp2112I2cAdapter";
 
 export class Cp2112Bridge implements BridgeBackend {
   readonly id = "silabs-cp2112-hid" as const;

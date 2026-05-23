@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LOG_LEVELS, getLogLevelPresentation } from "@/features/flasher/presentation/logLevelPresentation";
+import { LOG_LEVELS, getLogLevelPresentation } from "./logLevelPresentation";
 
 describe("logLevelPresentation", () => {
   it("defines all log levels in stable order", () => {

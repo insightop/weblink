@@ -6,6 +6,7 @@ export default defineConfig(({ mode }) => ({
   base: process.env.VITE_BASE_PATH ?? "/",
   plugins: [vue()],
   resolve: {
+    tsconfigPaths: true,
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },

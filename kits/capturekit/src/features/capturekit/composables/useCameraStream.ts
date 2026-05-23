@@ -1,6 +1,6 @@
 import { onUnmounted, ref, shallowRef, watch, type Ref } from "vue";
-import { getUserMedia } from "@/infrastructure/media/mediaDevicesFacade";
-import { mapMediaError } from "@/domain/media/errors";
+import { getUserMedia } from "../../../infrastructure/media/mediaDevicesFacade";
+import { mapMediaError } from "../../../domain/media/errors";
 
 export function useCameraStream(videoRef: Ref<HTMLVideoElement | null>) {
   const stream = shallowRef<MediaStream | null>(null);

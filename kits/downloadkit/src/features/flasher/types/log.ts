@@ -2,9 +2,9 @@ export type LogLevel = "trace" | "debug" | "info" | "warning" | "error";
 
 export interface LogEntry {
   id: string;
-  timestamp: string;
+  ts: number;
   level: LogLevel;
   message: string;
-  context?: unknown;
+  data?: unknown;
 }
 

@@ -7,8 +7,8 @@ import {
   buildProgramPacket,
   parseWchIspResponseFrame,
   wchIspRequestChecksum,
-} from "@/protocols/ch32/serial/wchUartIspFraming";
-import { WCH_ISP_COMMAND } from "@/protocols/ch32/serial/wchUartIspTypes";
+} from "../wchUartIspFraming";
+import { WCH_ISP_COMMAND } from "../wchUartIspTypes";
 
 describe("wchUartIspFraming", () => {
   it("computes request checksum as 8-bit sum over body only", () => {

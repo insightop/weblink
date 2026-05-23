@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import type { TransportMode } from "@/application/composables/useCanSession.js";
+import type { TransportMode } from "../../application/composables/useCanSession.js";
 
 const props = defineProps<{
   transportMode: TransportMode;

@@ -1,4 +1,4 @@
-import type { DownloadTaskInput, FirmwarePayload, FirmwareSegmentPayload } from "@/core/types/download";
+import type { DownloadTaskInput, FirmwarePayload, FirmwareSegmentPayload } from "../types/download";
 
 /**
  * 将任意历史形态的 `firmware` 联合类型规范为 `FirmwareSegmentPayload[]`，

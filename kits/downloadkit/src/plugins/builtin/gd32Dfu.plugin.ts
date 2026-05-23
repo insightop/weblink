@@ -1,9 +1,9 @@
-import { Gd32DfuProtocol } from "@/protocols/gd32/dfu/Gd32DfuProtocol";
-import { GD32_DFU_USB_FILTERS } from "@/protocols/gd32/dfu/adapters/gd32DfuDeviceMap";
-import { stm32FixedAddressPolicy } from "@/plugins/firmwareInputPresets";
-import type { FlasherPlugin } from "@/plugins/types";
-import type { UsbTransport } from "@/transports/types";
-import { WebUsbTransport } from "@/transports/usb/WebUsbTransport";
+import { Gd32DfuProtocol } from "../../protocols/gd32/dfu/Gd32DfuProtocol";
+import { GD32_DFU_USB_FILTERS } from "../../protocols/gd32/dfu/adapters/gd32DfuDeviceMap";
+import { stm32FixedAddressPolicy } from "../firmwareInputPresets";
+import type { FlasherPlugin } from "../types";
+import type { UsbTransport } from "../../transports/types";
+import { WebUsbTransport } from "../../transports/usb/WebUsbTransport";
 
 export const gd32DfuPlugin: FlasherPlugin = {
   id: "gd32-usb-dfu",

@@ -13,8 +13,15 @@ export interface Transport {
   cancel?(): Promise<void>;
 }
 
+export interface SerialSignals {
+  dataTerminalReady?: boolean;
+  requestToSend?: boolean;
+  break?: boolean;
+}
+
 export interface SerialTransport extends Transport {
   getPort(): SerialPort;
+  setSignals(signals: SerialSignals): Promise<void>;
 }
 
 export interface UsbTransport extends Transport {

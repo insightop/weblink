@@ -1,4 +1,4 @@
-import type { MatrixCell } from "@/matrix/types";
+import type { MatrixCell } from "../types";
 
 /** 常见黑色 CH341A USB 编程器：SPI/I²C 模式 PID 0x5512 */
 export const ch341aMiniProgrammerCells: MatrixCell[] = [

@@ -1,11 +1,11 @@
-import type { FlasherProtocol } from "@/protocols/types";
+import type { FlasherProtocol } from "../protocols/types";
 import type {
   PluginConfigMap,
   PluginConfigObject,
   PluginConfigSchema,
-} from "@/plugins/config/pluginConfig.types";
-import type { StlinkTargetVariant } from "@/transports/adapters/stlink.adapter";
-import type { Transport } from "@/transports/types";
+} from "./config/pluginConfig.types";
+import type { StlinkTargetVariant } from "../transports/adapters/stlink.adapter";
+import type { Transport } from "../transports/types";
 
 export type ChipFamily = "stm32" | "esp32" | "gd32" | "ch32";
 export type FlasherType = "serial" | "usb-dfu" | "st-link" | "dap-link";

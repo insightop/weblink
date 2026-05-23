@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { isSecureMediaContext } from "@/shared/utils/secureContext";
+import { isSecureMediaContext } from "../../../shared/utils/secureContext";
 
 const ok = computed(() => isSecureMediaContext());
 </script>

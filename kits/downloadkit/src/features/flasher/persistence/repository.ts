@@ -4,9 +4,9 @@ import {
   FLASHER_PERSISTENCE_KEY,
   FLASHER_PERSISTENCE_STORE,
   PERSISTENCE_SCHEMA_VERSION,
-} from "@/features/flasher/persistence/keys";
-import type { PersistedFlasherSession } from "@/features/flasher/persistence/schema";
-import type { PersistedFlasherSessionV2 } from "@/features/flasher/persistence/schema";
+} from "./keys";
+import type { PersistedFlasherSession } from "./schema";
+import type { PersistedFlasherSessionV2 } from "./schema";
 
 interface FlasherPersistenceDbSchema extends DBSchema {
   [FLASHER_PERSISTENCE_STORE]: {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { resolveMatrixCell } from "./workbenchAdapterUi";
-import type { MatrixCell } from "@/matrix/types";
+import type { MatrixCell } from "../../matrix/types";
 
 const mockCells: MatrixCell[] = [
   {

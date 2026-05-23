@@ -3,9 +3,9 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { NButton, NButtonGroup } from "naive-ui";
 import { HardwareChipOutline } from "@vicons/ionicons5";
-import FunctionZone from "@/features/flasher/components/FunctionZone.vue";
-import { TARGET_CATALOG } from "@/features/flasher/presentation/targetCatalog";
-import type { ChipFamily } from "@/plugins/types";
+import FunctionZone from "./FunctionZone.vue";
+import { TARGET_CATALOG } from "../presentation/targetCatalog";
+import type { ChipFamily } from "../../../plugins/types";
 
 const { t } = useI18n();
 

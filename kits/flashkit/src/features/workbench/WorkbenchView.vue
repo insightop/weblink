@@ -2,18 +2,18 @@
 import { computed, ref, watch } from "vue";
 import { NButton, NCard, NDivider, NInputNumber, NRadioButton, NRadioGroup, NSelect, NSpace, NText, NUpload, NUploadDragger, useMessage } from "naive-ui";
 import type { UploadFileInfo } from "naive-ui";
-import { FlashWorkbenchFacade } from "@/application/FlashWorkbenchFacade";
-import type { BusKind } from "@/matrix/types";
-import type { SpiNorProfile } from "@/domain/spi/nor/SpiNorProfile";
-import { FlashKitError } from "@/domain/errors/FlashKitError";
-import { uint8ToHex } from "@/shared/hex/uint8";
-import FlashLogPanel from "@/features/logs/FlashLogPanel.vue";
+import { FlashWorkbenchFacade } from "../../application/FlashWorkbenchFacade";
+import type { BusKind } from "../../matrix/types";
+import type { SpiNorProfile } from "../../domain/spi/nor/SpiNorProfile";
+import { FlashKitError } from "../../domain/errors/FlashKitError";
+import { uint8ToHex } from "../../shared/hex/uint8";
+import FlashLogPanel from "../logs/FlashLogPanel.vue";
 import {
   WORKBENCH_ADAPTER_OPTIONS,
   adapterSupportsBusInCells,
   resolveMatrixCell,
   type WorkbenchAdapterId,
-} from "@/features/workbench/workbenchAdapterUi";
+} from "./workbenchAdapterUi";
 
 const message = useMessage();
 const facade = new FlashWorkbenchFacade();

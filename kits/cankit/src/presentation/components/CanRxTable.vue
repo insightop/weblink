@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RxFrameRow } from "@/domain/can/types.js";
+import type { RxFrameRow } from "../../domain/can/types.js";
 import { formatDataHex, formatHexId } from "@weblink/utils/hex";
 
 defineProps<{

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { buildFirmwareSegmentsPayload } from "@/core/firmware/buildFirmwareSegmentsPayload";
-import type { FirmwareRowDraft } from "@/core/firmware/firmwareRowDraft";
-import { stm32FixedAddressPolicy, stm32UserAddressPolicy, esp32SerialPolicy } from "@/plugins/firmwareInputPresets";
+import { buildFirmwareSegmentsPayload } from "./buildFirmwareSegmentsPayload";
+import type { FirmwareRowDraft } from "./firmwareRowDraft";
+import { stm32FixedAddressPolicy, stm32UserAddressPolicy, esp32SerialPolicy } from "../../plugins/firmwareInputPresets";
 
 function makeBinFile(bytes: number[]): File {
   const buf = new Uint8Array(bytes);

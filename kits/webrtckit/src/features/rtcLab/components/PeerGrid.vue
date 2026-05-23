@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, watch, ref, onUnmounted } from "vue";
-import RemoteVideoTile from "@/features/rtcLab/components/RemoteVideoTile.vue";
+import RemoteVideoTile from "./RemoteVideoTile.vue";
 
 const props = defineProps<{
   localLabel: string;

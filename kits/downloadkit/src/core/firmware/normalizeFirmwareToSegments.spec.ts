@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeFirmwareToSegments } from "@/core/firmware/normalizeFirmwareToSegments";
+import { normalizeFirmwareToSegments } from "./normalizeFirmwareToSegments";
 
 describe("normalizeFirmwareToSegments", () => {
   it("passes through segments kind", () => {

@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, shallowRef, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { NResult, NButton, NSpin } from "naive-ui";
 import { findKit } from "@/config/kitRegistry";
+import { i18n } from "@/i18n";
 
 const route = useRoute();
 const kitId = computed(() => route.params.kitId as string);
 const kitConfig = computed(() => findKit(kitId.value));
 
-// 异步加载的组件
-const AsyncComponent = ref<any>(null);
+const AsyncComponent = shallowRef<any>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-const kitLoaders: Record<string, () => Promise<any>> = {
+const kitLoaders: Record<string, () => Promise<{ App: any }>> = {
   serialkit: () => import("@weblink/serialkit"),
   cankit: () => import("@weblink/cankit"),
   capturekit: () => import("@weblink/capturekit"),
@@ -24,7 +24,7 @@ const kitLoaders: Record<string, () => Promise<any>> = {
   wirelesskit: () => import("@weblink/wirelesskit"),
 };
 
-// iframe kit 的 URL
+// iframe 兜底：JS 和 Svelte kit
 const iframeUrl = computed(() => {
   if (!kitConfig.value) return "";
   const config = kitConfig.value;
@@ -52,7 +52,17 @@ async function loadKit(id: string) {
       return;
     }
     const mod = await loader();
-    AsyncComponent.value = mod.App;
+
+    // Merge kit i18n messages into global vue-i18n instance
+    if (mod.messages) {
+      i18n.global.mergeLocaleMessage("en-US", mod.messages);
+    }
+    if (mod.messagesZhCN) {
+      i18n.global.mergeLocaleMessage("zh-CN", mod.messagesZhCN);
+    }
+
+    // Prefer EmbeddedPage (no RouterView), fallback to App
+    AsyncComponent.value = mod.EmbeddedPage ?? mod.App;
   } catch (e: any) {
     error.value = e?.message ?? "Failed to load kit";
   } finally {
@@ -60,7 +70,6 @@ async function loadKit(id: string) {
   }
 }
 
-// 监听路由变化，加载对应 kit
 watch(
   kitId,
   (id) => {

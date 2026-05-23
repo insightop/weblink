@@ -1,9 +1,9 @@
-import { getFirmwareSegmentsFromTask } from "@/core/firmware/normalizeFirmwareToSegments";
-import type { DownloadTaskInput, FlashPlan, StageProgress } from "@/core/types/download";
-import { ErrorCode, type DownloadError } from "@/core/errors/ErrorCode";
-import type { FlasherProtocol, ProbeResult } from "@/protocols/types";
-import { WchUartIspSession } from "@/protocols/ch32/serial/WchUartIspSession";
-import type { SerialTransport } from "@/transports/types";
+import { getFirmwareSegmentsFromTask } from "../../../core/firmware/normalizeFirmwareToSegments";
+import type { DownloadTaskInput, FlashPlan, StageProgress } from "../../../core/types/download";
+import { ErrorCode, type DownloadError } from "../../../core/errors/ErrorCode";
+import type { FlasherProtocol, ProbeResult } from "../../types";
+import { WchUartIspSession } from "./WchUartIspSession";
+import type { SerialTransport } from "../../../transports/types";
 
 export class Ch32SerialProtocol implements FlasherProtocol {
   private readonly session: WchUartIspSession;

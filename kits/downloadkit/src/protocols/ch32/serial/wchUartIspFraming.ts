@@ -1,4 +1,4 @@
-import { WCH_ISP_COMMAND } from "@/protocols/ch32/serial/wchUartIspTypes";
+import { WCH_ISP_COMMAND } from "./wchUartIspTypes";
 
 function u16Le(value: number): [number, number] {
   const v = value & 0xffff;

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { StlinkTargetVariant } from "@/transports/adapters/stlink.adapter";
+import type { StlinkTargetVariant } from "../../../transports/adapters/stlink.adapter";
 import {
   createStlinkTargetSession,
   signatureForCandidates,
   tryAutoPickTarget,
-} from "@/features/flasher/services/stlinkTargetPreference";
+} from "./stlinkTargetPreference";
 
 const mk = (type: string): StlinkTargetVariant => ({
   type,

@@ -1,8 +1,8 @@
-import type { FirmwareSegmentsPayload, FirmwareSegmentPayload } from "@/core/types/download";
-import { parseIntelHex } from "@/shared/firmware/hex";
-import type { ChipFamily, FirmwareInputPolicy } from "@/plugins/types";
-import { parseHexAddressString, resolveDynamicFirmwareAddress } from "@/core/firmware/resolveSegmentAddresses";
-import type { FirmwareRowDraft } from "@/core/firmware/firmwareRowDraft";
+import type { FirmwareSegmentsPayload, FirmwareSegmentPayload } from "../types/download";
+import { parseIntelHex } from "../../shared/firmware/hex";
+import type { ChipFamily, FirmwareInputPolicy } from "../../plugins/types";
+import { parseHexAddressString, resolveDynamicFirmwareAddress } from "./resolveSegmentAddresses";
+import type { FirmwareRowDraft } from "./firmwareRowDraft";
 
 export interface BuildFirmwareSegmentsOptions {
   chipFamily: ChipFamily;

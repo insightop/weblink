@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NAlert, NCard, NDescriptions, NDescriptionsItem, NInput, NTag, NSpace } from "naive-ui";
 import { computed } from "vue";
-import type { FetchWithMetricsResult } from "@/infrastructure/net/fetchWithMetrics";
+import type { FetchWithMetricsResult } from "../../../infrastructure/net/fetchWithMetrics";
 
 const props = defineProps<{
   result: FetchWithMetricsResult | null;

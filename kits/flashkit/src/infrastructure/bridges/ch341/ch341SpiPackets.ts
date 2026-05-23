@@ -4,8 +4,8 @@ import {
   CH341A_CMD_UIO_STREAM,
   CH341A_CMD_UIO_STM_END,
   CH341A_CMD_UIO_STM_OUT,
-} from "@/infrastructure/bridges/ch341/ch341Constants";
-import { swapCh341SpiByte } from "@/infrastructure/bridges/ch341/ch341BitOrder";
+} from "./ch341Constants";
+import { swapCh341SpiByte } from "./ch341BitOrder";
 
 export interface Ch341aSpiBuiltTransaction {
   readonly out: Uint8Array;

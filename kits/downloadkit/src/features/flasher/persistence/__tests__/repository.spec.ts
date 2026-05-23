@@ -1,6 +1,6 @@
 import "fake-indexeddb/auto";
 import { beforeEach, describe, expect, it } from "vitest";
-import { FlasherPersistenceRepository } from "@/features/flasher/persistence/repository";
+import { FlasherPersistenceRepository } from "../repository";
 
 describe("FlasherPersistenceRepository", () => {
   const repository = new FlasherPersistenceRepository();

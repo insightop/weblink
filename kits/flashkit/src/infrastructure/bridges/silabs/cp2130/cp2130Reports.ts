@@ -3,4 +3,4 @@ export {
   packCp2130BulkRead,
   packCp2130BulkWrite,
   packCp2130BulkWriteRead,
-} from "@/infrastructure/bridges/silabs/cp2130/cp2130Bulk";
+} from "./cp2130Bulk";

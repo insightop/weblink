@@ -1,4 +1,4 @@
-import type { FlashPlan, FlashSegment, FirmwareSegmentPayload } from "@/core/types/download";
+import type { FlashPlan, FlashSegment, FirmwareSegmentPayload } from "../../../core/types/download";
 
 export interface Esp32SingleBinInput {
   kind: "single-bin";

@@ -3,7 +3,7 @@ import {
   ch32UidByteCount,
   findCh32Variant,
   type Ch32ChipVariant,
-} from "@/protocols/ch32/serial/ch32ChipCatalog";
+} from "./ch32ChipCatalog";
 import {
   buildErasePacket,
   buildIdentifyPacket,
@@ -15,15 +15,15 @@ import {
   parseWchIspResponseFrame,
   type ParsedWchIspResponse,
   wchIspRequestChecksum,
-} from "@/protocols/ch32/serial/wchUartIspFraming";
+} from "./wchUartIspFraming";
 import {
   WCH_CFG_MASK_ALL,
   WCH_ISP_CHUNK_SIZE,
   WCH_SECTOR_SIZE,
   WCH_UART_REQ_PREFIX,
   WCH_UART_RESP_MAGIC,
-} from "@/protocols/ch32/serial/wchUartIspTypes";
-import type { SerialTransport } from "@/transports/types";
+} from "./wchUartIspTypes";
+import type { SerialTransport } from "../../../transports/types";
 
 const ISP_KEY_SEED_LEN = 0x1e;
 

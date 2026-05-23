@@ -1,8 +1,8 @@
 import { onUnmounted, ref, shallowRef } from "vue";
-import { getUserMedia } from "@/infrastructure/media/mediaDevicesFacade";
-import { createAudioContext } from "@/infrastructure/audio/webAudioFacade";
-import { mapMediaError } from "@/domain/media/errors";
-import { rmsFromTimeDomain, rmsToLevel, smoothLevel } from "@/domain/media/levelMath";
+import { getUserMedia } from "../../../infrastructure/media/mediaDevicesFacade";
+import { createAudioContext } from "../../../infrastructure/audio/webAudioFacade";
+import { mapMediaError } from "../../../domain/media/errors";
+import { rmsFromTimeDomain, rmsToLevel, smoothLevel } from "../../../domain/media/levelMath";
 
 /** 时域快照长度；越大则波形「时间窗」越长（约 sampleRate / fftSize 秒量级 @48kHz：8192≈170ms，16384≈341ms） */
 const FFT_SIZE = 32768;

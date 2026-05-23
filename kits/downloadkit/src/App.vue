@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
-import BrowserCapabilityOverlay from "@/shell/BrowserCapabilityOverlay.vue";
-import { useUiStore } from "@/stores/ui.store";
+import BrowserCapabilityOverlay from "./shell/BrowserCapabilityOverlay.vue";
+import { useUiStore } from "./stores/ui.store";
 import {
   darkTheme,
   dateEnUS,
@@ -13,8 +13,8 @@ import {
   type GlobalThemeOverrides,
 } from "naive-ui";
 import { useI18n } from "vue-i18n";
-import { detectBrowserCapabilities } from "@/plugins/capabilities";
-import { evaluateBrowserSupport } from "@/plugins/browserSupport";
+import { detectBrowserCapabilities } from "./plugins/capabilities";
+import { evaluateBrowserSupport } from "./plugins/browserSupport";
 
 const osTheme = useOsTheme();
 const { locale } = useI18n();

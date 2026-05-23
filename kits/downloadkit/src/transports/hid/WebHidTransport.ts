@@ -1,4 +1,4 @@
-import type { Transport } from "@/transports/types";
+import type { Transport } from "../types";
 
 export class WebHidTransport implements Transport {
   readonly name = "web-hid";

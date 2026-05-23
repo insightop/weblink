@@ -1,11 +1,11 @@
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
+import type { SpiPort } from "../../../domain/spi/SpiPort";
+import { WebUsbSession } from "../../usb/WebUsbSession";
 import {
   buildMpsseDuplexMsbChunks,
   buildSetCs,
   concatMpsse,
   countMpsseDuplexReplyBytes,
-} from "@/infrastructure/bridges/ftdi/mpsse/mpsseSpi";
+} from "./mpsse/mpsseSpi";
 
 export class FtdiSpiAdapter implements SpiPort {
   constructor(private readonly session: WebUsbSession) {}

@@ -1,6 +1,6 @@
-import type { BridgeBackend } from "@/infrastructure/bridges/BridgeBackend";
-import type { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
-import type { WebHidSession } from "@/infrastructure/hid/WebHidSession";
+import type { BridgeBackend } from "../infrastructure/bridges/BridgeBackend";
+import type { WebUsbSession } from "../infrastructure/usb/WebUsbSession";
+import type { WebHidSession } from "../infrastructure/hid/WebHidSession";
 
 /** 主机侧桥实现 id（一种协议栈实现；命名沿用计划里程碑） */
 export type BridgeBackendId =

@@ -1,6 +1,6 @@
-import type { BridgeBackendId } from "@/matrix/types";
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import type { I2cPort } from "@/domain/i2c/I2cPort";
+import type { BridgeBackendId } from "../../matrix/types";
+import type { SpiPort } from "../../domain/spi/SpiPort";
+import type { I2cPort } from "../../domain/i2c/I2cPort";
 
 export interface BridgeBackend {
   readonly id: BridgeBackendId;

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, createMemoryHistory } from "vue-router";
-import FlasherPage from "@/features/flasher/pages/FlasherPage.vue";
+import FlasherPage from "../features/flasher/pages/FlasherPage.vue";
 
 const isEmbedded = import.meta.env.VITE_EMBEDDED === "true";
 

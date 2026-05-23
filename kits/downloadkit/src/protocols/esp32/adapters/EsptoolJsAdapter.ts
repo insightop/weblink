@@ -1,9 +1,9 @@
-import { ErrorCode, type DownloadError } from "@/core/errors/ErrorCode";
-import type { FlashPlan } from "@/core/types/download";
-import { loadEsptool } from "@/protocols/esp32/esptool/loadEsptool";
-import type { SerialTransport } from "@/transports/types";
+import { ErrorCode, type DownloadError } from "../../../core/errors/ErrorCode";
+import type { FlashPlan } from "../../../core/types/download";
+import { loadEsptool } from "../esptool/loadEsptool";
+import type { SerialTransport } from "../../../transports/types";
 import type { FlashOptions, IEspLoaderTerminal } from "esptool-js";
-import { i18n } from "@/i18n";
+import { i18n } from "../../../i18n";
 import type { ESPLoader, Transport as EspTransport } from "esptool-js";
 
 export interface EspChipInfo {

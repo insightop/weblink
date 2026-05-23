@@ -1,4 +1,4 @@
-import type { MatrixCell } from "@/matrix/types";
+import type { MatrixCell } from "../types";
 
 /**
  * CP2130：标准固件为 Vendor/Bulk（与 `silabs-cp2130-hid` 注册 id 对应，实现走 WebUSB）。

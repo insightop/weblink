@@ -1,6 +1,6 @@
 import { computed, type Ref } from "vue";
-import { createAudioContext } from "@/infrastructure/audio/webAudioFacade";
-import { logger } from "@/infrastructure/logging/logger";
+import { createAudioContext } from "../../../infrastructure/audio/webAudioFacade";
+import { logger } from "../../../infrastructure/logging/logger";
 
 type AudioContextWithSink = AudioContext & {
   setSinkId?: (id: string) => Promise<void>;

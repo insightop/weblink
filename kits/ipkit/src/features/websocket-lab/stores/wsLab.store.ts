@@ -3,8 +3,8 @@ import { ref, shallowRef } from "vue";
 import {
   createWebSocketController,
   type WebSocketController,
-} from "@/infrastructure/net/webSocketController";
-import { IpKitError } from "@/domain/errors/IpKitError";
+} from "../../../infrastructure/net/webSocketController";
+import { IpKitError } from "../../../domain/errors/IpKitError";
 
 const MAX_MESSAGES = 500;
 

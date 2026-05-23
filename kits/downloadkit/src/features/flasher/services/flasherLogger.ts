@@ -1,5 +1,5 @@
-import { useFlasherStore } from "@/features/flasher/stores/flasher.store";
-import type { LogEntry, LogLevel } from "@/features/flasher/types/log";
+import { useFlasherStore } from "../stores/flasher.store";
+import type { LogEntry, LogLevel } from "../types/log";
 import pino from "pino";
 
 const logger = pino({
@@ -10,21 +10,21 @@ const logger = pino({
   },
 });
 
-function append(level: LogLevel, message: string, context?: unknown): void {
+function append(level: LogLevel, message: string, data?: unknown): void {
   const store = useFlasherStore();
   const entry: LogEntry = {
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    timestamp: new Date().toISOString(),
+    ts: Date.now(),
     level,
     message,
-    context,
+    data,
   };
   store.appendLog(entry);
-  if (level === "trace") logger.trace({ context }, message);
-  if (level === "debug") logger.debug({ context }, message);
-  if (level === "info") logger.info({ context }, message);
-  if (level === "warning") logger.warn({ context }, message);
-  if (level === "error") logger.error({ context }, message);
+  if (level === "trace") logger.trace({ data }, message);
+  if (level === "debug") logger.debug({ data }, message);
+  if (level === "info") logger.info({ data }, message);
+  if (level === "warning") logger.warn({ data }, message);
+  if (level === "error") logger.error({ data }, message);
 }
 
 export const flasherLogger = {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatJedecId, parseJedecId } from "@/domain/spi/jedec/jedecId";
+import { formatJedecId, parseJedecId } from "./jedecId";
 
 describe("jedecId", () => {
   it("parses and formats", () => {

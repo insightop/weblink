@@ -2,7 +2,7 @@ import {
   CP2130_TRANSFER_READ,
   CP2130_TRANSFER_WRITE,
   CP2130_TRANSFER_WRITE_READ,
-} from "@/infrastructure/bridges/silabs/cp2130/cp2130Constants";
+} from "./cp2130Constants";
 
 function writeHeader(
   target: Uint8Array,

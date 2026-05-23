@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ErrorCode, isDownloadError, isUserCancelledError } from "@/core/errors/ErrorCode";
+import { ErrorCode, isDownloadError, isUserCancelledError } from "./ErrorCode";
 
 describe("download error guards", () => {
   it("detects UserCancelled", () => {

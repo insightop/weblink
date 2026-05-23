@@ -1,12 +1,12 @@
 import { computed, ref } from "vue";
 import { useLogStore } from "@weblink/ui-vue";
-import { BluetoothSession, type CharacteristicId } from "@/infrastructure/bluetooth/bluetoothSession";
-import { NfcSession } from "@/infrastructure/nfc/nfcSession";
-import { toUserError } from "@/infrastructure/errors/userErrors";
+import { BluetoothSession, type CharacteristicId } from "../../../infrastructure/bluetooth/bluetoothSession";
+import { NfcSession } from "../../../infrastructure/nfc/nfcSession";
+import { toUserError } from "../../../infrastructure/errors/userErrors";
 import { encodeText } from "@weblink/utils/codec";
 import { formatHex, parseHex } from "@weblink/utils/hex";
-import { formatNdefMessage, type NdefMessageVm } from "@/domain/nfc/ndefFormat";
-import { pushRing } from "@/shared/utils/ringBuffer";
+import { formatNdefMessage, type NdefMessageVm } from "../../../domain/nfc/ndefFormat";
+import { pushRing } from "../../../shared/utils/ringBuffer";
 import { formatTimeMs } from "@weblink/utils/time";
 
 export function useWirelessConsole() {

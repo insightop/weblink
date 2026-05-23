@@ -1,15 +1,15 @@
-import { IpKitError, IpKitErrorCode } from "@/domain/errors/IpKitError";
+import { IpKitError, IpKitErrorCode } from "../../domain/errors/IpKitError";
 import {
   buildHttpResponseSummary,
   type HttpResponseSummary,
-} from "@/domain/http/parseResponseSummary";
+} from "../../domain/http/parseResponseSummary";
 import {
   emptyTiming,
   formatTimingLine,
   summarizeTimingFromResource,
   type TimingSummary,
-} from "@/domain/timing/summarizeTiming";
-import { createLogger } from "@/infrastructure/logger/createLogger";
+} from "../../domain/timing/summarizeTiming";
+import { createLogger } from "../logger/createLogger";
 
 const log = createLogger("fetchWithMetrics");
 

@@ -1,4 +1,4 @@
-import { toSerialUserError, type SerialUserError } from "@/infrastructure/serial/serialErrors";
+import { toSerialUserError, type SerialUserError } from "./serialErrors";
 
 export type ConnectionState = "idle" | "connected" | "disconnected";
 

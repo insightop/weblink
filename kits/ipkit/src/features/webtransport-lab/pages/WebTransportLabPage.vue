@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NButton, NCard, NInput, NSpace, NText, NAlert, NTag } from "naive-ui";
 import { computed } from "vue";
-import { useWtLabStore } from "@/features/webtransport-lab/stores/wtLab.store";
+import { useWtLabStore } from "../stores/wtLab.store";
 
 const store = useWtLabStore();
 

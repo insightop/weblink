@@ -1,11 +1,11 @@
-import type { RegisteredBridge, BridgeBackendId, BusKind } from "@/matrix/types";
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
-import { createCh341VendorBulkBridge } from "@/infrastructure/bridges/ch341/createCh341VendorBulkBridge";
-import { createFtdiMpsseFt232hBridge } from "@/infrastructure/bridges/ftdi/createFtdiMpsseFt232hBridge";
-import { createSilabsCp2130Bridge } from "@/infrastructure/bridges/silabs/cp2130/createSilabsCp2130Bridge";
-import { createSilabsCp2112Bridge } from "@/infrastructure/bridges/silabs/cp2112/createSilabsCp2112Bridge";
-import type { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
-import type { WebHidSession } from "@/infrastructure/hid/WebHidSession";
+import type { RegisteredBridge, BridgeBackendId, BusKind } from "./types";
+import { FlashKitError, FlashKitErrorCode } from "../domain/errors/FlashKitError";
+import { createCh341VendorBulkBridge } from "../infrastructure/bridges/ch341/createCh341VendorBulkBridge";
+import { createFtdiMpsseFt232hBridge } from "../infrastructure/bridges/ftdi/createFtdiMpsseFt232hBridge";
+import { createSilabsCp2130Bridge } from "../infrastructure/bridges/silabs/cp2130/createSilabsCp2130Bridge";
+import { createSilabsCp2112Bridge } from "../infrastructure/bridges/silabs/cp2112/createSilabsCp2112Bridge";
+import type { WebUsbSession } from "../infrastructure/usb/WebUsbSession";
+import type { WebHidSession } from "../infrastructure/hid/WebHidSession";
 
 const registry = new Map<BridgeBackendId, RegisteredBridge>();
 

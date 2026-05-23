@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./src/index.ts"
   },
   "type": "module",
   "description": "浏览器内 HTTP / WebSocket / DoH 等网络协议调试台",

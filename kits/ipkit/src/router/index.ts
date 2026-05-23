@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, createMemoryHistory } from "vue-router";
-import { routes } from "@/router/routes";
+import { routes } from "./routes";
 
 const isEmbedded = import.meta.env.VITE_EMBEDDED === "true";
 

@@ -1,18 +1,18 @@
-import { initMatrixRegistry, getBridge, assertBusSupported } from "@/matrix/registry";
-import type { BridgeBackendId, BusKind } from "@/matrix/types";
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
-import { SpiNorDriver } from "@/domain/spi/nor/SpiNorDriver";
-import { matchNorProfile, listNorProfiles } from "@/domain/spi/nor/norProfileRegistry";
-import type { SpiNorProfile } from "@/domain/spi/nor/SpiNorProfile";
-import { winbondW25q32 } from "@/domain/spi/nor/profiles/winbondW25q32";
-import { I2cEepromDriver } from "@/domain/i2c/eeprom/I2cEepromDriver";
-import type { I2cEepromProfile } from "@/domain/i2c/eeprom/I2cEepromProfile";
-import { at24c256 } from "@/domain/i2c/eeprom/profiles/at24c256";
-import { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
-import { WebHidSession } from "@/infrastructure/hid/WebHidSession";
-import type { BridgeBackend } from "@/infrastructure/bridges/BridgeBackend";
-import { allMatrixCells } from "@/matrix/presets/allMatrixCells";
-import { flashKitLogger } from "@/shared/logging/flashKitLogger";
+import { initMatrixRegistry, getBridge, assertBusSupported } from "../matrix/registry";
+import type { BridgeBackendId, BusKind } from "../matrix/types";
+import { FlashKitError, FlashKitErrorCode } from "../domain/errors/FlashKitError";
+import { SpiNorDriver } from "../domain/spi/nor/SpiNorDriver";
+import { matchNorProfile, listNorProfiles } from "../domain/spi/nor/norProfileRegistry";
+import type { SpiNorProfile } from "../domain/spi/nor/SpiNorProfile";
+import { winbondW25q32 } from "../domain/spi/nor/profiles/winbondW25q32";
+import { I2cEepromDriver } from "../domain/i2c/eeprom/I2cEepromDriver";
+import type { I2cEepromProfile } from "../domain/i2c/eeprom/I2cEepromProfile";
+import { at24c256 } from "../domain/i2c/eeprom/profiles/at24c256";
+import { WebUsbSession } from "../infrastructure/usb/WebUsbSession";
+import { WebHidSession } from "../infrastructure/hid/WebHidSession";
+import type { BridgeBackend } from "../infrastructure/bridges/BridgeBackend";
+import { allMatrixCells } from "../matrix/presets/allMatrixCells";
+import { flashKitLogger } from "../shared/logging/flashKitLogger";
 
 export interface FlashWorkbenchState {
   readonly deviceLabel: string | null;

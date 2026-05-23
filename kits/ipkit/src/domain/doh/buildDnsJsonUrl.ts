@@ -1,6 +1,6 @@
-import { IpKitError, IpKitErrorCode } from "@/domain/errors/IpKitError";
-import type { Result } from "@/domain/result";
-import { err, ok } from "@/domain/result";
+import { IpKitError, IpKitErrorCode } from "../errors/IpKitError";
+import type { Result } from "../result";
+import { err, ok } from "../result";
 
 /** 常用 RR 类型名（Cloudflare dns-json） */
 export const DNS_JSON_TYPES = [

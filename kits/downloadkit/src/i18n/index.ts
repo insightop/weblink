@@ -1,7 +1,7 @@
 import { createI18n } from "vue-i18n";
-import zhCN from "@/locales/zh-CN.json";
-import enUS from "@/locales/en-US.json";
-import { resolveBrowserLocale } from "@/i18n/locale";
+import zhCN from "../locales/zh-CN.json";
+import enUS from "../locales/en-US.json";
+import { resolveBrowserLocale } from "./locale";
 
 const fallbackLocale = "en-US";
 

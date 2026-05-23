@@ -1,7 +1,7 @@
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
-import { buildCh341aSpiTransaction } from "@/infrastructure/bridges/ch341/ch341SpiPackets";
-import { swapCh341SpiByte } from "@/infrastructure/bridges/ch341/ch341BitOrder";
+import type { SpiPort } from "../../../domain/spi/SpiPort";
+import { WebUsbSession } from "../../usb/WebUsbSession";
+import { buildCh341aSpiTransaction } from "./ch341SpiPackets";
+import { swapCh341SpiByte } from "./ch341BitOrder";
 
 export class Ch341SpiAdapter implements SpiPort {
   constructor(private readonly session: WebUsbSession) {}

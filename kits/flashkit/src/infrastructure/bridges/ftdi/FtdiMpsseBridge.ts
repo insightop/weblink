@@ -1,16 +1,16 @@
-import type { BridgeBackend } from "@/infrastructure/bridges/BridgeBackend";
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import type { I2cPort } from "@/domain/i2c/I2cPort";
-import { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
+import type { BridgeBackend } from "../BridgeBackend";
+import type { SpiPort } from "../../../domain/spi/SpiPort";
+import type { I2cPort } from "../../../domain/i2c/I2cPort";
+import { WebUsbSession } from "../../usb/WebUsbSession";
 import {
   FTDI_RESET_PURGE_RX,
   FTDI_RESET_PURGE_TX,
   FTDI_SIO_RESET,
   FTDI_SIO_SET_BITMODE,
-} from "@/infrastructure/bridges/ftdi/ftdiConstants";
-import { FtdiSpiAdapter } from "@/infrastructure/bridges/ftdi/FtdiSpiAdapter";
-import { buildMpsseSpiInitCommands, FT232H_DIV_1MHZ } from "@/infrastructure/bridges/ftdi/mpsse/mpsseSpi";
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
+} from "./ftdiConstants";
+import { FtdiSpiAdapter } from "./FtdiSpiAdapter";
+import { buildMpsseSpiInitCommands, FT232H_DIV_1MHZ } from "./mpsse/mpsseSpi";
+import { FlashKitError, FlashKitErrorCode } from "../../../domain/errors/FlashKitError";
 
 /** FTDI 控制传输 wIndex：单通道 FT232H 常用 1（与 libftdi/pyftdi 一致） */
 const FTDI_CTRL_INDEX = 1;

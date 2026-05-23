@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { NButton, NCard, NSpace, NTag, NThing, NDivider } from "naive-ui";
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 import { KIT_REGISTRY } from "@/config/kitRegistry";
+
+const router = useRouter();
 
 const rows = computed(() =>
   KIT_REGISTRY.map((k) => ({
@@ -9,6 +12,10 @@ const rows = computed(() =>
     ready: k.prodUrl !== "",
   })),
 );
+
+function navigateToKit(id: string) {
+  router.push(`/${id}`);
+}
 </script>
 
 <template>
@@ -29,10 +36,9 @@ const rows = computed(() =>
           <NSpace vertical :size="12">
             <NButton
               v-if="row.ready"
-              tag="router-link"
-              :to="'/' + row.id"
               type="primary"
               secondary
+              @click="navigateToKit(row.id)"
             >
               Open
             </NButton>

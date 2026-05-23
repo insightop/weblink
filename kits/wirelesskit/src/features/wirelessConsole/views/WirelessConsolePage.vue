@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { SplitPane, LogConsole } from "@weblink/ui-vue";
-import BluetoothPanel from "@/features/wirelessConsole/components/BluetoothPanel.vue";
-import NfcPanel from "@/features/wirelessConsole/components/NfcPanel.vue";
-import { useWirelessConsole } from "@/features/wirelessConsole/composables/useWirelessConsole";
-import { isWebBluetoothSupported, isSecureContextForBluetooth } from "@/infrastructure/bluetooth/webBluetooth";
-import { isWebNfcSupported, isSecureContextForNfc } from "@/infrastructure/nfc/webNfc";
+import BluetoothPanel from "../components/BluetoothPanel.vue";
+import NfcPanel from "../components/NfcPanel.vue";
+import { useWirelessConsole } from "../composables/useWirelessConsole";
+import { isWebBluetoothSupported, isSecureContextForBluetooth } from "../../../infrastructure/bluetooth/webBluetooth";
+import { isWebNfcSupported, isSecureContextForNfc } from "../../../infrastructure/nfc/webNfc";
 
 const rightOpen = ref(true);
 

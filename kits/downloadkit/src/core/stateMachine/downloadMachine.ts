@@ -1,4 +1,4 @@
-import type { DownloadEvent, DownloadStage } from "@/core/types/download";
+import type { DownloadEvent, DownloadStage } from "../types/download";
 
 type TransitionTable = Record<DownloadStage, Partial<Record<DownloadEvent, DownloadStage>>>;
 

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { createDaplinkAdapter } from "@/transports/adapters/daplink.adapter";
-import type { UsbTransport } from "@/transports/types";
+import { createDaplinkAdapter } from "./daplink.adapter";
+import type { UsbTransport } from "../types";
 
 function mockUsbTransport(getDeviceImpl: () => USBDevice): UsbTransport {
   return {

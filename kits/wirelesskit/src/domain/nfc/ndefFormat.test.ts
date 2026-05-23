@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatNdefMessage } from "@/domain/nfc/ndefFormat";
+import { formatNdefMessage } from "./ndefFormat";
 
 describe("ndefFormat", () => {
   it("formats empty message", () => {

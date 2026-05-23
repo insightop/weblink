@@ -1,4 +1,4 @@
-import type { IpKitError } from "@/domain/errors/IpKitError";
+import type { IpKitError } from "./errors/IpKitError";
 
 export type Ok<T> = { ok: true; value: T };
 export type Err = { ok: false; error: IpKitError };

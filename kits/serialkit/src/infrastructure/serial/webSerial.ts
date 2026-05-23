@@ -1,5 +1,5 @@
 import { isSecureContext, isWebApiSupported } from "@weblink/utils/web-api";
-import { toSerialUserError, type SerialUserError } from "@/infrastructure/serial/serialErrors";
+import { toSerialUserError, type SerialUserError } from "./serialErrors";
 
 export function isSecureContextForSerial(): boolean {
   return isSecureContext();

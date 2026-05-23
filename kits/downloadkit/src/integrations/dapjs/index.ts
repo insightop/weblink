@@ -1,1 +1,1 @@
-export { flashWithDapLink, type DapLinkProgressHandler } from "@/integrations/dapjs/dapLinkFlash";
+export { flashWithDapLink, type DapLinkProgressHandler } from "./dapLinkFlash";

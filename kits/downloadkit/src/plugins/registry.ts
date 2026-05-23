@@ -1,4 +1,4 @@
-import type { FlasherPlugin, PluginResolveCriteria } from "@/plugins/types";
+import type { FlasherPlugin, PluginResolveCriteria } from "./types";
 
 export interface TargetFlasherOption {
   plugin: FlasherPlugin;

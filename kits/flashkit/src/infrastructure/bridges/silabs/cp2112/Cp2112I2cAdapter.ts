@@ -1,5 +1,5 @@
-import type { I2cPort } from "@/domain/i2c/I2cPort";
-import { WebHidSession } from "@/infrastructure/hid/WebHidSession";
+import type { I2cPort } from "../../../../domain/i2c/I2cPort";
+import { WebHidSession } from "../../../hid/WebHidSession";
 import {
   CP2112_DATA_READ_FORCE_SEND,
   CP2112_DATA_READ_REQUEST,
@@ -16,8 +16,8 @@ import {
   encodeCp2112WriteReadRequest,
   encodeCp2112WriteRequest,
   parseCp2112TransferStatus,
-} from "@/infrastructure/bridges/silabs/cp2112/cp2112Reports";
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
+} from "./cp2112Reports";
+import { FlashKitError, FlashKitErrorCode } from "../../../../domain/errors/FlashKitError";
 
 const XFER_STATUS_RETRIES = 10;
 const RESPONSE_TIMEOUT_MS = 80;

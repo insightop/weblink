@@ -1,2 +1,5 @@
 export { default as App } from "./App.vue"
 export { default as router } from "./router"
+export { default as EmbeddedPage } from "./features/flasher/pages/FlasherPage.vue"
+export { default as messages } from "./locales/en-US.json"
+export { default as messagesZhCN } from "./locales/zh-CN.json"

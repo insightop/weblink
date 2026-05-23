@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ErrorCode } from "@/core/errors/ErrorCode";
-import { EsptoolJsAdapter } from "@/protocols/esp32/adapters/EsptoolJsAdapter";
-import type { FlashPlan } from "@/core/types/download";
-import type { SerialTransport } from "@/transports/types";
+import { ErrorCode } from "../../../../core/errors/ErrorCode";
+import { EsptoolJsAdapter } from "../EsptoolJsAdapter";
+import type { FlashPlan } from "../../../../core/types/download";
+import type { SerialTransport } from "../../../../transports/types";
 
 const mainMock = vi.fn(async () => "ESP32-S3");
 const writeFlashMock = vi.fn(async () => undefined);

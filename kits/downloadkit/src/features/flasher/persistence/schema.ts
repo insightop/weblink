@@ -1,5 +1,5 @@
-import type { ChipFamily, FlasherType } from "@/plugins/types";
-import type { PluginConfigObject } from "@/plugins/config/pluginConfig.types";
+import type { ChipFamily, FlasherType } from "../../../plugins/types";
+import type { PluginConfigObject } from "../../../plugins/config/pluginConfig.types";
 
 export interface PersistedFirmwareFile {
   name: string;

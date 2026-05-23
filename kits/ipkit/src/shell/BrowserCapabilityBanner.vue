@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { NAlert } from "naive-ui";
 import { computed } from "vue";
-import { detectCapabilities } from "@/infrastructure/browser/detectCapabilities";
-import { useSecureContext } from "@/shared/composables/useSecureContext";
+import { detectCapabilities } from "../infrastructure/browser/detectCapabilities";
+import { useSecureContext } from "../shared/composables/useSecureContext";
 
 const secure = useSecureContext();
 const caps = computed(() => detectCapabilities());

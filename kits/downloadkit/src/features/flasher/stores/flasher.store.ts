@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import type { DownloadStage } from "@/core/types/download";
-import type { StlinkTargetPreferenceV1 } from "@/features/flasher/services/stlinkTargetPreference";
-import type { StlinkTargetVariant } from "@/transports/adapters/stlink.adapter";
-import type { LogEntry, LogLevel } from "@/features/flasher/types/log";
-import type { PluginConfigObject } from "@/plugins/config/pluginConfig.types";
-import type { ChipFamily, FlasherType } from "@/plugins/types";
+import type { DownloadStage } from "../../../core/types/download";
+import type { StlinkTargetPreferenceV1 } from "../services/stlinkTargetPreference";
+import type { StlinkTargetVariant } from "../../../transports/adapters/stlink.adapter";
+import type { LogEntry, LogLevel } from "../types/log";
+import type { PluginConfigObject } from "../../../plugins/config/pluginConfig.types";
+import type { ChipFamily, FlasherType } from "../../../plugins/types";
 
 export type DeviceStatus = "idle" | "selecting" | "ready" | "failed";
 export type DownloadResult = "idle" | "running" | "success" | "error";

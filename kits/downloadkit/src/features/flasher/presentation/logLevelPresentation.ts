@@ -6,7 +6,7 @@ import {
   WarningOutline,
   PulseOutline,
 } from "@vicons/ionicons5";
-import type { LogLevel } from "@/features/flasher/types/log";
+import type { LogLevel } from "../types/log";
 
 export const LOG_LEVELS = ["trace", "debug", "info", "warning", "error"] as const;
 

@@ -1,7 +1,7 @@
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import type { SpiNorProfile } from "@/domain/spi/nor/SpiNorProfile";
-import { parseJedecId } from "@/domain/spi/jedec/jedecId";
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
+import type { SpiPort } from "../SpiPort";
+import type { SpiNorProfile } from "./SpiNorProfile";
+import { parseJedecId } from "../jedec/jedecId";
+import { FlashKitError, FlashKitErrorCode } from "../../errors/FlashKitError";
 
 export interface SpiNorProgress {
   readonly phase: "identify" | "erase" | "program" | "verify" | "idle";

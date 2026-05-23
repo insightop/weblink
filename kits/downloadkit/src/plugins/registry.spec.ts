@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { PluginRegistry } from "@/plugins/registry";
-import type { FlasherPlugin } from "@/plugins/types";
+import { PluginRegistry } from "./registry";
+import type { FlasherPlugin } from "./types";
 
 const pluginA: FlasherPlugin = {
   id: "a",

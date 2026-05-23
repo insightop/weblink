@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { buildDnsJsonUrl, type DnsJsonType } from "@/domain/doh/buildDnsJsonUrl";
-import { dnsStatusDescription } from "@/domain/doh/parseDohResponse";
-import type { DnsJsonDocument } from "@/domain/doh/parseDohResponse";
-import { fetchDnsJson } from "@/infrastructure/net/dohFetch";
-import { IpKitError } from "@/domain/errors/IpKitError";
+import { buildDnsJsonUrl, type DnsJsonType } from "../../../domain/doh/buildDnsJsonUrl";
+import { dnsStatusDescription } from "../../../domain/doh/parseDohResponse";
+import type { DnsJsonDocument } from "../../../domain/doh/parseDohResponse";
+import { fetchDnsJson } from "../../../infrastructure/net/dohFetch";
+import { IpKitError } from "../../../domain/errors/IpKitError";
 
 export const DOH_PRESETS = [
   {

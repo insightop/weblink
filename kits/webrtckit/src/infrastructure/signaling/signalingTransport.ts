@@ -1,4 +1,4 @@
-import type { ClientToServerMessage, ServerToClientMessage } from "@/domain/signaling/messageTypes";
+import type { ClientToServerMessage, ServerToClientMessage } from "../../domain/signaling/messageTypes";
 
 export type SignalingTransport = {
   connect(url: string): Promise<void>;

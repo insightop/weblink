@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { buildFetchInit, type HttpRequestDraft } from "@/domain/http/buildFetchInit";
-import type { FetchWithMetricsResult } from "@/infrastructure/net/fetchWithMetrics";
-import { fetchWithMetrics } from "@/infrastructure/net/fetchWithMetrics";
-import { IpKitError } from "@/domain/errors/IpKitError";
+import { buildFetchInit, type HttpRequestDraft } from "../../../domain/http/buildFetchInit";
+import type { FetchWithMetricsResult } from "../../../infrastructure/net/fetchWithMetrics";
+import { fetchWithMetrics } from "../../../infrastructure/net/fetchWithMetrics";
+import { IpKitError } from "../../../domain/errors/IpKitError";
 
 export const useHttpLabStore = defineStore("httpLab", () => {
   const method = ref("GET");

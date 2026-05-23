@@ -1,4 +1,4 @@
-import { toUserError, UserError } from "@/infrastructure/errors/userErrors";
+import { toUserError, UserError } from "../errors/userErrors";
 
 export type NfcStatus =
   | { state: "idle" }

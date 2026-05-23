@@ -1,10 +1,10 @@
-import type { SpiPort } from "@/domain/spi/SpiPort";
-import { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
+import type { SpiPort } from "../../../../domain/spi/SpiPort";
+import { WebUsbSession } from "../../../usb/WebUsbSession";
 import {
   packCp2130BulkRead,
   packCp2130BulkWrite,
   packCp2130BulkWriteRead,
-} from "@/infrastructure/bridges/silabs/cp2130/cp2130Bulk";
+} from "./cp2130Bulk";
 
 export class Cp2130SpiAdapter implements SpiPort {
   constructor(private readonly session: WebUsbSession) {}

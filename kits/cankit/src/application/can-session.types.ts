@@ -1,4 +1,4 @@
-import type { RxFrameRow } from "@/domain/can/types.js";
+import type { RxFrameRow } from "../domain/can/types.js";
 
 export const DEFAULT_MAX_RX_FRAMES = 2000;
 

@@ -1,4 +1,4 @@
-import { IpKitError, IpKitErrorCode } from "@/domain/errors/IpKitError";
+import { IpKitError, IpKitErrorCode } from "../../domain/errors/IpKitError";
 
 type WebTransportConstructor = new (
   url: string,

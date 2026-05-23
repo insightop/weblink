@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { ErrorCode } from "@/core/errors/ErrorCode";
+import { ErrorCode } from "../../../../core/errors/ErrorCode";
 import {
   mapDfuProbeError,
   mapDfuResetError,
   mapDfuSyncError,
   mapDfuWriteError,
-} from "@/protocols/stm32/dfu/adapters/DfuErrorMapper";
+} from "../adapters/DfuErrorMapper";
 
 describe("DfuErrorMapper", () => {
   it("maps probe error", () => {

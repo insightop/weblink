@@ -1,4 +1,4 @@
-import { CanKitError } from "@/domain/errors/can-kit-error.js";
+import { CanKitError } from "../../domain/errors/can-kit-error.js";
 import {
   GS_CAN_MODE_NORMAL,
   GS_CAN_MODE_RESET,
@@ -6,13 +6,13 @@ import {
   GS_USB_BREQ_BITTIMING,
   GS_USB_BREQ_BT_CONST,
   GS_USB_BREQ_MODE,
-} from "@/domain/gsusb/gs-usb-constants.js";
+} from "../../domain/gsusb/gs-usb-constants.js";
 import {
   bitrateToDeviceBittiming,
   packDeviceBittiming,
   packDeviceMode,
-} from "@/domain/gsusb/gs-usb-bittiming.js";
-import { logDebug } from "@/shared/logger.js";
+} from "../../domain/gsusb/gs-usb-bittiming.js";
+import { logDebug } from "../../shared/logger.js";
 
 const CHANNEL = 0;
 

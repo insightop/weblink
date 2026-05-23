@@ -9,8 +9,8 @@ import {
 } from "naive-ui";
 import { computed } from "vue";
 import { RouterView } from "vue-router";
-import AppShell from "@/shell/AppShell.vue";
-import BrowserCapabilityBanner from "@/shell/BrowserCapabilityBanner.vue";
+import AppShell from "./shell/AppShell.vue";
+import BrowserCapabilityBanner from "./shell/BrowserCapabilityBanner.vue";
 
 const osTheme = useOsTheme();
 const theme = computed(() => (osTheme.value === "dark" ? darkTheme : null));

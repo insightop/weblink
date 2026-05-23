@@ -1,5 +1,5 @@
-import type { UsbTransport } from "@/transports/types";
-import { flashWithDapLink, type DapLinkProgressHandler } from "@/integrations/dapjs/dapLinkFlash";
+import type { UsbTransport } from "../types";
+import { flashWithDapLink, type DapLinkProgressHandler } from "../../integrations/dapjs/dapLinkFlash";
 
 export interface DaplinkAdapter {
   connect(): Promise<void>;

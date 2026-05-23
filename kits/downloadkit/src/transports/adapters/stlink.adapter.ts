@@ -1,5 +1,5 @@
-import { ErrorCode, type DownloadError } from "@/core/errors/ErrorCode";
-import { i18n } from "@/i18n";
+import { ErrorCode, type DownloadError } from "../../core/errors/ErrorCode";
+import { i18n } from "../../i18n";
 import { Logger } from "../../../vendor/protocols/webstlink/src/lib/package.js";
 import WebStlink from "../../../vendor/protocols/webstlink/src/webstlink.js";
 

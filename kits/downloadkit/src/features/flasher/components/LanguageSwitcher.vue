@@ -4,7 +4,7 @@ import { LanguageOutline } from "@vicons/ionicons5";
 import { useI18n } from "vue-i18n";
 import { computed, h } from "vue";
 import { storeToRefs } from "pinia";
-import { useUiStore, type LocaleMode } from "@/stores/ui.store";
+import { useUiStore, type LocaleMode } from "../../../stores/ui.store";
 
 const { t } = useI18n();
 const ui = useUiStore();

@@ -1,5 +1,5 @@
-import type { FlashPlan, StageProgress } from "@/core/types/download";
-import type { Transport } from "@/transports/types";
+import type { FlashPlan, StageProgress } from "../core/types/download";
+import type { Transport } from "../transports/types";
 
 export interface ProbeResult {
   chipFamily: "stm32" | "esp32" | "gd32" | "ch32";

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Esp32ImagePlanner } from "@/protocols/esp32/imagePlan/Esp32ImagePlanner";
+import { Esp32ImagePlanner } from "./Esp32ImagePlanner";
 
 describe("Esp32ImagePlanner", () => {
   it("builds single bin plan with default app address", () => {

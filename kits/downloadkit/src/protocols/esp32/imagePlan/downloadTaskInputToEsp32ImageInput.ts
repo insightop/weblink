@@ -1,6 +1,6 @@
-import type { DownloadTaskInput } from "@/core/types/download";
-import { getFirmwareSegmentsFromTask } from "@/core/firmware/normalizeFirmwareToSegments";
-import type { Esp32ImageInput } from "@/protocols/esp32/imagePlan/Esp32ImagePlanner";
+import type { DownloadTaskInput } from "../../../core/types/download";
+import { getFirmwareSegmentsFromTask } from "../../../core/firmware/normalizeFirmwareToSegments";
+import type { Esp32ImageInput } from "./Esp32ImagePlanner";
 
 function requireUint8(data: unknown, label: string): Uint8Array {
   if (data instanceof Uint8Array) return data;

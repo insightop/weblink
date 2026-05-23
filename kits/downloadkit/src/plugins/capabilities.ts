@@ -1,4 +1,4 @@
-import type { BrowserCapabilities } from "@/plugins/types";
+import type { BrowserCapabilities } from "./types";
 
 export function detectBrowserCapabilities(): BrowserCapabilities {
   if (typeof navigator === "undefined") {

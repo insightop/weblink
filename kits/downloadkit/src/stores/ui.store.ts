@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import type { AppLocale } from "@/i18n/locale";
-import { resolveBrowserLocale } from "@/i18n/locale";
+import type { AppLocale } from "../i18n/locale";
+import { resolveBrowserLocale } from "../i18n/locale";
 
 export type LocaleMode = "auto" | AppLocale;
 

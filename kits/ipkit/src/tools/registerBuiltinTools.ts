@@ -1,5 +1,5 @@
-import { globalIpToolRegistry } from "@/tools/registry";
-import type { IpToolDefinition } from "@/tools/types";
+import { globalIpToolRegistry } from "./registry";
+import type { IpToolDefinition } from "./types";
 
 const builtin: IpToolDefinition[] = [
   {

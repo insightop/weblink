@@ -1,6 +1,6 @@
-import type { I2cPort } from "@/domain/i2c/I2cPort";
-import type { I2cEepromProfile } from "@/domain/i2c/eeprom/I2cEepromProfile";
-import { FlashKitError, FlashKitErrorCode } from "@/domain/errors/FlashKitError";
+import type { I2cPort } from "../I2cPort";
+import type { I2cEepromProfile } from "./I2cEepromProfile";
+import { FlashKitError, FlashKitErrorCode } from "../../errors/FlashKitError";
 
 function encodeAddr16(addr: number): Uint8Array {
   return new Uint8Array([(addr >> 8) & 0xff, addr & 0xff]);

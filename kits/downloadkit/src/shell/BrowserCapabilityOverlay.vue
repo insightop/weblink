@@ -4,7 +4,7 @@ import { CopyOutline } from "@vicons/ionicons5";
 import { useI18n } from "vue-i18n";
 import chromeLogoUrl from "@browser-logos/chrome/chrome.svg?url";
 import edgeLogoUrl from "@browser-logos/edge/edge.svg?url";
-import ArcBrandIcon from "@/shell/browser/ArcBrandIcon.vue";
+import ArcBrandIcon from "./browser/ArcBrandIcon.vue";
 import {
   buildExternalBrowserLinks,
   normalizeHttpPageUrl,
@@ -12,7 +12,7 @@ import {
 } from "@weblink/utils/browser";
 import { UI_Z_INDEX } from "@weblink/utils/ui";
 
-import type { BrowserMarketingKey } from "@/plugins/browserSupport";
+import type { BrowserMarketingKey } from "../plugins/browserSupport";
 
 const props = defineProps<{
   platformKind: PlatformKind;

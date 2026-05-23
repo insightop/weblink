@@ -2,9 +2,9 @@ import { onMounted, onUnmounted, ref } from "vue";
 import {
   enumerateDevices,
   onDeviceChange,
-} from "@/infrastructure/media/mediaDevicesFacade";
-import { mapMediaError } from "@/domain/media/errors";
-import { logger } from "@/infrastructure/logging/logger";
+} from "../../../infrastructure/media/mediaDevicesFacade";
+import { mapMediaError } from "../../../domain/media/errors";
+import { logger } from "../../../infrastructure/logging/logger";
 
 export function useEnumerateDevices() {
   const devices = ref<MediaDeviceInfo[]>([]);

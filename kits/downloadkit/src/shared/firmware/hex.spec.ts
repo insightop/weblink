@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseIntelHex } from "@/shared/firmware/hex";
+import { parseIntelHex } from "./hex";
 
 describe("parseIntelHex", () => {
   it("parses contiguous records and returns base address", () => {

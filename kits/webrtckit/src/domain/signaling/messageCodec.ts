@@ -1,5 +1,5 @@
-import type { ClientToServerMessage, ServerToClientMessage } from "@/domain/signaling/messageTypes";
-import { SIGNALING_VERSION } from "@/domain/signaling/messageTypes";
+import type { ClientToServerMessage, ServerToClientMessage } from "./messageTypes";
+import { SIGNALING_VERSION } from "./messageTypes";
 
 export function parseServerMessage(raw: string): ServerToClientMessage | null {
   try {

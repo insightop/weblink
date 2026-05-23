@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { SplitPane, LogConsole } from "@weblink/ui-vue";
-import ConnectionPanel from "@/features/rtcLab/components/ConnectionPanel.vue";
-import PeerGrid from "@/features/rtcLab/components/PeerGrid.vue";
-import MeshStatsPanel from "@/features/rtcLab/components/MeshStatsPanel.vue";
-import { useRtcLab } from "@/features/rtcLab/composables/useRtcLab";
+import ConnectionPanel from "../components/ConnectionPanel.vue";
+import PeerGrid from "../components/PeerGrid.vue";
+import MeshStatsPanel from "../components/MeshStatsPanel.vue";
+import { useRtcLab } from "../composables/useRtcLab";
 
 const rightOpen = ref(true);
 

@@ -1,6 +1,6 @@
 import type { ComputedRef } from "vue";
-import type { DownloadTaskInput } from "@/core/types/download";
-import type { PersistedFirmwareRow } from "@/features/flasher/persistence/schema";
+import type { DownloadTaskInput } from "../../../core/types/download";
+import type { PersistedFirmwareRow } from "../persistence/schema";
 
 /** Public API exposed by `FirmwareInputPanel` for parent coordination. */
 export interface FirmwareInputPanelExpose {

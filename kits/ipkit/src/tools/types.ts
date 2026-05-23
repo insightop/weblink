@@ -1,4 +1,4 @@
-import type { IpKitCapabilities } from "@/infrastructure/browser/detectCapabilities";
+import type { IpKitCapabilities } from "../infrastructure/browser/detectCapabilities";
 
 export interface IpToolDefinition {
   id: string;

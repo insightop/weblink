@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { NSwitch } from "naive-ui";
-import FormFieldRow from "@/features/flasher/components/FormFieldRow.vue";
-import NumberField from "@/features/flasher/components/config-fields/NumberField.vue";
-import PresetNumberField from "@/features/flasher/components/config-fields/PresetNumberField.vue";
-import SelectField from "@/features/flasher/components/config-fields/SelectField.vue";
-import type { PluginConfigObject, PluginConfigSchema } from "@/plugins/config/pluginConfig.types";
+import FormFieldRow from "./FormFieldRow.vue";
+import NumberField from "./config-fields/NumberField.vue";
+import PresetNumberField from "./config-fields/PresetNumberField.vue";
+import SelectField from "./config-fields/SelectField.vue";
+import type { PluginConfigObject, PluginConfigSchema } from "../../../plugins/config/pluginConfig.types";
 
 defineProps<{
   schema: PluginConfigSchema | null;

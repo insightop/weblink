@@ -1,4 +1,4 @@
-import { GD32_DFU_PROFILES, toUsbFilters } from "@/protocols/stm32/dfu/adapters/dfuDeviceProfiles";
+import { GD32_DFU_PROFILES, toUsbFilters } from "../../../stm32/dfu/adapters/dfuDeviceProfiles";
 
 export const GD32_DFU_USB_FILTERS: USBDeviceFilter[] = toUsbFilters(GD32_DFU_PROFILES);
 

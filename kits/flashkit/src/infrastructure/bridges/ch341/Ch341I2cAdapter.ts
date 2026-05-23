@@ -1,6 +1,6 @@
-import type { I2cPort } from "@/domain/i2c/I2cPort";
-import { WebUsbSession } from "@/infrastructure/usb/WebUsbSession";
-import { buildAt24PageWriteStream, buildAt24RandomReadStream } from "@/infrastructure/bridges/ch341/ch341I2cStream";
+import type { I2cPort } from "../../../domain/i2c/I2cPort";
+import { WebUsbSession } from "../../usb/WebUsbSession";
+import { buildAt24PageWriteStream, buildAt24RandomReadStream } from "./ch341I2cStream";
 
 /**
  * CH341A I²C：使用 Vendor Bulk 上的 I²C 流命令（`0xAA` 头）。

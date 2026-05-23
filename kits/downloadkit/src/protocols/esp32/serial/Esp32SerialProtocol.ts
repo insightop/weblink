@@ -1,12 +1,12 @@
-import type { DownloadTaskInput, FlashPlan, StageProgress } from "@/core/types/download";
-import { ErrorCode, type DownloadError, isDownloadError } from "@/core/errors/ErrorCode";
-import { flasherLogger } from "@/features/flasher/services/flasherLogger";
-import { getFirmwareSegmentsFromTask } from "@/core/firmware/normalizeFirmwareToSegments";
-import { Esp32ImagePlanner } from "@/protocols/esp32/imagePlan/Esp32ImagePlanner";
-import type { FlasherProtocol, ProbeResult } from "@/protocols/types";
-import { EsptoolJsAdapter } from "@/protocols/esp32/adapters/EsptoolJsAdapter";
-import type { SerialTransport } from "@/transports/types";
-import { i18n } from "@/i18n";
+import type { DownloadTaskInput, FlashPlan, StageProgress } from "../../../core/types/download";
+import { ErrorCode, type DownloadError, isDownloadError } from "../../../core/errors/ErrorCode";
+import { flasherLogger } from "../../../features/flasher/services/flasherLogger";
+import { getFirmwareSegmentsFromTask } from "../../../core/firmware/normalizeFirmwareToSegments";
+import { Esp32ImagePlanner } from "../imagePlan/Esp32ImagePlanner";
+import type { FlasherProtocol, ProbeResult } from "../../types";
+import { EsptoolJsAdapter } from "../adapters/EsptoolJsAdapter";
+import type { SerialTransport } from "../../../transports/types";
+import { i18n } from "../../../i18n";
 
 export interface Esp32SerialProtocolOptions {
   baudRate: number;

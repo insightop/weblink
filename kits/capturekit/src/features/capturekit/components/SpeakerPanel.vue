@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import DeviceCard from "@/features/capturekit/components/DeviceCard.vue";
+import DeviceCard from "./DeviceCard.vue";
 import {
   playTestTone,
   supportsSetSinkId,
   useAudioOutputDevices,
-} from "@/features/capturekit/composables/useAudioOutput";
-import { formatDeviceLabel } from "@/domain/media/deviceLabels";
-import { mapMediaError } from "@/domain/media/errors";
+} from "../composables/useAudioOutput";
+import { formatDeviceLabel } from "../../../domain/media/deviceLabels";
+import { mapMediaError } from "../../../domain/media/errors";
 
 const props = defineProps<{
   devices: MediaDeviceInfo[];

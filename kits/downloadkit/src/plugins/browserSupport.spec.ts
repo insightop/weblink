@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evaluateBrowserSupport, inferBrowserMarketingKey } from "@/plugins/browserSupport";
+import { evaluateBrowserSupport, inferBrowserMarketingKey } from "./browserSupport";
 
 describe("evaluateBrowserSupport", () => {
   it("needs overlay when no hardware APIs", () => {

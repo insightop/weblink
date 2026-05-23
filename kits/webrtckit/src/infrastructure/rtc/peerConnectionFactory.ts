@@ -1,4 +1,4 @@
-import type { RTCIceServer } from "@/domain/rtc/iceTypes";
+import type { RTCIceServer } from "../../domain/rtc/iceTypes";
 
 export function createPeerConnection(iceServers: RTCIceServer[]): RTCPeerConnection {
   return new RTCPeerConnection({

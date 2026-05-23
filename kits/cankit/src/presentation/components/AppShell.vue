@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCanSession } from "@/application/composables/useCanSession.js";
+import { useCanSession } from "../../application/composables/useCanSession.js";
 import ConnectionToolbar from "./ConnectionToolbar.vue";
 import CanTxPanel from "./CanTxPanel.vue";
 import CanRxTable from "./CanRxTable.vue";
