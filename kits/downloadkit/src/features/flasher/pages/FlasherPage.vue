@@ -22,6 +22,7 @@ import {
   startFlash,
 } from "../services/flasherFacade";
 import { flasherLogger } from "../services/flasherLogger";
+import { useUrlParams } from "../../../url-params/useUrlParams";
 import { createStlinkTargetSession, tryAutoPickTarget } from "../services/stlinkTargetPreference";
 import type { StlinkTargetVariant } from "../../../transports/adapters/stlink.adapter";
 import { i18n } from "../../../i18n";
@@ -308,6 +309,25 @@ onMounted(async () => {
   } finally {
     store.setFlasherRuntime(getFlasherRuntimeInfo());
     isHydratingPersistence.value = false;
+
+    // URL 参数覆盖（仅在 IndexedDB 恢复完成后）
+    if (firmwareInput.value) {
+      const urlCtrl = useUrlParams();
+      if (urlCtrl.hasParams.value) {
+        try {
+          const { autoStart } = await urlCtrl.apply({
+            store,
+            firmwareInput: firmwareInput.value,
+          });
+          if (autoStart) {
+            await nextTick();
+            await download();
+          }
+        } catch (error) {
+          flasherLogger.warning(error instanceof Error ? error.message : String(error));
+        }
+      }
+    }
   }
 });
 </script>
