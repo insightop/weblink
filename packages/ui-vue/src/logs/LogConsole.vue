@@ -68,6 +68,18 @@ const formatContext = (ctx: unknown): string => {
   }
 };
 
+const expandedEntries = ref<Set<string>>(new Set());
+
+function toggleExpand(id: string): void {
+  const next = new Set(expandedEntries.value);
+  if (next.has(id)) {
+    next.delete(id);
+  } else {
+    next.add(id);
+  }
+  expandedEntries.value = next;
+}
+
 const displayedLogs = computed(() => [...props.logs].reverse());
 
 function scrollToTop(): void {
@@ -137,10 +149,20 @@ onMounted(() => {
           <span v-if="entry.scope" class="scope">{{ entry.scope }}</span>
         </div>
         <div class="msg-col">
-          <div class="msg">
-            {{ entry.message }}
+          <div class="msg-row">
+            <div class="msg">
+              {{ entry.message }}
+            </div>
+            <button
+              v-if="entry.data !== undefined"
+              class="toggle-btn"
+              @click="toggleExpand(entry.id)"
+              :title="expandedEntries.has(entry.id) ? '收起详情' : '展开详情'"
+            >
+              <span class="arrow">{{ expandedEntries.has(entry.id) ? '▼' : '▶' }}</span>
+            </button>
           </div>
-          <div v-if="entry.data !== undefined" class="ctx">
+          <div v-if="entry.data !== undefined && expandedEntries.has(entry.id)" class="ctx">
             <pre class="ctx-body">{{ formatContext(entry.data) }}</pre>
           </div>
         </div>
@@ -283,10 +305,41 @@ onMounted(() => {
   display: grid;
   gap: 4px;
 }
+.msg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
 .msg {
+  flex: 1;
   color: var(--log-text-primary);
   white-space: pre-wrap;
   word-break: break-word;
+}
+.toggle-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-top: 1px;
+  transition: background 0.15s, color 0.15s;
+}
+.toggle-btn:hover {
+  background: rgba(128, 128, 128, 0.15);
+  color: var(--log-text-primary);
+}
+.arrow {
+  font-size: 10px;
+  line-height: 1;
+  transition: transform 0.15s;
 }
 .ctx-body {
   margin: 0;

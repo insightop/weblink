@@ -74,7 +74,7 @@
   },
   "logMessages": {
     "stage": "阶段：{stage}",
-    "progress": "进度 {percent}%（已写入 {written} / 共 {total}，{speed}，剩余时间 {eta}）",
+    "progress": "进度{percent}%（{written} / {total}，{speed}）",
     "esp32ProbeOk": "ESP32 探测成功：{chipName}，波特率 {baudRate}",
     "starting": "开始下载",
     "usingPlugin": "使用插件：{name}",

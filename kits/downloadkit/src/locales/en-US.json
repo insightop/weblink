@@ -74,7 +74,7 @@
   },
   "logMessages": {
     "stage": "Stage: {stage}",
-    "progress": "Progress {percent}% ({written} / {total}, {speed}, ETA {eta})",
+    "progress": "Progress {percent}% ({written} / {total}, {speed})",
     "esp32ProbeOk": "ESP32 probe OK: {chipName}, baud {baudRate}",
     "starting": "Starting download",
     "usingPlugin": "Using plugin: {name}",

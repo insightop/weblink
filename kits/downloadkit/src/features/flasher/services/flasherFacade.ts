@@ -15,14 +15,6 @@ function t(key: string, values?: Record<string, unknown>): string {
   return String(i18n.global.t(key, (values ?? {}) as Record<string, unknown>));
 }
 
-function formatEtaSeconds(eta: number | null): string {
-  if (eta === null || eta < 0) return "—";
-  if (eta < 60) return `${eta}s`;
-  const m = Math.floor(eta / 60);
-  const s = eta % 60;
-  return `${m}m ${s}s`;
-}
-
 interface PreparedTransportSession {
   pluginId: string;
   configKey: string;
@@ -316,7 +308,6 @@ export async function startFlash(input: unknown, deps: PluginRuntimeDeps = {}): 
           written: formatBytes(progress.bytesWritten),
           total: formatBytes(progress.bytesTotal),
           speed: formatSpeed(bytesPerSecond),
-          eta: formatEtaSeconds(etaSeconds),
         });
         flasherLogger.debug(progressLine, {
           plugin: plugin.displayName,

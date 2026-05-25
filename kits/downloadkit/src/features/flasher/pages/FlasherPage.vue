@@ -435,7 +435,7 @@ onMounted(async () => {
   position: relative;
 }
 .split-layout {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: row;
 }
@@ -445,6 +445,8 @@ onMounted(async () => {
   gap: 16px;
   align-content: start;
   max-width: 1200px;
+  height: 100%;
+  overflow-y: auto;
 }
 .page-head {
   display: flex;
