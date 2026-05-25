@@ -285,50 +285,52 @@ const onTargetCancel = (): void => {
 };
 
 onMounted(async () => {
-  try {
-    const persisted = await flasherPersistenceRepository.loadLastSession();
-    if (persisted) {
-      store.setChipFamily(persisted.chipFamily);
-      store.setFlasherType(persisted.flasherType);
-      for (const [pluginId, config] of Object.entries(persisted.pluginConfigs ?? {})) {
-        store.setPluginConfig(pluginId, config);
-      }
-      if ("downloadStats" in persisted) {
-        store.setDownloadStats({
-          successCount: persisted.downloadStats?.successCount ?? 0,
-          failedCount: persisted.downloadStats?.failedCount ?? 0,
-        });
-      }
-      await nextTick();
-      if (persisted.firmwareRows?.length) {
-        firmwareInput.value?.restoreFirmwareRows(persisted.firmwareRows);
-      }
-    }
-  } catch (error) {
-    flasherLogger.warning(error instanceof Error ? error.message : String(error));
-  } finally {
-    store.setFlasherRuntime(getFlasherRuntimeInfo());
-    isHydratingPersistence.value = false;
+  const urlCtrl = useUrlParams();
+  const hasUrlParams = urlCtrl.hasParams.value;
 
-    // URL 参数覆盖（仅在 IndexedDB 恢复完成后）
-    if (firmwareInput.value) {
-      const urlCtrl = useUrlParams();
-      if (urlCtrl.hasParams.value) {
-        try {
-          const { autoStart } = await urlCtrl.apply({
-            store,
-            firmwareInput: firmwareInput.value,
+  // URL 参数优先：跳过本地缓存，以 URL 参数为准
+  if (!hasUrlParams) {
+    try {
+      const persisted = await flasherPersistenceRepository.loadLastSession();
+      if (persisted) {
+        store.setChipFamily(persisted.chipFamily);
+        store.setFlasherType(persisted.flasherType);
+        for (const [pluginId, config] of Object.entries(persisted.pluginConfigs ?? {})) {
+          store.setPluginConfig(pluginId, config);
+        }
+        if ("downloadStats" in persisted) {
+          store.setDownloadStats({
+            successCount: persisted.downloadStats?.successCount ?? 0,
+            failedCount: persisted.downloadStats?.failedCount ?? 0,
           });
-          if (autoStart) {
-            await nextTick();
-            await download();
-          }
-        } catch (error) {
-          const msg = error instanceof Error ? error.message : String(error);
-          console.error("[url-params]", msg);
-          flasherLogger.warning(msg);
+        }
+        await nextTick();
+        if (persisted.firmwareRows?.length) {
+          firmwareInput.value?.restoreFirmwareRows(persisted.firmwareRows);
         }
       }
+    } catch (error) {
+      flasherLogger.warning(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  store.setFlasherRuntime(getFlasherRuntimeInfo());
+  isHydratingPersistence.value = false;
+
+  if (hasUrlParams && firmwareInput.value) {
+    try {
+      const { autoStart } = await urlCtrl.apply({
+        store,
+        firmwareInput: firmwareInput.value,
+      });
+      if (autoStart) {
+        await nextTick();
+        await download();
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error("[url-params]", msg);
+      flasherLogger.warning(msg);
     }
   }
 });
