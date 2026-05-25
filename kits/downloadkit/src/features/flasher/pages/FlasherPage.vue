@@ -13,6 +13,7 @@ import LogSidebar from "../components/LogSidebar.vue";
 import TargetVariantDialog from "../components/TargetVariantDialog.vue";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import { useFlasherStore } from "../stores/flasher.store";
+import { useUiStore } from "../stores/ui.store";
 import {
   getCurrentDeviceDetails,
   getCurrentPluginMeta,
@@ -35,7 +36,17 @@ import { registerBuiltinPlugins } from "../../../plugins/builtin/registerBuiltin
 
 registerBuiltinPlugins();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+const uiStore = useUiStore();
+
+watch(
+  () => uiStore.effectiveLocale,
+  (v) => {
+    locale.value = v;
+  },
+  { immediate: true },
+);
+
 const store = useFlasherStore();
 const firmwareInput = ref<FirmwareInputPanelExpose | null>(null);
 const resolveTargetPicker = ref<((type: string | null) => void) | null>(null);
