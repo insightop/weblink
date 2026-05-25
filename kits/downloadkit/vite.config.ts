@@ -13,6 +13,7 @@ function buildTimeTag(): string {
 }
 
 export default defineConfig({
+  base: "/downloadkit/",
   plugins: [vue()],
   define: {
     __BUILD_TIME__: JSON.stringify(buildTimeTag()),
