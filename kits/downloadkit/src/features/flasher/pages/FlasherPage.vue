@@ -23,6 +23,7 @@ import {
 } from "../services/flasherFacade";
 import { flasherLogger } from "../services/flasherLogger";
 import { useUrlParams } from "../../../url-params/useUrlParams";
+import { useRoute } from "vue-router";
 import { createStlinkTargetSession, tryAutoPickTarget } from "../services/stlinkTargetPreference";
 import type { StlinkTargetVariant } from "../../../transports/adapters/stlink.adapter";
 import { i18n } from "../../../i18n";
@@ -287,6 +288,7 @@ const onTargetCancel = (): void => {
 onMounted(async () => {
   const urlCtrl = useUrlParams();
   const hasUrlParams = urlCtrl.hasParams.value;
+  console.log("[diag] hasUrlParams:", hasUrlParams, "query:", JSON.stringify(useRoute().query));
 
   // URL 参数优先：跳过本地缓存，以 URL 参数为准
   if (!hasUrlParams) {

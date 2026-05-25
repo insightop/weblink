@@ -10,6 +10,9 @@ import "splitpanes/dist/splitpanes.css";
 
 registerBuiltinPlugins();
 
+declare const __BUILD_TIME__: string;
+document.title = `downloadkit(${__BUILD_TIME__})`;
+
 const app = createApp(App);
 app.use(createPinia());
 app.use(i18n);
