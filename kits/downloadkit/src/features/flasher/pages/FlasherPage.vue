@@ -13,7 +13,7 @@ import LogSidebar from "../components/LogSidebar.vue";
 import TargetVariantDialog from "../components/TargetVariantDialog.vue";
 import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 import { useFlasherStore } from "../stores/flasher.store";
-import { useUiStore } from "../stores/ui.store";
+import { useUiStore } from "../../../stores/ui.store";
 import {
   getCurrentDeviceDetails,
   getCurrentPluginMeta,
