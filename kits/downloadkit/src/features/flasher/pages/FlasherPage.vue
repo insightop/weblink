@@ -324,7 +324,9 @@ onMounted(async () => {
             await download();
           }
         } catch (error) {
-          flasherLogger.warning(error instanceof Error ? error.message : String(error));
+          const msg = error instanceof Error ? error.message : String(error);
+          console.error("[url-params]", msg);
+          flasherLogger.warning(msg);
         }
       }
     }
