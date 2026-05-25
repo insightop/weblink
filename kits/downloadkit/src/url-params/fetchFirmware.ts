@@ -4,10 +4,27 @@ export interface FetchedFirmware {
   size: number;
 }
 
-function deriveFileName(url: string): string {
+function deriveFileName(url: string, headers?: Headers): string {
+  // 1. Try Content-Disposition header
+  if (headers) {
+    const disposition = headers.get("content-disposition");
+    if (disposition) {
+      const match = disposition.match(/filename\*?=(?:UTF-8'')?["']?([^"'\s;]+)["']?/i);
+      if (match?.[1]) return decodeURIComponent(match[1]);
+    }
+  }
+
+  // 2. Try fileName query parameter
   try {
-    const path = new URL(url).pathname;
-    const segments = path.split("/").filter(Boolean);
+    const fileNameParam = new URL(url).searchParams.get("fileName");
+    if (fileNameParam) return fileNameParam;
+  } catch {
+    // ignore
+  }
+
+  // 3. Fall back to URL pathname
+  try {
+    const segments = new URL(url).pathname.split("/").filter(Boolean);
     return segments.length > 0 ? segments[segments.length - 1] : "firmware.bin";
   } catch {
     return "firmware.bin";
@@ -27,7 +44,7 @@ export async function fetchFirmware(
 
   const blob = await response.blob();
   return {
-    name: deriveFileName(url),
+    name: deriveFileName(url, response.headers),
     blob,
     size: blob.size,
   };
