@@ -218,11 +218,9 @@ watch(
 const download = async (): Promise<void> => {
   try {
     if (!store.canStartDownload) {
-      flasherLogger.warning(t("flasherPage.downloadBlocked"));
       return;
     }
     if (!store.flasherCanFlash) {
-      flasherLogger.warning(t("flasherPage.flashNotImplemented"));
       return;
     }
     const input = await firmwareInput.value?.getInput();
