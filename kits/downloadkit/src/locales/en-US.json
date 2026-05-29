@@ -31,7 +31,10 @@
     "deviceNotSelected": "Device: not selected",
     "deviceSelecting": "Device: selecting...",
     "deviceNotConnected": "Device: not connected",
-    "deviceFailed": "Device: connect failed"
+    "deviceFailed": "Device: connect failed",
+    "devicePending": "Please authorize {type} device",
+    "deviceDisconnected": "Device disconnected, waiting for reconnection...",
+    "deviceReconnected": "Device reconnected"
   },
   "firmware": {
     "input": "Input",

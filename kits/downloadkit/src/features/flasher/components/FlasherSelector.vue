@@ -6,6 +6,7 @@ import FunctionZone from "./FunctionZone.vue";
 import PluginConfigPanel from "./PluginConfigPanel.vue";
 import type { FlasherOption } from "../services/flasherFacade";
 import type { PluginConfigObject, PluginConfigSchema } from "../../../plugins/config/pluginConfig.types";
+import type { DeviceStatus } from "../stores/flasher.store";
 
 const { t } = useI18n();
 
@@ -13,6 +14,7 @@ const props = defineProps<{
   value: "serial" | "usb-dfu" | "st-link" | "dap-link" | null;
   options: FlasherOption[];
   subtitle: string;
+  status: DeviceStatus;
   configSchema: PluginConfigSchema | null;
   config: PluginConfigObject;
 }>();
@@ -21,6 +23,13 @@ const emit = defineEmits<{
   reenter: [];
   "update:field": [key: string, value: string | number | boolean];
 }>();
+
+function buttonType(option: FlasherOption): "primary" | "default" | "warning" {
+  if (props.value !== option.flasherType) return "default";
+  if (props.status === "pending" || props.status === "disconnected") return "warning";
+  if (props.status === "ready") return "primary";
+  return "default";
+}
 
 function onClickFlasher(value: "serial" | "usb-dfu" | "st-link" | "dap-link"): void {
   if (props.value === value) {
@@ -43,7 +52,7 @@ function onClickFlasher(value: "serial" | "usb-dfu" | "st-link" | "dap-link"): v
         v-for="option in props.options"
         :key="option.pluginId"
         class="btn"
-        :type="props.value === option.flasherType ? 'primary' : 'default'"
+        :type="buttonType(option)"
         :disabled="!option.isSupported"
         @click="onClickFlasher(option.flasherType)"
       >

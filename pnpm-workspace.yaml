@@ -2,3 +2,17 @@ packages:
   - "apps/*"
   - "kits/*"
   - "packages/*"
+allowBuilds:
+  '@swc/core': true
+  electron: true
+  esbuild: true
+  sharp: true
+  vue-demi: true
+  workerd: true
+onlyBuiltDependencies:
+  - "@swc/core"
+  - electron
+  - esbuild
+  - sharp
+  - vue-demi
+  - workerd

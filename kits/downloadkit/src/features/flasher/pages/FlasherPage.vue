@@ -54,6 +54,11 @@ const flasherOptions = computed(() => getFlasherOptionsForTarget(store.chipFamil
 const logPanelExpanded = ref(true);
 const rightPanePercent = ref<number>(28);
 const isHydratingPersistence = ref(true);
+
+/** URL 参数中指定了 target 时锁定选择器 */
+const urlCtrl = useUrlParams();
+const targetLocked = computed(() => Boolean(urlCtrl.params.value.target));
+
 let persistDebounceTimer: ReturnType<typeof window.setTimeout> | null = null;
 const onPaneResized = (event: { size: number }[]): void => {
   if (!logPanelExpanded.value) return;
@@ -79,6 +84,8 @@ const currentPluginConfig = computed<PluginConfigObject>(() => {
 });
 const flasherSubtitle = computed(() => {
   if (!store.flasherType) return t("flasherPage.deviceNotSelected");
+  if (store.flasherStatus === "pending") return t("flasherPage.devicePending", { type: store.flasherType });
+  if (store.flasherStatus === "disconnected") return t("flasherPage.deviceDisconnected");
   if (store.flasherStatus !== "ready") {
     if (store.flasherStatus === "selecting") return t("flasherPage.deviceSelecting");
     if (store.flasherError) return `${t("flasherPage.deviceFailed")}: ${store.flasherError}`;
@@ -147,7 +154,7 @@ async function persistSnapshot(): Promise<void> {
     };
     await flasherPersistenceRepository.saveLastSession(snapshot);
   } catch (error) {
-    // 固件 Blob 持久化失败时降级为“仅配置持久化”，保证刷新后至少能恢复 target/flasher/config。
+    // 固件 Blob 持久化失败时降级为"仅配置持久化"，保证刷新后至少能恢复 target/flasher/config。
     try {
       const fallbackSnapshot: PersistedFlasherSession = {
         version: 2,
@@ -295,7 +302,6 @@ const onTargetCancel = (): void => {
 };
 
 onMounted(async () => {
-  const urlCtrl = useUrlParams();
   const hasUrlParams = urlCtrl.hasParams.value;
   console.log("[diag] hasUrlParams:", hasUrlParams, "query:", JSON.stringify(useRoute().query));
 
@@ -378,12 +384,14 @@ onMounted(async () => {
           </div>
           <TargetSelector
             :value="store.chipFamily"
+            :disabled="targetLocked"
             @update:value="onTargetSelected"
           />
           <FlasherSelector
             :value="store.flasherType"
             :options="flasherOptions"
             :subtitle="flasherSubtitle"
+            :status="store.flasherStatus"
             :config-schema="currentPluginConfigSchema"
             :config="currentPluginConfig"
             @update:value="onFlasherSelected"

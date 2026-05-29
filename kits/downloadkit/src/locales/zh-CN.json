@@ -31,7 +31,10 @@
     "deviceNotSelected": "设备：未选择",
     "deviceSelecting": "设备：选择中...",
     "deviceNotConnected": "设备：未连接",
-    "deviceFailed": "设备：连接失败"
+    "deviceFailed": "设备：连接失败",
+    "devicePending": "请授权 {type} 设备",
+    "deviceDisconnected": "设备已断开，等待重连...",
+    "deviceReconnected": "设备已重连"
   },
   "firmware": {
     "input": "输入模式",

@@ -9,7 +9,7 @@ import type { ChipFamily } from "../../../plugins/types";
 
 const { t } = useI18n();
 
-const props = defineProps<{ value: ChipFamily | null }>();
+const props = defineProps<{ value: ChipFamily | null; disabled?: boolean }>();
 const emit = defineEmits<{ "update:value": [value: ChipFamily] }>();
 
 const options = TARGET_CATALOG.map((item) => ({ id: item.id, label: item.label }));
@@ -17,7 +17,7 @@ const options = TARGET_CATALOG.map((item) => ({ id: item.id, label: item.label }
 const subtitle = computed(() => {
   const current = props.value ? TARGET_CATALOG.find((item) => item.id === props.value) : null;
   if (current) return `${t("target.supportedSeriesPrefix")}${current.supportedSeries.join(" / ")}`;
-  // 未选择目标时，不展示任何“支持系列”，避免用户误解为全部都支持
+  // 未选择目标时，不展示任何"支持系列"，避免用户误解为全部都支持
   return "";
 });
 </script>
@@ -38,6 +38,7 @@ const subtitle = computed(() => {
         :key="option.id"
         class="btn"
         :type="props.value === option.id ? 'primary' : 'default'"
+        :disabled="props.disabled"
         @click="emit('update:value', option.id)"
       >
         {{ option.label }}
@@ -60,6 +61,11 @@ const subtitle = computed(() => {
 .btn {
   text-transform: uppercase;
   font-weight: 600;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
 
