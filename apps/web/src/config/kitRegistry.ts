@@ -111,6 +111,14 @@ export const KIT_REGISTRY: KitConfig[] = [
     stack: "vue",
     prodUrl: "",
   },
+  {
+    id: "otakit",
+    title: "OTA Kit",
+    description: "OpenBLT 协议调试",
+    stack: "vue",
+    prodUrl: "",
+    localPort: 5184,
+  },
 ]
 
 export function findKit(id: string): KitConfig | undefined {

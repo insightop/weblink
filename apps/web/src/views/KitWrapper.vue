@@ -22,6 +22,7 @@ const kitLoaders: Record<string, () => Promise<{ App: any }>> = {
   ipkit: () => import("@weblink/ipkit"),
   webrtckit: () => import("@weblink/webrtckit"),
   wirelesskit: () => import("@weblink/wirelesskit"),
+  otakit: () => import("@weblink/otakit"),
 };
 
 // iframe 兜底：JS 和 Svelte kit
