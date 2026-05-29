@@ -34,6 +34,7 @@
     "deviceFailed": "设备：连接失败",
     "devicePending": "请授权 {type} 设备",
     "deviceDisconnected": "设备已断开，等待重连...",
+    "confirmReconnect": "检测到设备 {device} 已插入，是否重连？",
     "deviceReconnected": "设备已重连"
   },
   "firmware": {

@@ -5,6 +5,8 @@ import { createSerialReconnectManager, type SerialReconnectManager } from "./ser
 export type StatusChangeHandler = (status: ConnectionStatus) => void;
 export type DisconnectHandler = () => void;
 export type ReconnectHandler = () => Promise<void>;
+/** 设备重连确认：VID/PID 匹配但无法确认是同一设备时，询问用户是否接受重连。 */
+export type ConfirmReconnectHandler = (portInfo: string) => Promise<boolean>;
 
 /**
  * USB 设备会话管理器。
@@ -28,6 +30,7 @@ export class SessionManager {
   private _onStatusChange: StatusChangeHandler | null = null;
   private _onDisconnect: DisconnectHandler | null = null;
   private _onReconnect: ReconnectHandler | null = null;
+  private _onConfirmReconnect: ConfirmReconnectHandler | null = null;
 
   /** 串口重连管理器（当传输层支持时） */
   private _reconnectManager: SerialReconnectManager | null = null;
@@ -50,6 +53,11 @@ export class SessionManager {
   /** 注册自动重连回调 */
   onReconnect(handler: ReconnectHandler): void {
     this._onReconnect = handler;
+  }
+
+  /** 注册重连确认回调（VID/PID 匹配时询问用户）。 */
+  onConfirmReconnect(handler: ConfirmReconnectHandler): void {
+    this._onConfirmReconnect = handler;
   }
 
   /**
@@ -98,6 +106,7 @@ export class SessionManager {
     this._onStatusChange = null;
     this._onDisconnect = null;
     this._onReconnect = null;
+    this._onConfirmReconnect = null;
     this._status = "idle";
   }
 
@@ -141,6 +150,16 @@ export class SessionManager {
             this.setState("failed");
           });
       },
+      confirmReconnect: this._onConfirmReconnect
+        ? async (port: SerialPort) => {
+            const info = port.getInfo?.();
+            const label =
+              info && typeof info.usbVendorId === "number"
+                ? `VID:${info.usbVendorId.toString(16).toUpperCase()} PID:${info.usbProductId?.toString(16).toUpperCase()}`
+                : "unknown";
+            return this._onConfirmReconnect!(label);
+          }
+        : undefined,
     });
 
     this._reconnectManager.rememberPort(reconnectable.port);

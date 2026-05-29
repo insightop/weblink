@@ -62,7 +62,9 @@ function identitiesMatch(a: SerialPortIdentity, b: SerialPortIdentity): boolean 
 export type SerialReconnectManagerOptions = {
   enabled: () => boolean;
   onDisconnect: () => void;
-  onReconnect: (port: SerialPort) => void;
+  onReconnect: (port: SerialPort, needsConfirm: boolean) => void;
+  /** 仅 VID/PID 匹配（非同一对象引用）时，询问用户是否重连。返回 true 表示同意。 */
+  confirmReconnect?: (port: SerialPort) => Promise<boolean>;
   /** getPorts() 轮询间隔；connect 事件不可靠时的兜底（毫秒）。 */
   pollIntervalMs?: number;
 };
@@ -88,12 +90,15 @@ export function createSerialReconnectManager(
   let disconnected = false;
   let pollTimer: ReturnType<typeof setInterval> | null = null;
   const pollIntervalMs = opts.pollIntervalMs ?? 1000;
+  /** 本轮重连已成功，防止轮询重复触发。断开时重置。 */
+  let reconnected = false;
 
   // ----- 共享的断开逻辑 -----
 
   const handleDisconnect = () => {
     if (!started || disconnected) return;
     disconnected = true;
+    reconnected = false;
     rememberedPort = null;
     opts.onDisconnect();
   };
@@ -126,11 +131,23 @@ export function createSerialReconnectManager(
     if (reconnecting) return;
     reconnecting = true;
     try {
+      // 断开后 rememberedPort 已清空，插回的新端口永远是新对象引用。
+      // 仅 VID/PID 匹配无法区分"同一设备插回"和"同型号不同设备"，
+      // 因此始终传 needsConfirm=true，由上层决定是否需要用户确认。
+      const needsConfirm = true;
+
+      if (opts.confirmReconnect) {
+        const confirmed = await opts.confirmReconnect(port);
+        if (!confirmed) return;
+      }
+
       disconnected = false;
+      reconnected = true;
       rememberedPort = port;
-      // 为新端口注册断开直接回调
+      rememberedIdentity = getPortIdentity(port);
       setupPortDisconnect(port);
-      opts.onReconnect(port);
+      opts.onReconnect(port, needsConfirm);
+      rememberedPort = null;
     } finally {
       reconnecting = false;
     }
@@ -181,7 +198,7 @@ export function createSerialReconnectManager(
   // ----- 轮询兜底 -----
 
   async function scanGrantedPortsForReconnect() {
-    if (!started || !opts.enabled() || reconnecting || !rememberedIdentity) return;
+    if (!started || !opts.enabled() || reconnecting || reconnected || !rememberedIdentity) return;
     const serial = getWebSerial();
     if (!serial?.getPorts) return;
     try {

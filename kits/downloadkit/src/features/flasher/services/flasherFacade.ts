@@ -44,6 +44,12 @@ function getSessionManager(): SessionManager {
       flasherLogger.warning(t("flasherPage.deviceDisconnected"));
       cancelDownload();
     });
+    sessionManager.onConfirmReconnect((portInfo: string) => {
+      // VID/PID 匹配但无法确认是同一设备时，询问用户
+      return Promise.resolve(
+        window.confirm(t("flasherPage.confirmReconnect", { device: portInfo })),
+      );
+    });
   }
   return sessionManager;
 }

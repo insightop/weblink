@@ -34,6 +34,7 @@
     "deviceFailed": "Device: connect failed",
     "devicePending": "Please authorize {type} device",
     "deviceDisconnected": "Device disconnected, waiting for reconnection...",
+    "confirmReconnect": "Device {device} detected. Reconnect?",
     "deviceReconnected": "Device reconnected"
   },
   "firmware": {

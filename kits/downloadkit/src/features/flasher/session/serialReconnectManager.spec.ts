@@ -199,8 +199,8 @@ describe("createSerialReconnectManager", () => {
       Object.defineProperty(ev, "port", { value: incoming, configurable: true });
       serialTarget.dispatchEvent(ev);
 
-      // onReconnect 应该收到新的端口对象
-      await vi.waitFor(() => expect(onReconnect).toHaveBeenCalledWith(incoming), { timeout: 500 });
+      // onReconnect 应该收到新的端口对象 + needsConfirm 标志
+      await vi.waitFor(() => expect(onReconnect).toHaveBeenCalledWith(incoming, true), { timeout: 500 });
       mgr.stop();
     });
 
@@ -261,7 +261,7 @@ describe("createSerialReconnectManager", () => {
       serialTarget.getPorts.mockResolvedValue([granted]);
       mgr.start();
 
-      await vi.waitFor(() => expect(onReconnect).toHaveBeenCalledWith(granted), { timeout: 2000 });
+      await vi.waitFor(() => expect(onReconnect).toHaveBeenCalledWith(granted, true), { timeout: 2000 });
       mgr.stop();
     });
   });
@@ -302,7 +302,7 @@ describe("createSerialReconnectManager", () => {
       serialTarget.getPorts.mockResolvedValue([grantedPort]);
       mgr.start();
 
-      await vi.waitFor(() => expect(onReconnect).toHaveBeenCalledWith(grantedPort), { timeout: 2000 });
+      await vi.waitFor(() => expect(onReconnect).toHaveBeenCalledWith(grantedPort, true), { timeout: 2000 });
       mgr.stop();
     });
   });
