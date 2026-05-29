@@ -97,6 +97,9 @@ importers:
       '@weblink/ipkit':
         specifier: workspace:*
         version: link:../../kits/ipkit
+      '@weblink/otakit':
+        specifier: workspace:*
+        version: link:../../kits/otakit
       '@weblink/serialkit':
         specifier: workspace:*
         version: link:../../kits/serialkit
