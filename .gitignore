@@ -48,3 +48,4 @@ coverage
 # Lock files (only root pnpm-lock.yaml should exist)
 **/package-lock.json
 !pnpm-lock.yaml
+.pnpm-store/

@@ -5,6 +5,13 @@ import { i18n } from "../../i18n";
 import type { FlasherProtocol } from "../../protocols/types";
 import type { Transport } from "../../transports/types";
 
+/** 用于外部中断下载的信号（cancel / disconnect 共用）。 */
+export const CANCEL_SIGNAL: DownloadError = {
+  code: ErrorCode.UserCancelled,
+  userMessage: "用户取消",
+  debugMessage: "Download session was cancelled externally",
+};
+
 export interface DownloadSessionDeps {
   transport: Transport;
   protocol: FlasherProtocol;
@@ -14,6 +21,8 @@ export interface DownloadSessionDeps {
 
 export class DownloadSession {
   private stage: DownloadStage = "idle";
+  /** cancel() 已被调用（从 UI 线程），等 run() 的 catch 检测后抛出 UserCancelled。 */
+  private _cancelRequested = false;
 
   constructor(private readonly deps: DownloadSessionDeps) {}
 
@@ -73,6 +82,11 @@ export class DownloadSession {
       this.move("RESET_OK");
     } catch (cause) {
       this.move("FAIL");
+      // cancel() 从 UI 线程调用时 throw 被丢弃，靠此标志位在 run() 里识别
+      if (this._cancelRequested) {
+        this._cancelRequested = false;
+        throw CANCEL_SIGNAL;
+      }
       throw this.mapError(cause);
     } finally {
       await this.deps.transport.releaseSession?.().catch(() => undefined);
@@ -80,8 +94,12 @@ export class DownloadSession {
   }
 
   cancel(): void {
-    if (this.stage === "completed" || this.stage === "failed") return;
+    if (this.stage === "completed" || this.stage === "failed" || this.stage === "cancelled") return;
+    this._cancelRequested = true;
     this.move("CANCEL");
+    // 立即中断协议层 I/O（probe/sync 的 AbortController），无需等超时
+    this.deps.protocol.abort?.();
+    // 取消 transport reader，导致 pending read/write 抛出流错误
     void this.deps.transport.cancel?.();
   }
 

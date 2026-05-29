@@ -19,6 +19,8 @@ export interface FlasherProtocol {
   write(plan: FlashPlan, onProgress: (progress: StageProgress) => void): Promise<void>;
   verify?(plan: FlashPlan): Promise<void>;
   reset?(): Promise<void>;
+  /** 中断当前进行中的 I/O 操作（probe/sync 等阶段），让 pending read 立即抛错。 */
+  abort?(): void;
 }
 
 export interface ProtocolContext {

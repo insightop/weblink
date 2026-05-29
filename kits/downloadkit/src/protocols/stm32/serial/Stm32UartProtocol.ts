@@ -112,6 +112,11 @@ export class Stm32UartProtocol implements FlasherProtocol {
 
   async verify(): Promise<void> {}
 
+  /** 中断 probe/sync 阶段的 I/O 操作（触发 UartIsp 内部 AbortController）。 */
+  abort(): void {
+    this.uart.abort();
+  }
+
   async reset(): Promise<void> {
     if (this.connected) {
       try {

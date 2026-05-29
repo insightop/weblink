@@ -6,7 +6,7 @@ import type { LogEntry, LogLevel } from "../types/log";
 import type { PluginConfigObject } from "../../../plugins/config/pluginConfig.types";
 import type { ChipFamily, FlasherType } from "../../../plugins/types";
 
-export type DeviceStatus = "idle" | "selecting" | "ready" | "failed";
+export type DeviceStatus = "idle" | "pending" | "selecting" | "ready" | "disconnected" | "failed";
 export type DownloadResult = "idle" | "running" | "success" | "error";
 export type RuntimePhase = "idle" | "downloading" | "verifying" | "completed" | "failed";
 
