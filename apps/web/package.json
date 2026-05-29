@@ -17,6 +17,7 @@
     "@weblink/capturekit": "workspace:*",
     "@weblink/flashkit": "workspace:*",
     "@weblink/ipkit": "workspace:*",
+    "@weblink/otakit": "workspace:*",
     "@weblink/webrtckit": "workspace:*",
     "@weblink/wirelesskit": "workspace:*",
     "naive-ui": "^2.44.1",
