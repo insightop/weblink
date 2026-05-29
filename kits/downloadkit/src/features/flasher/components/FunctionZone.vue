@@ -38,6 +38,9 @@ const helpHtml = computed(() => {
     <template v-if="helpKey" #help>
       <article class="help-content" v-html="helpHtml" />
     </template>
+    <template #subtitleExtra>
+      <slot name="subtitleExtra" />
+    </template>
     <slot />
   </WeblinkFunctionZone>
 </template>
