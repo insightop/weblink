@@ -9,6 +9,8 @@ allowBuilds:
   sharp: true
   vue-demi: true
   workerd: true
+minimumReleaseAgeExclude:
+  - '@insightop/libopenblt@0.1.0'
 onlyBuiltDependencies:
   - "@swc/core"
   - electron
