@@ -21,6 +21,7 @@ import {
   getFlasherRuntimeInfo,
   prepareFlasherForCurrentSelection,
   startFlash,
+  cancelDownload,
 } from "../services/flasherFacade";
 import { flasherLogger } from "../services/flasherLogger";
 import { useUrlParams } from "../../../url-params/useUrlParams";
@@ -267,6 +268,10 @@ const download = async (): Promise<void> => {
   }
 };
 
+const onCancelDownload = (): void => {
+  cancelDownload();
+};
+
 
 const onPluginConfigFieldUpdate = (key: string, value: string | number | boolean): void => {
   const plugin = currentPlugin.value;
@@ -401,6 +406,7 @@ onMounted(async () => {
           <FirmwareInputPanel ref="firmwareInput" />
           <DownloadPanel
             :can-start="store.canStartDownload"
+            :can-cancel="store.downloadResult === 'running'"
             :download-result="store.downloadResult"
             :runtime-phase="store.runtimePhase"
             :progress-percent="store.progressPercent"
@@ -409,6 +415,7 @@ onMounted(async () => {
             :success-count="store.downloadStats.successCount"
             :failed-count="store.downloadStats.failedCount"
             @download="download"
+            @cancel="onCancelDownload"
             @clear-stats="store.clearDownloadStats"
           />
           <TargetVariantDialog

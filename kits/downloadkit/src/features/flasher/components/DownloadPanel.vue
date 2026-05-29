@@ -16,6 +16,7 @@ import type { DownloadResult, RuntimePhase } from "../stores/flasher.store";
 
 const props = defineProps<{
   canStart: boolean;
+  canCancel: boolean;
   downloadResult: DownloadResult;
   runtimePhase: RuntimePhase;
   progressPercent: number;
@@ -24,7 +25,7 @@ const props = defineProps<{
   successCount: number;
   failedCount: number;
 }>();
-const emit = defineEmits<{ download: []; clearStats: [] }>();
+const emit = defineEmits<{ download: []; cancel: []; clearStats: [] }>();
 
 const { t } = useI18n();
 const isHovering = ref(false);
@@ -39,6 +40,7 @@ const onPointerLeave = (): void => {
 const isIdle = computed(() => props.downloadResult === "idle");
 const isDownloading = computed(() => props.downloadResult === "running");
 const isVerifying = computed(() => props.downloadResult === "running" && props.runtimePhase === "verifying");
+const isCanCancelHovering = computed(() => props.canCancel && isHovering.value);
 const isResult = computed(
   () => props.downloadResult === "success" || props.downloadResult === "error",
 );
@@ -60,6 +62,7 @@ const formatEta = (etaSeconds: number | null): string => {
 };
 
 const buttonText = computed(() => {
+  if (isCanCancelHovering.value) return t("download.cancel");
   if (isIdle.value) return t("download.idle");
   if (isDownloading.value) {
     if (isVerifying.value) return t("download.verifying");
@@ -75,6 +78,7 @@ const buttonText = computed(() => {
 });
 
 const displayIcon = computed<Component>(() => {
+  if (isCanCancelHovering.value) return CloseCircleOutline;
   if (isIdle.value) return DownloadOutline;
   if (isDownloading.value) return SyncOutline;
   if (props.downloadResult === "success") {
@@ -87,6 +91,7 @@ const displayIcon = computed<Component>(() => {
 });
 
 const buttonType = computed<"primary" | "success" | "error" | "warning" | "info">(() => {
+  if (isCanCancelHovering.value) return "error";
   if (isVerifying.value) return "info";
   if (isDownloading.value) return "warning";
   if (isResultHovering.value) return "primary";
@@ -95,7 +100,10 @@ const buttonType = computed<"primary" | "success" | "error" | "warning" | "info"
   return "primary";
 });
 
-const buttonDisabled = computed(() => props.downloadResult === "running" || !props.canStart);
+const buttonDisabled = computed(() => {
+  if (isCanCancelHovering.value) return false;
+  return props.downloadResult === "running" || !props.canStart;
+});
 
 const progressWidth = computed(() => `${Math.min(100, Math.max(0, props.progressPercent))}%`);
 </script>
@@ -144,10 +152,10 @@ const progressWidth = computed(() => `${Math.min(100, Math.max(0, props.progress
     >
       <NButton
         class="download"
-        :class="{ 'download--running': isDownloading, 'download--verifying': isVerifying }"
+        :class="{ 'download--running': isDownloading && !isCanCancelHovering, 'download--verifying': isVerifying, 'download--cancel-hover': isCanCancelHovering }"
         :type="buttonType"
         :disabled="buttonDisabled"
-        @click="emit('download')"
+        @click="isCanCancelHovering ? emit('cancel') : emit('download')"
       >
         <span
           v-if="isDownloading"
@@ -159,7 +167,7 @@ const progressWidth = computed(() => `${Math.min(100, Math.max(0, props.progress
           <NIcon
             :component="displayIcon"
             :size="20"
-            :class="{ spin: isDownloading }"
+            :class="{ spin: isDownloading && !isCanCancelHovering }"
           />
           <span class="text">{{ buttonText }}</span>
         </span>
@@ -215,6 +223,13 @@ const progressWidth = computed(() => `${Math.min(100, Math.max(0, props.progress
   --n-color-hover: color-mix(in srgb, var(--warning-500) 22%, transparent) !important;
   --n-color-pressed: color-mix(in srgb, var(--warning-500) 26%, transparent) !important;
   --n-color-focus: color-mix(in srgb, var(--warning-500) 18%, transparent) !important;
+}
+.download.download--cancel-hover {
+  /* 取消悬浮态：error 红色，覆盖 warning */
+  --n-color: color-mix(in srgb, var(--error-500) 16%, transparent) !important;
+  --n-color-hover: color-mix(in srgb, var(--error-500) 22%, transparent) !important;
+  --n-color-pressed: color-mix(in srgb, var(--error-500) 26%, transparent) !important;
+  --n-color-focus: color-mix(in srgb, var(--error-500) 16%, transparent) !important;
 }
 .download.download--verifying {
   --n-color: color-mix(in srgb, var(--info-500) 18%, transparent) !important;

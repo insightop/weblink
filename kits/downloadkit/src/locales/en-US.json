@@ -70,6 +70,7 @@
     "idle": "Download",
     "verifying": "Verifying",
     "again": "Download again",
+    "cancel": "Cancel",
     "completed": "Completed",
     "failed": "Failed",
     "counterLabel": "Counter:",

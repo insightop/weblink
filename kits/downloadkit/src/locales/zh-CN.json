@@ -70,6 +70,7 @@
     "idle": "下载",
     "verifying": "校验中",
     "again": "再次下载",
+    "cancel": "取消",
     "completed": "已完成",
     "failed": "失败",
     "counterLabel": "计数：",

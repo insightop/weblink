@@ -3,6 +3,7 @@ import { isUserCancelledError } from "../../../core/errors/ErrorCode";
 import { detectBrowserCapabilities, getBrowserSupportHint } from "../../../plugins/capabilities";
 import { globalPluginRegistry } from "../../../plugins/registry";
 import type { ChipFamily, FlasherPlugin, FlasherType, PluginResolveCriteria, PluginRuntimeDeps } from "../../../plugins/types";
+import type { FlasherProtocol } from "../../../protocols/types";
 import { normalizeConfigBySchema } from "../../../plugins/config/pluginConfig.validators";
 import type { PluginConfigObject } from "../../../plugins/config/pluginConfig.types";
 import type { Transport } from "../../../transports/types";
@@ -25,6 +26,10 @@ interface PreparedTransportSession {
 let prepared: PreparedTransportSession | null = null;
 let selectingTask: Promise<void> | null = null;
 let sessionManager: SessionManager | null = null;
+/** 当前活跃的下载会话（供 cancelDownload() 和 disconnect 中断使用）。 */
+let currentSession: DownloadSession | null = null;
+/** 当前活跃的协议实例（供 disconnect 时立即中断 I/O 使用）。 */
+let currentProtocol: FlasherProtocol | null = null;
 
 function getSessionManager(): SessionManager {
   if (!sessionManager) {
@@ -33,8 +38,19 @@ function getSessionManager(): SessionManager {
       const store = useFlasherStore();
       store.setFlasherState({ status: status as DeviceStatus, label: store.flasherLabel, error: store.flasherError });
     });
+    sessionManager.onDisconnect(() => {
+      // 串口被动断开时：立即中断协议 I/O（无需等超时），再取消下载流程
+      currentProtocol?.abort?.();
+      flasherLogger.warning(t("flasherPage.deviceDisconnected"));
+      cancelDownload();
+    });
   }
   return sessionManager;
+}
+
+/** 中断当前正在进行的下载（用户取消 / 串口被动断开 共用）。 */
+export function cancelDownload(): void {
+  currentSession?.cancel();
 }
 
 const SELECT_DEVICE_TIMEOUT_MS = 15000;
@@ -342,6 +358,8 @@ export async function startFlash(input: unknown, deps: PluginRuntimeDeps = {}): 
     pluginId: plugin.id,
   });
   try {
+    currentSession = session;
+    currentProtocol = protocol;
     await session.run(input);
     store.setDownloadResult("success");
     store.setRuntimePhase("completed");
@@ -366,5 +384,8 @@ export async function startFlash(input: unknown, deps: PluginRuntimeDeps = {}): 
           : String(error);
     flasherLogger.error(t("logMessages.failed", { message }), { plugin: plugin.displayName, message });
     throw error;
+  } finally {
+    currentSession = null;
+    currentProtocol = null;
   }
 }
