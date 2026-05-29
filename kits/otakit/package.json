@@ -9,7 +9,7 @@
   "description": "OpenBLT 协议调试工具",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "echo \"Source-only package, no build needed\"",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "lint": "eslint . --max-warnings 0",
