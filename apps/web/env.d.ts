@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly VITE_SENTRY_DSN?: string;
+  readonly VITE_BASE_PATH?: string;
   readonly VITE_KIT_SERIAL_URL?: string;
   readonly VITE_KIT_WIRELESS_URL?: string;
   readonly VITE_KIT_DOWNLOAD_URL?: string;

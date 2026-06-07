@@ -15,7 +15,8 @@
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "test": "vitest run",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "build:standalone": "vite build"
   },
   "dependencies": {
     "@weblink/ui-vue": "workspace:*",

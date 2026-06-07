@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "build:standalone": "vite build"
   },
   "dependencies": {
     "@weblink/tokens": "workspace:*",

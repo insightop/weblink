@@ -1,21 +1,35 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["pnpm-lock.yaml"],
+  "globalEnv": ["NODE_ENV", "VITE_BASE_PATH", "VITE_SENTRY_DSN"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "inputs": ["src/**", "vite.config.*", "tsconfig*.json", "package.json"],
       "outputs": ["dist/**"]
+    },
+    "build:standalone": {
+      "dependsOn": [],
+      "inputs": ["src/**", "vite.config.*", "tsconfig*.json", "package.json"],
+      "outputs": ["dist/**"],
+      "cache": true
     },
     "dev": {
       "persistent": true,
       "cache": false
     },
     "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig*.json"],
       "outputs": []
     },
     "lint": {
+      "inputs": ["src/**", "eslint.config.*"],
       "outputs": []
     },
     "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**"],
       "outputs": []
     },
     "format": {

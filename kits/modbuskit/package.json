@@ -30,7 +30,8 @@
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint .",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "build:standalone": "vite build"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

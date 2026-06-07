@@ -17,7 +17,8 @@
     "test": "vitest run",
     "pages:dev": "npm run build && wrangler pages dev ./dist --compatibility-date=2025-01-01",
     "deploy:worker": "wrangler deploy --config workers/room-signaling/wrangler.toml",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "build:standalone": "vite build"
   },
   "dependencies": {
     "@weblink/tokens": "workspace:*",

@@ -10,14 +10,15 @@
     "typecheck": "vue-tsc -b --noEmit"
   },
   "dependencies": {
-    "@weblink/tokens": "workspace:*",
-    "@weblink/serialkit": "workspace:*",
+    "@sentry/vue": "^10.56.0",
     "@weblink/cankit": "workspace:*",
-    "@weblink/downloadkit": "workspace:*",
     "@weblink/capturekit": "workspace:*",
+    "@weblink/downloadkit": "workspace:*",
     "@weblink/flashkit": "workspace:*",
     "@weblink/ipkit": "workspace:*",
     "@weblink/otakit": "workspace:*",
+    "@weblink/serialkit": "workspace:*",
+    "@weblink/tokens": "workspace:*",
     "@weblink/webrtckit": "workspace:*",
     "@weblink/wirelesskit": "workspace:*",
     "naive-ui": "^2.44.1",
@@ -27,10 +28,10 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@weblink/eslint-config": "workspace:*",
-    "@weblink/tsconfig": "workspace:*",
     "@types/node": "^24.12.2",
     "@vitejs/plugin-vue": "^6.0.5",
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
     "typescript": "~6.0.2",
     "vite": "^8.0.4",
     "vue-tsc": "^3.2.6"

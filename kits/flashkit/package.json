@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "build:standalone": "vite build"
   },
   "dependencies": {
     "@weblink/ui-vue": "workspace:*",

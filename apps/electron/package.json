@@ -13,7 +13,8 @@
     "package:mac": "electron-vite build && electron-builder --mac"
   },
   "dependencies": {
-    "@electron-toolkit/utils": "^3.0.0"
+    "@electron-toolkit/utils": "^3.0.0",
+    "@sentry/electron": "^7.13.0"
   },
   "devDependencies": {
     "electron": "^35.0.0",

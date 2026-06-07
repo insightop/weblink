@@ -1,6 +1,17 @@
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
+import * as Sentry from "@sentry/electron/main";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN || undefined,
+  debug: is.dev,
+  tracesSampleRate: 1.0,
+  beforeSend(event) {
+    event.tags = { ...event.tags, platform: "electron-main" };
+    return event;
+  },
+});
 
 function createWindow(): void {
   const win = new BrowserWindow({

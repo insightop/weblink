@@ -10,7 +10,8 @@
     "lint": "eslint \"src/**/*.js\"",
     "format": "prettier --write \"index.html\" \"src/**/*.{js,html,css}\"",
     "test": "vitest run",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "build:standalone": "vite build"
   },
   "dependencies": {
     "chart.js": "^4.5.1",
@@ -25,7 +26,11 @@
     "type": "git",
     "url": "git+https://github.com/Insightop/weblink-gnsskit.git"
   },
-  "keywords": ["gnss", "nmea", "web-serial"],
+  "keywords": [
+    "gnss",
+    "nmea",
+    "web-serial"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
