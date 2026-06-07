@@ -62,6 +62,16 @@ export const KIT_REGISTRY: KitConfig[] = [
     loader: () => import("@weblink/ipkit"),
   },
   {
+    id: "gnsskit",
+    title: "GNSS Kit",
+    description: "GNSS / NMEA 数据分析",
+  },
+  {
+    id: "modbuskit",
+    title: "Modbus Kit",
+    description: "Modbus 调试面板",
+  },
+  {
     id: "hidkit",
     title: "HID Kit",
     description: "HID 设备调试",

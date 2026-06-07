@@ -12,16 +12,18 @@ const kitConfig = computed(() => findKit(kitId.value));
 const AsyncComponent = shallowRef<any>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
+const noLoader = ref(false);
 
 async function loadKit(id: string) {
   AsyncComponent.value = null;
   error.value = null;
   loading.value = true;
+  noLoader.value = false;
 
   try {
     const config = kitConfig.value;
     if (!config?.loader) {
-      error.value = "Kit loader not found";
+      noLoader.value = true;
       return;
     }
     const mod = await config.loader();
@@ -65,6 +67,12 @@ const kitNotFound = computed(() => !kitConfig.value);
     </NResult>
 
     <NResult v-else-if="error" status="error" title="Load Failed" :description="error">
+      <template #footer>
+        <NButton tag="a" href="/" type="primary">Back to Home</NButton>
+      </template>
+    </NResult>
+
+    <NResult v-else-if="noLoader" status="info" title="Coming Soon" description="This kit is under development.">
       <template #footer>
         <NButton tag="a" href="/" type="primary">Back to Home</NButton>
       </template>
