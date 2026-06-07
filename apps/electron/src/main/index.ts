@@ -6,12 +6,10 @@ import * as Sentry from "@sentry/electron/main";
 Sentry.init({
   dsn: process.env.SENTRY_DSN || undefined,
   debug: is.dev,
-  tracesSampleRate: 1.0,
-  beforeSend(event) {
-    event.tags = { ...event.tags, platform: "electron-main" };
-    return event;
-  },
+  tracesSampleRate: is.dev ? 1.0 : 0.2,
 });
+
+Sentry.setTag("platform", "electron-main");
 
 function createWindow(): void {
   const win = new BrowserWindow({

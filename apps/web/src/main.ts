@@ -20,16 +20,14 @@ declare const __BUILD_TIME__: string;
 
 const app = createApp(App);
 
-// --- Platform & deploy context (computed once, reused by Sentry beforeSend) ---
+// --- Platform & deploy context (set as Sentry tags once at init) ---
 const __platform: "tauri" | "electron" | "web" = window.__TAURI__
   ? "tauri"
   : window.platform?.isDesktop
     ? "electron"
     : "web";
 
-const __host = (() => {
-  try { return window.location.hostname; } catch { return "unknown"; }
-})();
+const __host = window.location.hostname;
 
 const __deploy =
   __host.includes("pages.dev") ? "cloudflare" :
@@ -44,11 +42,6 @@ Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN || undefined,
   environment: import.meta.env.MODE,
   debug: import.meta.env.DEV,
-
-  beforeSend(event) {
-    event.tags = { ...event.tags, platform: __platform, deploy: __deploy };
-    return event;
-  },
 
   // --- Performance Tracing ---
   tracesSampleRate: import.meta.env.DEV ? 1.0 : 0.2,
@@ -95,5 +88,8 @@ Sentry.init({
     Sentry.rewriteFramesIntegration(),
   ],
 });
+
+Sentry.setTag("platform", __platform);
+Sentry.setTag("deploy", __deploy);
 
 app.use(createPinia()).use(router).use(i18n).mount("#app");
