@@ -49,3 +49,4 @@ coverage
 **/package-lock.json
 !pnpm-lock.yaml
 .pnpm-store/
+.codegraph/daemon.pid
