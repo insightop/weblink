@@ -222,6 +222,9 @@ importers:
 
   kits/capturekit:
     dependencies:
+      '@weblink/tokens':
+        specifier: workspace:*
+        version: link:../../packages/tokens
       '@weblink/utils':
         specifier: workspace:*
         version: link:../../packages/utils
