@@ -13,46 +13,18 @@ const AsyncComponent = shallowRef<any>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-const kitLoaders: Record<string, () => Promise<{ App: any }>> = {
-  serialkit: () => import("@weblink/serialkit"),
-  cankit: () => import("@weblink/cankit"),
-  capturekit: () => import("@weblink/capturekit"),
-  downloadkit: () => import("@weblink/downloadkit"),
-  flashkit: () => import("@weblink/flashkit"),
-  ipkit: () => import("@weblink/ipkit"),
-  webrtckit: () => import("@weblink/webrtckit"),
-  wirelesskit: () => import("@weblink/wirelesskit"),
-  otakit: () => import("@weblink/otakit"),
-};
-
-// iframe 兜底：JS 和 Svelte kit
-const iframeUrl = computed(() => {
-  if (!kitConfig.value) return "";
-  const config = kitConfig.value;
-  if (config.stack === "js" || config.stack === "svelte") {
-    return import.meta.env.DEV && config.localPort
-      ? `http://localhost:${config.localPort}`
-      : config.prodUrl;
-  }
-  return "";
-});
-
-const isIframeKit = computed(() => {
-  return kitConfig.value?.stack === "js" || kitConfig.value?.stack === "svelte";
-});
-
 async function loadKit(id: string) {
   AsyncComponent.value = null;
   error.value = null;
   loading.value = true;
 
   try {
-    const loader = kitLoaders[id];
-    if (!loader) {
+    const config = kitConfig.value;
+    if (!config?.loader) {
       error.value = "Kit loader not found";
       return;
     }
-    const mod = await loader();
+    const mod = await config.loader();
 
     // Merge kit i18n messages into global vue-i18n instance
     if (mod.messages) {
@@ -74,7 +46,7 @@ async function loadKit(id: string) {
 watch(
   kitId,
   (id) => {
-    if (id && kitConfig.value && !isIframeKit.value) {
+    if (id && kitConfig.value) {
       loadKit(id);
     }
   },
@@ -98,16 +70,6 @@ const kitNotFound = computed(() => !kitConfig.value);
       </template>
     </NResult>
 
-    <template v-else-if="isIframeKit">
-      <iframe
-        v-if="iframeUrl"
-        :src="iframeUrl"
-        class="kit-iframe"
-        allow="serial;usb;hid;bluetooth;nfc;camera;microphone"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-      />
-    </template>
-
     <template v-else>
       <div v-if="loading" class="loading">
         <NSpin size="large" />
@@ -123,11 +85,6 @@ const kitNotFound = computed(() => !kitConfig.value);
   width: 100%;
   display: flex;
   flex-direction: column;
-}
-.kit-iframe {
-  flex: 1;
-  width: 100%;
-  border: none;
 }
 .loading {
   display: flex;

@@ -100,18 +100,27 @@ importers:
       '@weblink/flashkit':
         specifier: workspace:*
         version: link:../../kits/flashkit
+      '@weblink/hidkit':
+        specifier: workspace:*
+        version: link:../../kits/hidkit
       '@weblink/ipkit':
         specifier: workspace:*
         version: link:../../kits/ipkit
       '@weblink/otakit':
         specifier: workspace:*
         version: link:../../kits/otakit
+      '@weblink/sensorkit':
+        specifier: workspace:*
+        version: link:../../kits/sensorkit
       '@weblink/serialkit':
         specifier: workspace:*
         version: link:../../kits/serialkit
       '@weblink/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
+      '@weblink/vkvmkit':
+        specifier: workspace:*
+        version: link:../../kits/vkvmkit
       '@weblink/webrtckit':
         specifier: workspace:*
         version: link:../../kits/webrtckit
@@ -401,7 +410,42 @@ importers:
         specifier: ^4.1.4
         version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0))
 
-  kits/hidkit: {}
+  kits/hidkit:
+    dependencies:
+      '@weblink/ui-vue':
+        specifier: workspace:*
+        version: link:../../packages/ui-vue
+      '@weblink/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      vue:
+        specifier: ^3.5.32
+        version: 3.5.32(typescript@6.0.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^24.12.2
+        version: 24.12.2
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.5
+        version: 6.0.6(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0))(vue@3.5.32(typescript@6.0.3))
+      '@weblink/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@weblink/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vite:
+        specifier: ^8.0.4
+        version: 8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0)
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0))
+      vue-tsc:
+        specifier: ^3.2.6
+        version: 3.2.7(typescript@6.0.3)
 
   kits/ipkit:
     dependencies:
@@ -582,7 +626,42 @@ importers:
         specifier: ^3.2.6
         version: 3.2.7(typescript@6.0.3)
 
-  kits/sensorkit: {}
+  kits/sensorkit:
+    dependencies:
+      '@weblink/ui-vue':
+        specifier: workspace:*
+        version: link:../../packages/ui-vue
+      '@weblink/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      vue:
+        specifier: ^3.5.32
+        version: 3.5.32(typescript@6.0.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^24.12.2
+        version: 24.12.2
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.5
+        version: 6.0.6(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0))(vue@3.5.32(typescript@6.0.3))
+      '@weblink/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@weblink/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vite:
+        specifier: ^8.0.4
+        version: 8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0)
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0))
+      vue-tsc:
+        specifier: ^3.2.6
+        version: 3.2.7(typescript@6.0.3)
 
   kits/serialkit:
     dependencies:
@@ -627,7 +706,42 @@ importers:
         specifier: ^3.2.6
         version: 3.2.7(typescript@6.0.3)
 
-  kits/vkvmkit: {}
+  kits/vkvmkit:
+    dependencies:
+      '@weblink/ui-vue':
+        specifier: workspace:*
+        version: link:../../packages/ui-vue
+      '@weblink/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      vue:
+        specifier: ^3.5.32
+        version: 3.5.32(typescript@6.0.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^24.12.2
+        version: 24.12.2
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.5
+        version: 6.0.6(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0))(vue@3.5.32(typescript@6.0.3))
+      '@weblink/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@weblink/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vite:
+        specifier: ^8.0.4
+        version: 8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0)
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0))
+      vue-tsc:
+        specifier: ^3.2.6
+        version: 3.2.7(typescript@6.0.3)
 
   kits/webrtckit:
     dependencies:

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NButton, NCard, NSpace, NTag, NThing, NDivider } from "naive-ui";
+import { NButton, NCard, NSpace, NThing, NDivider } from "naive-ui";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { KIT_REGISTRY } from "@/config/kitRegistry";
@@ -9,7 +9,7 @@ const router = useRouter();
 const rows = computed(() =>
   KIT_REGISTRY.map((k) => ({
     ...k,
-    ready: k.prodUrl !== "",
+    ready: !!k.loader,
   })),
 );
 
@@ -30,7 +30,6 @@ function navigateToKit(id: string) {
           <template #header>
             <NSpace align="center" :size="8">
               <span>{{ row.description }}</span>
-              <NTag size="small" type="info" round>{{ row.stack }}</NTag>
             </NSpace>
           </template>
           <NSpace vertical :size="12">
