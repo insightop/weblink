@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath, URL } from "node:url";
 
 function buildTimeTag(): string {
@@ -11,7 +12,20 @@ export default defineConfig(({ mode }) => ({
   define: {
     __BUILD_TIME__: JSON.stringify(buildTimeTag()),
   },
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    VitePWA({
+      registerType: "prompt",
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+      },
+      manifest: {
+        name: "Weblink",
+        short_name: "Weblink",
+        theme_color: "#2080f0",
+      },
+    }),
+  ],
   resolve: {
     tsconfigPaths: true,
     alias: {

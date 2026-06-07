@@ -92,4 +92,39 @@ Sentry.init({
 Sentry.setTag("platform", __platform);
 Sentry.setTag("deploy", __deploy);
 
+// --- PWA: notify user when a new version is available ---
+if (import.meta.env.PROD) {
+  // Request notification permission (non-blocking)
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+
+  import("virtual:pwa-register").then(({ registerSW }) => {
+    registerSW({
+      onNeedRefresh() {
+        // System notification (if permitted)
+        if (Notification.permission === "granted") {
+          new Notification("Weblink", {
+            body: "发现新内容，点击刷新获取最新版本。",
+            icon: "/favicon.ico",
+          });
+        }
+        // Web dialog
+        if (confirm("发现新版本，是否立即刷新？")) {
+          location.reload();
+        }
+      },
+      onOfflineReady() {
+        if (Notification.permission === "granted") {
+          new Notification("Weblink", { body: "应用已可离线使用。" });
+        }
+      },
+      onRegisteredSW(swUrl, reg) {
+        // Check for updates every 60 minutes
+        reg && setInterval(() => reg.update(), 60 * 60 * 1000);
+      },
+    });
+  });
+}
+
 app.use(createPinia()).use(router).use(i18n).mount("#app");
