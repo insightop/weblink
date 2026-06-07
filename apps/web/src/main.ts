@@ -101,7 +101,7 @@ if (import.meta.env.PROD) {
   }
 
   import("virtual:pwa-register").then(({ registerSW }) => {
-    registerSW({
+    const updateSW = registerSW({
       onNeedRefresh() {
         // System notification (if permitted)
         if (Notification.permission === "granted") {
@@ -112,7 +112,7 @@ if (import.meta.env.PROD) {
         }
         // Web dialog
         if (confirm("发现新版本，是否立即刷新？")) {
-          location.reload();
+          updateSW(true);
         }
       },
       onOfflineReady() {
