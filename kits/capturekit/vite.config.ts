@@ -1,11 +1,8 @@
 import { defineConfig, mergeConfig } from "vite";
 import { kitBaseConfig } from "@weblink/vite-config";
-import { fileURLToPath, URL } from "node:url";
 
 export default mergeConfig(
-  kitBaseConfig({
-    kitRoot: fileURLToPath(new URL(".", import.meta.url)),
-  }),
+  kitBaseConfig(),
   defineConfig({
     server: {
       port: 5174,

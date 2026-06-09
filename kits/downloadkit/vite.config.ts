@@ -1,6 +1,5 @@
 import { defineConfig, mergeConfig } from "vite";
 import { kitBaseConfig } from "@weblink/vite-config";
-import { fileURLToPath, URL } from "node:url";
 
 function buildTimeTag(): string {
   const now = new Date();
@@ -13,10 +12,7 @@ function buildTimeTag(): string {
 }
 
 export default mergeConfig(
-  kitBaseConfig({
-    kitRoot: fileURLToPath(new URL(".", import.meta.url)),
-    test: true,
-  }),
+  kitBaseConfig({ test: true }),
   defineConfig({
     base: "/downloadkit/",
     define: {

@@ -7,7 +7,7 @@
  */
 
 import vue from "@vitejs/plugin-vue"
-import { fileURLToPath, URL } from "node:url"
+import { join } from "node:path"
 import type { UserConfig } from "vite"
 
 /** Vite UserConfig extended with vitest test config */
@@ -16,8 +16,6 @@ type Config = UserConfig & { test?: Record<string, unknown> }
 // ── kitBaseConfig ──────────────────────────────────────────────
 
 export interface KitBaseOptions {
-  /** Absolute path to the kit's root directory */
-  kitRoot?: string
   /**
    * Test configuration.
    * true = use defaults, object = custom include patterns, false/omitted = no test config
@@ -64,7 +62,7 @@ export interface KitLibOptions {
 
 export function kitLibConfig(options: KitLibOptions): Config {
   const { kitRoot, entry = "./src/index.ts" } = options
-  const srcDir = fileURLToPath(new URL("./src", new URL(`file://${kitRoot}`)))
+  const srcDir = join(kitRoot, "src")
 
   return {
     plugins: [vue()],
@@ -75,7 +73,7 @@ export function kitLibConfig(options: KitLibOptions): Config {
     },
     build: {
       lib: {
-        entry: fileURLToPath(new URL(entry, new URL(`file://${kitRoot}`))),
+        entry: join(kitRoot, entry),
         formats: ["es"],
         fileName: "index",
       },

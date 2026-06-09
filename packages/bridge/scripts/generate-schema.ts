@@ -235,6 +235,26 @@ function main() {
   const raw = readFileSync(yamlPath, "utf-8")
   const schema = yaml.load(raw) as Schema
 
+  // Validate: json columns must have ts_type and rust_type
+  const errors: string[] = []
+  for (const [tableName, table] of Object.entries(schema.tables)) {
+    for (const col of table.columns) {
+      if (col.json) {
+        if (!col.ts_type) {
+          errors.push(`${tableName}.${col.name}: json: true requires ts_type`)
+        }
+        if (!col.rust_type) {
+          errors.push(`${tableName}.${col.name}: json: true requires rust_type`)
+        }
+      }
+    }
+  }
+  if (errors.length > 0) {
+    console.error("Schema validation failed:")
+    errors.forEach((e) => console.error(`  - ${e}`))
+    process.exit(1)
+  }
+
   const ddl = generateDDL(schema)
 
   // 1. Generate sqlite-schema.ts
