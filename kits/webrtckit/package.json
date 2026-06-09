@@ -29,6 +29,7 @@
   "devDependencies": {
     "@weblink/eslint-config": "workspace:*",
     "@weblink/tsconfig": "workspace:*",
+    "@weblink/vite-config": "workspace:*",
     "@cloudflare/workers-types": "^4.20251125.0",
     "@types/node": "^24.12.2",
     "@vitejs/plugin-vue": "^6.0.5",

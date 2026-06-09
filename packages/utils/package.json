@@ -21,7 +21,8 @@
     "clean": "rm -rf dist node_modules/.cache"
   },
   "devDependencies": {
-    "typescript": "^5.8.0",
-    "vitest": "^3.0.0"
+    "@weblink/tsconfig": "workspace:*",
+    "typescript": "~6.0.2",
+    "vitest": "^4.1.4"
   }
 }

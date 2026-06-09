@@ -8,6 +8,16 @@
       "inputs": ["src/**", "vite.config.*", "tsconfig*.json", "package.json"],
       "outputs": ["dist/**"]
     },
+    "generate": {
+      "dependsOn": [],
+      "inputs": ["src/domain/schema.yaml", "scripts/generate-schema.ts"],
+      "outputs": [
+        "src/domain/sqlite-schema.ts",
+        "src/domain/types.ts",
+        "../../apps/tauri/src-tauri/src/bridge/schema.rs"
+      ],
+      "cache": true
+    },
     "build:standalone": {
       "dependsOn": [],
       "inputs": ["src/**", "vite.config.*", "tsconfig*.json", "package.json"],
@@ -29,7 +39,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**"],
+      "inputs": ["src/**", "test/**"],
       "outputs": []
     },
     "format": {

@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
+import { defineConfig, mergeConfig } from "vite";
+import { kitBaseConfig } from "@weblink/vite-config";
 import { fileURLToPath, URL } from "node:url";
 
 function buildTimeTag(): string {
@@ -12,21 +12,18 @@ function buildTimeTag(): string {
   return `${y}${M}${d}${h}${m}`;
 }
 
-export default defineConfig({
-  base: "/downloadkit/",
-  plugins: [vue()],
-  define: {
-    __BUILD_TIME__: JSON.stringify(buildTimeTag()),
-  },
-  resolve: {
-    alias: {
+export default mergeConfig(
+  kitBaseConfig({
+    kitRoot: fileURLToPath(new URL(".", import.meta.url)),
+    test: true,
+  }),
+  defineConfig({
+    base: "/downloadkit/",
+    define: {
+      __BUILD_TIME__: JSON.stringify(buildTimeTag()),
     },
-  },
-  optimizeDeps: {
-    include: ["dapjs"],
-  },
-  test: {
-    environment: "node",
-    include: ["src/**/*.spec.ts"],
-  },
-});
+    optimizeDeps: {
+      include: ["dapjs"],
+    },
+  }),
+);

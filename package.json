@@ -22,11 +22,9 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{js,mjs,cjs,ts,vue,json,md,css}\"",
-    "clean": "turbo run clean && rm -rf node_modules/.cache",
-    "changeset": "changeset"
+    "clean": "turbo run clean && rm -rf node_modules/.cache"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.11",
     "@eslint/js": "^10.0.1",
     "@types/splitpanes": "^2.2.6",
     "@vitejs/plugin-vue": "^6.0.5",

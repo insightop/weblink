@@ -1,9 +1,11 @@
 // Tauri injects __TAURI__ on the window object when running in a Tauri WebView
-// Electron preload exposes window.platform with isDesktop flag
+// Electron preload exposes window.platform with isDesktop flag and invoke bridge
 interface Window {
   __TAURI__?: Record<string, unknown>;
   platform?: {
-    isDesktop: boolean;
+    isDesktop?: boolean;
+    /** IPC invoke bridge — exposed by Electron preload via contextBridge */
+    invoke?: (channel: string, ...args: unknown[]) => Promise<unknown>;
   };
 }
 

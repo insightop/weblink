@@ -1,0 +1,122 @@
+# @weblink/bridge — SQLite Schema (single source of truth)
+#
+# This file defines the canonical database schema.
+# Run `pnpm generate` from packages/bridge to regenerate:
+#   - src/domain/sqlite-schema.ts  (SQL DDL constant)
+#   - src/domain/types.ts          (TypeScript interfaces)
+#   - ../../apps/tauri/src-tauri/src/bridge/schema.rs (Rust structs + DDL)
+
+tables:
+  kit_schemas:
+    columns:
+      - name: kit_key
+        type: TEXT
+        primary_key: true
+      - name: display_name
+        type: TEXT
+        not_null: true
+      - name: description
+        type: TEXT
+        not_null: true
+        default: "''"
+      - name: version
+        type: INTEGER
+        not_null: true
+        default: "1"
+      - name: state_keys
+        type: TEXT
+        not_null: true
+        default: "'[]'"
+        json: true
+        ts_type: "string[]"
+        rust_type: "Vec<String>"
+      - name: event_types
+        type: TEXT
+        not_null: true
+        default: "'[]'"
+        json: true
+        ts_type: "string[]"
+        rust_type: "Vec<String>"
+      - name: created_at
+        type: INTEGER
+        not_null: true
+      - name: updated_at
+        type: INTEGER
+        not_null: true
+
+  kit_state:
+    columns:
+      - name: kit_key
+        type: TEXT
+        not_null: true
+      - name: instance_id
+        type: TEXT
+        not_null: true
+        default: "'default'"
+      - name: state
+        type: TEXT
+        not_null: true
+        default: "'{}'"
+        json: true
+        ts_type: "Record<string, unknown>"
+        rust_type: "serde_json::Value"
+      - name: updated_at
+        type: INTEGER
+        not_null: true
+    primary_key:
+      - kit_key
+      - instance_id
+
+  kit_events:
+    columns:
+      - name: id
+        type: INTEGER
+        primary_key: true
+        autoincrement: true
+      - name: kit_key
+        type: TEXT
+        not_null: true
+      - name: instance_id
+        type: TEXT
+        not_null: true
+        default: "'default'"
+      - name: type
+        type: TEXT
+        not_null: true
+        name_override:
+          rust_field: event_type
+          rust_serde_rename: type
+      - name: ts
+        type: INTEGER
+        not_null: true
+      - name: payload
+        type: TEXT
+        not_null: true
+        default: "'{}'"
+        json: true
+        ts_type: "Record<string, unknown>"
+        rust_type: "serde_json::Value"
+
+  kit_config:
+    columns:
+      - name: kit_key
+        type: TEXT
+        primary_key: true
+      - name: config
+        type: TEXT
+        not_null: true
+        default: "'{}'"
+        json: true
+        ts_type: "Record<string, unknown>"
+        rust_type: "serde_json::Value"
+      - name: updated_at
+        type: INTEGER
+        not_null: true
+
+indexes:
+  - name: idx_events_kit
+    table: kit_events
+    columns: [kit_key, ts]
+  - name: idx_events_type
+    table: kit_events
+    columns: [kit_key, type, ts]

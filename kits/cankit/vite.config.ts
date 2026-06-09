@@ -1,17 +1,9 @@
-import { defineConfig } from "vitest/config";
-import vue from "@vitejs/plugin-vue";
+import { kitBaseConfig } from "@weblink/vite-config";
 import { fileURLToPath, URL } from "node:url";
 
-export default defineConfig({
-  plugins: [vue()],
-  resolve: {
-    alias: {
-    },
-  },
+export default kitBaseConfig({
+  kitRoot: fileURLToPath(new URL(".", import.meta.url)),
   test: {
-    environment: "node",
     include: ["src/**/*.test.ts"],
-    globals: false,
-    passWithNoTests: true,
   },
 });

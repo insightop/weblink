@@ -4,6 +4,7 @@ packages:
   - "packages/*"
 allowBuilds:
   '@swc/core': true
+  better-sqlite3: true
   electron: true
   esbuild: true
   sharp: true
@@ -13,6 +14,7 @@ minimumReleaseAgeExclude:
   - '@insightop/libopenblt@0.1.0'
 onlyBuiltDependencies:
   - "@swc/core"
+  - better-sqlite3
   - electron
   - esbuild
   - sharp

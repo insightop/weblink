@@ -1,0 +1,8 @@
+{
+  "extends": "@weblink/tsconfig/vue-app.json",
+  "compilerOptions": {
+    "jsx": null,
+    "jsxImportSource": null
+  },
+  "include": ["src"]
+}

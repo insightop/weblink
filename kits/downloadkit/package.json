@@ -44,6 +44,7 @@
   "devDependencies": {
     "@weblink/eslint-config": "workspace:*",
     "@weblink/tsconfig": "workspace:*",
+    "@weblink/vite-config": "workspace:*",
     "@types/node": "^24.12.2",
     "@types/w3c-web-serial": "^1.0.8",
     "@types/w3c-web-usb": "^1.0.14",
