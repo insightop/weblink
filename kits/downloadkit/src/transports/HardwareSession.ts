@@ -169,9 +169,9 @@ export class HardwareSession {
       case 'serial':
         return new WebSerialTransport(device as SerialPort, (config?.baudRate as number) ?? 115200);
       case 'usb':
-        return new WebUsbTransport();
+        return new WebUsbTransport(device as USBDevice);
       case 'hid':
-        return new WebHidTransport();
+        return new WebHidTransport(device as HIDDevice);
     }
   }
 
