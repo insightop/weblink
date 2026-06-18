@@ -225,8 +225,14 @@ export async function prepareFlasherForCurrentSelection(options?: { forceReselec
     const identityStore = new DeviceIdentityStore();
     const stored = await identityStore.load();
 
+    // 首次连接时传入插件配置，确保 lastConfig 被持久化
+    const identity = stored ?? {
+      type: plugin.connectionType,
+      lastConfig: getPluginConfigSnapshot(plugin) as Record<string, unknown>,
+    };
+
     const transport = await withTimeout(
-      hs.acquire(plugin.connectionType, stored ?? undefined),
+      hs.acquire(plugin.connectionType, identity),
       SELECT_DEVICE_TIMEOUT_MS,
       t('flasherPage.deviceSelectionTimeout'),
     );

@@ -32,11 +32,25 @@ export class UsbSelector implements DeviceSelector<USBDevice> {
     };
   }
 
-  watchDisconnect(_device: USBDevice, _callback: () => void): void {
-    // USB 断开检测依赖 navigator.usb 的 disconnect 事件，USBDevice 没有 ondisconnect 属性
+  private disconnectHandlers = new WeakMap<USBDevice, (e: USBConnectionEvent) => void>();
+
+  watchDisconnect(device: USBDevice, callback: () => void): void {
+    const usb = getNavigatorUsb();
+    if (!usb) return;
+    const handler = (e: USBConnectionEvent) => {
+      if (e.device === device) callback();
+    };
+    usb.addEventListener('disconnect', handler);
+    this.disconnectHandlers.set(device, handler);
   }
 
-  unwatchDisconnect(_device: USBDevice): void {
-    // no-op
+  unwatchDisconnect(device: USBDevice): void {
+    const usb = getNavigatorUsb();
+    if (!usb) return;
+    const handler = this.disconnectHandlers.get(device);
+    if (handler) {
+      usb.removeEventListener('disconnect', handler);
+      this.disconnectHandlers.delete(device);
+    }
   }
 }

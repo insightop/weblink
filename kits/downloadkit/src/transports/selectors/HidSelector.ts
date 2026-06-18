@@ -33,11 +33,25 @@ export class HidSelector implements DeviceSelector<HIDDevice> {
     };
   }
 
-  watchDisconnect(_device: HIDDevice, _callback: () => void): void {
-    // HID 断开检测依赖 navigator.hid 的 disconnect 事件
+  private disconnectHandlers = new WeakMap<HIDDevice, (e: HIDConnectionEvent) => void>();
+
+  watchDisconnect(device: HIDDevice, callback: () => void): void {
+    const hid = getNavigatorHid();
+    if (!hid) return;
+    const handler = (e: HIDConnectionEvent) => {
+      if (e.device === device) callback();
+    };
+    hid.addEventListener('disconnect', handler);
+    this.disconnectHandlers.set(device, handler);
   }
 
-  unwatchDisconnect(_device: HIDDevice): void {
-    // no-op
+  unwatchDisconnect(device: HIDDevice): void {
+    const hid = getNavigatorHid();
+    if (!hid) return;
+    const handler = this.disconnectHandlers.get(device);
+    if (handler) {
+      hid.removeEventListener('disconnect', handler);
+      this.disconnectHandlers.delete(device);
+    }
   }
 }
