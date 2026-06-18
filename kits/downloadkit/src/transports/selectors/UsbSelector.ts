@@ -26,6 +26,9 @@ export class UsbSelector implements DeviceSelector<USBDevice> {
       type: 'usb',
       usbVendorId: device.vendorId,
       usbProductId: device.productId,
+      manufacturerName: device.manufacturerName ?? undefined,
+      productName: device.productName ?? undefined,
+      serialNumber: device.serialNumber ?? undefined,
     };
   }
 

@@ -6,4 +6,7 @@ export interface HardwareIdentity {
   type: HardwareType;
   usbVendorId?: number;
   usbProductId?: number;
+  manufacturerName?: string;
+  productName?: string;
+  serialNumber?: string;
 }

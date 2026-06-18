@@ -27,6 +27,8 @@ export class HardwareSession {
   private _currentIdentity: HardwareIdentity | null = null;
   private _disconnectCallback: (() => void) | null = null;
   private _disconnectBound: (() => void) | null = null;
+  private _reconnectCallback: (() => void) | null = null;
+  private _reconnectController: AbortController | null = null;
 
   private readonly store: DeviceIdentityStore;
   private readonly createSelectorFn: (type: HardwareType) => DeviceSelector<unknown>;
@@ -61,8 +63,16 @@ export class HardwareSession {
     return this._transport;
   }
 
+  getDeviceIdentity(): HardwareIdentity | null {
+    return this._currentIdentity;
+  }
+
   onDisconnect(cb: (() => void) | null): void {
     this._disconnectCallback = cb;
+  }
+
+  onReconnect(cb: (() => void) | null): void {
+    this._reconnectCallback = cb;
   }
 
   async acquire(type: HardwareType, identity?: PersistedHardwareIdentity): Promise<Transport> {
@@ -98,6 +108,8 @@ export class HardwareSession {
         lastConfig: identity?.lastConfig,
       });
 
+      this.startAutoReconnect();
+
       return transport;
     } catch (e) {
       this._status = 'idle';
@@ -106,6 +118,7 @@ export class HardwareSession {
   }
 
   async release(): Promise<void> {
+    this.stopAutoReconnect();
     if (this._transport && this._currentIdentity) {
       const selector = this.createSelectorFn(this._currentIdentity.type);
       const device = this.extractDevice(this._transport, this._currentIdentity.type);
@@ -151,6 +164,73 @@ export class HardwareSession {
     await this.store.clear();
   }
 
+  /** Start listening for browser connect events to auto-reconnect after a disconnect. */
+  startAutoReconnect(): void {
+    this.stopAutoReconnect();
+
+    const identity = this._currentIdentity;
+    if (!identity) return;
+
+    const controller = new AbortController();
+    this._reconnectController = controller;
+    const signal = controller.signal;
+
+    switch (identity.type) {
+      case 'serial': {
+        const nav = navigator as Navigator & { serial?: { addEventListener: Function } };
+        if (!nav.serial?.addEventListener) break;
+        nav.serial.addEventListener(
+          'connect',
+          async (e: Event) => {
+            const port = (e as unknown as { port: SerialPort }).port;
+            const info = port.getInfo?.();
+            if (!info) return;
+            if (this._status !== 'disconnected') return;
+            if (
+              identity.usbVendorId != null &&
+              identity.usbProductId != null &&
+              info.usbVendorId === identity.usbVendorId &&
+              info.usbProductId === identity.usbProductId
+            ) {
+              const restored = await this.tryRestore();
+              if (restored) this._reconnectCallback?.();
+            }
+          },
+          { signal },
+        );
+        break;
+      }
+      case 'usb': {
+        const nav = navigator as Navigator & { usb?: USB };
+        if (!nav.usb?.addEventListener) break;
+        nav.usb.addEventListener(
+          'connect',
+          async (e: Event) => {
+            const device = (e as USBConnectionEvent).device;
+            if (this._status !== 'disconnected') return;
+            if (
+              identity.usbVendorId != null &&
+              identity.usbProductId != null &&
+              device.vendorId === identity.usbVendorId &&
+              device.productId === identity.usbProductId
+            ) {
+              const restored = await this.tryRestore();
+              if (restored) this._reconnectCallback?.();
+            }
+          },
+          { signal },
+        );
+        break;
+      }
+      // hid: navigator.hid has no connect/disconnect events
+    }
+  }
+
+  stopAutoReconnect(): void {
+    this._reconnectController?.abort();
+    this._reconnectController = null;
+  }
+
   /** Silently restore device connection from stored identity. No user prompt. */
   async tryRestore(): Promise<boolean> {
     if (this._transport) return false;
@@ -182,6 +262,7 @@ export class HardwareSession {
       this._status = 'ready';
 
       await this.store.save({ ...hardwareIdentity, lastConfig: identity.lastConfig });
+      this.startAutoReconnect();
       return true;
     } catch {
       this._status = 'idle';

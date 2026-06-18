@@ -29,6 +29,7 @@ export class HidSelector implements DeviceSelector<HIDDevice> {
       type: 'hid',
       usbVendorId: device.vendorId,
       usbProductId: device.productId,
+      productName: device.productName ?? undefined,
     };
   }
 

@@ -9,6 +9,9 @@ export interface PersistedHardwareIdentity {
   type: 'serial' | 'usb' | 'hid';
   usbVendorId?: number;
   usbProductId?: number;
+  manufacturerName?: string;
+  productName?: string;
+  serialNumber?: string;
   lastConfig?: Record<string, unknown>;
 }
 

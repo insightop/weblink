@@ -73,8 +73,15 @@ export function getCurrentPluginMeta(): FlasherPlugin | null {
 export function getCurrentDeviceDetails(): string[] {
   const hs = HardwareSession.getInstance();
   if (hs.getStatus() !== 'ready') return [];
-  // 设备详情现在由 HardwareSession 统一管理
-  return [];
+  const identity = hs.getDeviceIdentity();
+  if (!identity) return [];
+  const details: string[] = [];
+  if (identity.usbVendorId != null && identity.usbProductId != null) {
+    details.push(`${identity.usbVendorId.toString(16).padStart(4, '0')}:${identity.usbProductId.toString(16).padStart(4, '0')}`);
+  }
+  if (identity.manufacturerName) details.push(identity.manufacturerName);
+  if (identity.productName) details.push(identity.productName);
+  return details;
 }
 
 function getPluginConfigSnapshot(plugin: FlasherPlugin): PluginConfigObject {
@@ -159,6 +166,11 @@ export async function tryRestoreConnection(): Promise<boolean> {
     store.setFlasherState({ status: 'disconnected', label: store.flasherLabel, error: null });
   });
 
+  hs.onReconnect(() => {
+    flasherLogger.info(t('flasherPage.deviceReconnected'));
+    store.setFlasherState({ status: 'ready', label: plugin.displayName, error: null });
+  });
+
   return true;
 }
 
@@ -224,7 +236,7 @@ export async function prepareFlasherForCurrentSelection(options?: { forceReselec
     prepared = { pluginId: plugin.id, configKey };
     store.setFlasherState({ status: 'ready', label: plugin.displayName, error: null });
 
-    // 监听设备被动断开
+    // 监听设备被动断开与自动重连
     hs.onDisconnect(() => {
       currentProtocol?.abort?.();
       flasherLogger.warning(t('flasherPage.deviceDisconnected'));
@@ -234,6 +246,11 @@ export async function prepareFlasherForCurrentSelection(options?: { forceReselec
         label: store.flasherLabel,
         error: null,
       });
+    });
+
+    hs.onReconnect(() => {
+      flasherLogger.info(t('flasherPage.deviceReconnected'));
+      store.setFlasherState({ status: 'ready', label: plugin.displayName, error: null });
     });
 
     return;
@@ -268,7 +285,6 @@ export async function startFlash(input: unknown, deps: PluginRuntimeDeps = {}): 
     store.setDownloadResult("error");
     throw new Error(t("flasherPage.flashNotImplemented"));
   }
-  const hs = HardwareSession.getInstance();
   const hs = HardwareSession.getInstance();
   const existingTransport = hs.getStatus() === 'ready' ? hs.getTransport() : null;
 
