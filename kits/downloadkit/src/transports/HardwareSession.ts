@@ -57,6 +57,10 @@ export class HardwareSession {
     return this._status;
   }
 
+  getTransport(): Transport | null {
+    return this._transport;
+  }
+
   onDisconnect(cb: (() => void) | null): void {
     this._disconnectCallback = cb;
   }

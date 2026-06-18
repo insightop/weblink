@@ -7,52 +7,27 @@ import type { FlasherProtocol } from "../../../protocols/types";
 import { normalizeConfigBySchema } from "../../../plugins/config/pluginConfig.validators";
 import type { PluginConfigObject } from "../../../plugins/config/pluginConfig.types";
 import type { Transport } from "../../../transports/types";
-import { useFlasherStore, type DeviceStatus } from "../stores/flasher.store";
+import { useFlasherStore } from "../stores/flasher.store";
 import { flasherLogger } from "./flasherLogger";
 import { i18n } from "../../../i18n";
 import { formatBytes, formatSpeed } from "../../../shared/format/formatBytes";
-import { SessionManager } from "../session/SessionManager";
+import { HardwareSession } from "../../../transports/HardwareSession";
+import { DeviceIdentityStore } from "../../../transports/DeviceIdentityStore";
 
 function t(key: string, values?: Record<string, unknown>): string {
   return String(i18n.global.t(key, (values ?? {}) as Record<string, unknown>));
 }
 
-interface PreparedTransportSession {
+interface PreparedInfo {
   pluginId: string;
   configKey: string;
-  transport: Transport;
 }
 
-let prepared: PreparedTransportSession | null = null;
-let selectingTask: Promise<void> | null = null;
-let sessionManager: SessionManager | null = null;
+let prepared: PreparedInfo | null = null;
 /** 当前活跃的下载会话（供 cancelDownload() 和 disconnect 中断使用）。 */
 let currentSession: DownloadSession | null = null;
 /** 当前活跃的协议实例（供 disconnect 时立即中断 I/O 使用）。 */
 let currentProtocol: FlasherProtocol | null = null;
-
-function getSessionManager(): SessionManager {
-  if (!sessionManager) {
-    sessionManager = new SessionManager();
-    sessionManager.onStatusChange((status) => {
-      const store = useFlasherStore();
-      store.setFlasherState({ status: status as DeviceStatus, label: store.flasherLabel, error: store.flasherError });
-    });
-    sessionManager.onDisconnect(() => {
-      // 串口被动断开时：立即中断协议 I/O（无需等超时），再取消下载流程
-      currentProtocol?.abort?.();
-      flasherLogger.warning(t("flasherPage.deviceDisconnected"));
-      cancelDownload();
-    });
-    sessionManager.onConfirmReconnect((portInfo: string) => {
-      // VID/PID 匹配但无法确认是同一设备时，询问用户
-      return Promise.resolve(
-        window.confirm(t("flasherPage.confirmReconnect", { device: portInfo })),
-      );
-    });
-  }
-  return sessionManager;
-}
 
 /** 中断当前正在进行的下载（用户取消 / 串口被动断开 共用）。 */
 export function cancelDownload(): void {
@@ -96,9 +71,10 @@ export function getCurrentPluginMeta(): FlasherPlugin | null {
 }
 
 export function getCurrentDeviceDetails(): string[] {
-  if (!prepared) return [];
-  const details = prepared.transport.getDeviceDetails?.() ?? [];
-  return details.filter((item) => item && item.trim().length > 0);
+  const hs = HardwareSession.getInstance();
+  if (hs.getStatus() !== 'ready') return [];
+  // 设备详情现在由 HardwareSession 统一管理
+  return [];
 }
 
 function getPluginConfigSnapshot(plugin: FlasherPlugin): PluginConfigObject {
@@ -180,53 +156,70 @@ export async function prepareFlasherForCurrentSelection(options?: { forceReselec
 
   const configSnapshot = getPluginConfigSnapshot(plugin);
   const configKey = JSON.stringify(configSnapshot);
+  const hs = HardwareSession.getInstance();
 
-  if (prepared && (prepared.pluginId !== plugin.id || prepared.configKey !== configKey || options?.forceReselect)) {
-    sessionManager?.destroy();
-    await prepared.transport.close().catch(() => undefined);
-    prepared = null;
-  }
-
-  if (!prepared) {
-    prepared = { pluginId: plugin.id, configKey, transport: plugin.createTransport(configSnapshot) };
+  // 检测配置变更或插件切换
+  if (hs.getStatus() !== 'idle') {
+    if (prepared?.pluginId !== plugin.id || options?.forceReselect) {
+      await hs.release();
+      prepared = null;
+    } else if (prepared.configKey !== configKey) {
+      // 配置变更（如波特率修改），保持设备连接但用新配置重建传输
+      await hs.reopen(configSnapshot as Record<string, unknown>);
+      prepared.configKey = configKey;
+      store.setFlasherState({ status: 'ready', label: plugin.displayName, error: null });
+      return;
+    } else {
+      // 已有活跃连接且配置未变
+      store.setFlasherState({ status: 'ready', label: plugin.displayName, error: null });
+      return;
+    }
   }
 
   if (!plugin.canSelectConnection) {
-    store.setFlasherState({ status: "idle", label: null, error: t("flasherPage.noConnectionNeeded") });
+    store.setFlasherState({ status: 'idle', label: null, error: t('flasherPage.noConnectionNeeded') });
     return;
   }
 
-  if (prepared.transport.isDeviceReady?.()) {
-    const label = prepared.transport.getDeviceLabel?.() ?? plugin.displayName;
-    store.setFlasherState({ status: "ready", label, error: null });
-    return;
-  }
+  // 使用 HardwareSession 管理连接流程
+  store.setFlasherState({ status: 'pending', label: null, error: null });
 
-  // 使用 SessionManager 管理连接流程（pending → selecting → ready）
-  store.setFlasherState({ status: "pending", label: null, error: null });
-  if (selectingTask) return selectingTask;
-  selectingTask = (async () => {
-    const sm = getSessionManager();
-    try {
-      await withTimeout(
-        sm.connect(prepared!.transport),
-        SELECT_DEVICE_TIMEOUT_MS,
-        t("flasherPage.deviceSelectionTimeout"),
-      );
-      if (sm.status !== "ready") return; // user cancelled → stays pending
-      const label = prepared?.transport.getDeviceLabel?.() ?? plugin.displayName;
-      store.setFlasherState({ status: "ready", label, error: null });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      store.setFlasherState({ status: "failed", label: null, error: message });
-      await prepared?.transport.close().catch(() => undefined);
-      prepared = null;
-      throw error;
-    } finally {
-      selectingTask = null;
-    }
-  })();
-  return selectingTask;
+  try {
+    // 从持久化存储读取上次的设备身份（如有）
+    const identityStore = new DeviceIdentityStore();
+    const stored = await identityStore.load();
+
+    const transport = await withTimeout(
+      hs.acquire(plugin.flasherType as 'serial' | 'usb' | 'hid', stored ?? undefined),
+      SELECT_DEVICE_TIMEOUT_MS,
+      t('flasherPage.deviceSelectionTimeout'),
+    );
+
+    if (hs.getStatus() !== 'ready') return; // user cancelled → stays pending
+
+    prepared = { pluginId: plugin.id, configKey };
+    store.setFlasherState({ status: 'ready', label: plugin.displayName, error: null });
+
+    // 监听设备被动断开
+    hs.onDisconnect(() => {
+      currentProtocol?.abort?.();
+      flasherLogger.warning(t('flasherPage.deviceDisconnected'));
+      cancelDownload();
+      store.setFlasherState({
+        status: 'disconnected',
+        label: store.flasherLabel,
+        error: null,
+      });
+    });
+
+    return;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    store.setFlasherState({ status: 'failed', label: null, error: message });
+    await hs.release().catch(() => undefined);
+    prepared = null;
+    throw error;
+  }
 }
 
 /** @returns true if flash completed successfully; false if user cancelled (e.g. ST-Link target picker). */
@@ -251,6 +244,20 @@ export async function startFlash(input: unknown, deps: PluginRuntimeDeps = {}): 
     store.setDownloadResult("error");
     throw new Error(t("flasherPage.flashNotImplemented"));
   }
+  const hs = HardwareSession.getInstance();
+  const hs = HardwareSession.getInstance();
+  const existingTransport = hs.getStatus() === 'ready' ? hs.getTransport() : null;
+
+  let transport: Transport;
+  if (existingTransport) {
+    transport = existingTransport;
+  } else if (!plugin.canSelectConnection) {
+    transport = plugin.createTransport(getPluginConfigSnapshot(plugin));
+  } else {
+    store.setDownloadResult("error");
+    throw new Error(t("flasherPage.selectConnectionFirst"));
+  }
+
   if (!prepared || prepared.pluginId !== plugin.id) {
     store.setDownloadResult("error");
     throw new Error(t("flasherPage.selectConnectionFirst"));
@@ -268,7 +275,6 @@ export async function startFlash(input: unknown, deps: PluginRuntimeDeps = {}): 
     store.setRuntimePhase("idle");
   };
 
-  const transport = prepared.transport;
   const configSnapshot = getPluginConfigSnapshot(plugin);
   const protocol = plugin.createProtocol(transport, deps, configSnapshot);
   const speedWindow: Array<{ t: number; w: number }> = [];
