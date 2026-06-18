@@ -138,6 +138,30 @@ export function getFlasherRuntimeInfo(): { canFlash: boolean; canSelectConnectio
   return { canFlash: plugin.canFlash, canSelectConnection: plugin.canSelectConnection, hint };
 }
 
+/** Silently restore device connection from stored identity on page load. */
+export async function tryRestoreConnection(): Promise<boolean> {
+  const store = useFlasherStore();
+  const plugin = resolveCurrentPlugin();
+  if (!plugin || !plugin.canSelectConnection) return false;
+
+  const hs = HardwareSession.getInstance();
+  const restored = await hs.tryRestore();
+  if (!restored) return false;
+
+  const configKey = JSON.stringify(getPluginConfigSnapshot(plugin));
+  prepared = { pluginId: plugin.id, configKey };
+  store.setFlasherState({ status: 'ready', label: plugin.displayName, error: null });
+
+  hs.onDisconnect(() => {
+    currentProtocol?.abort?.();
+    flasherLogger.warning(t('flasherPage.deviceDisconnected'));
+    cancelDownload();
+    store.setFlasherState({ status: 'disconnected', label: store.flasherLabel, error: null });
+  });
+
+  return true;
+}
+
 export async function prepareFlasherForCurrentSelection(options?: { forceReselect?: boolean }): Promise<void> {
   const store = useFlasherStore();
   const plugin = resolveCurrentPlugin();
@@ -190,7 +214,7 @@ export async function prepareFlasherForCurrentSelection(options?: { forceReselec
     const stored = await identityStore.load();
 
     const transport = await withTimeout(
-      hs.acquire(plugin.flasherType as 'serial' | 'usb' | 'hid', stored ?? undefined),
+      hs.acquire(plugin.connectionType, stored ?? undefined),
       SELECT_DEVICE_TIMEOUT_MS,
       t('flasherPage.deviceSelectionTimeout'),
     );

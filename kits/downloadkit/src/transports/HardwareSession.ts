@@ -151,6 +151,44 @@ export class HardwareSession {
     await this.store.clear();
   }
 
+  /** Silently restore device connection from stored identity. No user prompt. */
+  async tryRestore(): Promise<boolean> {
+    if (this._transport) return false;
+
+    const identity = await this.store.load();
+    if (!identity) return false;
+
+    this._status = 'selecting';
+    try {
+      const selector = this.createSelectorFn(identity.type);
+      const device = await this.tryMatchGranted(selector, identity);
+      if (!device) {
+        this._status = 'idle';
+        return false;
+      }
+
+      const transport = this.createTransportFn(identity.type, device, identity.lastConfig);
+      const hardwareIdentity = selector.getIdentity(device);
+
+      this._disconnectBound = () => {
+        this._status = 'disconnected';
+        this._disconnectCallback?.();
+      };
+      selector.watchDisconnect(device, this._disconnectBound);
+      await transport.open();
+
+      this._transport = transport;
+      this._currentIdentity = hardwareIdentity;
+      this._status = 'ready';
+
+      await this.store.save({ ...hardwareIdentity, lastConfig: identity.lastConfig });
+      return true;
+    } catch {
+      this._status = 'idle';
+      return false;
+    }
+  }
+
   // --- Default implementations (real browser API) ---
 
   private defaultCreateSelector(type: HardwareType): DeviceSelector<unknown> {

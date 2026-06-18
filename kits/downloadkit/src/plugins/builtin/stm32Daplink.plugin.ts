@@ -12,6 +12,7 @@ export const stm32DaplinkPlugin: FlasherPlugin = {
   displayName: "STM32 DAP-Link",
   chipFamily: "stm32",
   flasherType: "dap-link",
+  connectionType: "usb",
   canSelectConnection: true,
   canFlash: true,
   priority: 100,

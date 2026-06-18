@@ -22,6 +22,7 @@ import {
   prepareFlasherForCurrentSelection,
   startFlash,
   cancelDownload,
+  tryRestoreConnection,
 } from "../services/flasherFacade";
 import { flasherLogger } from "../services/flasherLogger";
 import { useUrlParams } from "../../../url-params/useUrlParams";
@@ -331,6 +332,15 @@ onMounted(async () => {
           firmwareInput.value?.restoreFirmwareRows(persisted.firmwareRows);
         }
       }
+    } catch (error) {
+      flasherLogger.warning(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  // 页面加载后尝试静默恢复上次的设备连接
+  if (!hasUrlParams) {
+    try {
+      await tryRestoreConnection();
     } catch (error) {
       flasherLogger.warning(error instanceof Error ? error.message : String(error));
     }

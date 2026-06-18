@@ -16,6 +16,7 @@ export const stm32DfuPlugin: FlasherPlugin = {
   displayName: "STM32 USB DFU",
   chipFamily: "stm32",
   flasherType: "usb-dfu",
+  connectionType: "usb",
   canSelectConnection: true,
   canFlash: true,
   priority: 100,

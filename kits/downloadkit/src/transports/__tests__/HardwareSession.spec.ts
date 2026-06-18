@@ -199,4 +199,75 @@ describe('HardwareSession', () => {
     const b = HardwareSession.getInstance();
     expect(a).toBe(b);
   });
+
+  describe('tryRestore', () => {
+    it('返回 false 当无存储的 identity', async () => {
+      const store = new DeviceIdentityStore();
+      const session = HardwareSession.getInstance({ store, createSelector: () => makeMockSelector() });
+      const result = await session.tryRestore();
+      expect(result).toBe(false);
+      expect(session.getStatus()).toBe('idle');
+    });
+
+    it('返回 false 当无匹配的已授权设备', async () => {
+      const mockSelector = makeMockSelector();
+      (mockSelector.getGranted as Mock).mockResolvedValue([]);
+
+      const store = new DeviceIdentityStore();
+      await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 });
+
+      const session = HardwareSession.getInstance({
+        store,
+        createSelector: () => mockSelector,
+        createTransport: (_t, _d, _c) => makeMockTransport(),
+      });
+      const result = await session.tryRestore();
+      expect(result).toBe(false);
+      expect(session.getStatus()).toBe('idle');
+    });
+
+    it('返回 true 当匹配到已授权设备并建立连接', async () => {
+      const mockDevice = { id: 'device-1', usbVendorId: 0x1234, usbProductId: 0x5678 };
+      const mockSelector = makeMockSelector();
+      (mockSelector.getGranted as Mock).mockResolvedValue([mockDevice]);
+      (mockSelector.getIdentity as Mock).mockImplementation((d) => ({
+        type: 'serial',
+        usbVendorId: d.usbVendorId,
+        usbProductId: d.usbProductId,
+      }));
+
+      const store = new DeviceIdentityStore();
+      await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 });
+
+      const session = HardwareSession.getInstance({
+        store,
+        createSelector: () => mockSelector,
+        createTransport: (_t, _d, _c) => makeMockTransport(),
+      });
+      const result = await session.tryRestore();
+      expect(result).toBe(true);
+      expect(session.getStatus()).toBe('ready');
+      expect(session.getTransport()).not.toBeNull();
+    });
+
+    it('返回 false 当会话已激活', async () => {
+      const mockDevice = { id: 'device-1', usbVendorId: 0x1234, usbProductId: 0x5678 };
+      const mockSelector = makeMockSelector();
+      (mockSelector.request as Mock).mockResolvedValue(mockDevice);
+
+      const store = new DeviceIdentityStore();
+      await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 });
+
+      const session = HardwareSession.getInstance({
+        store,
+        createSelector: () => mockSelector,
+        createTransport: (_t, _d, _c) => makeMockTransport(),
+      });
+      await session.acquire('serial');
+      expect(session.getStatus()).toBe('ready');
+
+      const result = await session.tryRestore();
+      expect(result).toBe(false);
+    });
+  });
 });

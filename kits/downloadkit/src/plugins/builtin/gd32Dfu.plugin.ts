@@ -10,6 +10,7 @@ export const gd32DfuPlugin: FlasherPlugin = {
   displayName: "GD32 USB DFU",
   chipFamily: "gd32",
   flasherType: "usb-dfu",
+  connectionType: "usb",
   canSelectConnection: true,
   canFlash: true,
   priority: 100,
