@@ -2,8 +2,19 @@ import { describe, expect, it, vi } from "vitest";
 import { SessionManager } from "./SessionManager";
 import type { Transport } from "../../../../transports/types";
 
-function createMockTransport(overrides: Partial<Transport> = {}): Transport {
-  return {
+// Extra methods SessionManager checks at runtime
+interface SessionAwareTransport extends Transport {
+  selectDevice?(): Promise<void>;
+  isDeviceReady?(): boolean;
+  getDeviceLabel?(): string | null;
+  getDeviceDetails?(): string[];
+  onDisconnect?(cb: () => void): void;
+  onReconnect?(cb: (...args: unknown[]) => void): void;
+  removeEventListeners?(): void;
+}
+
+function createMockTransport(overrides: Partial<SessionAwareTransport> = {}): Transport {
+  const t: SessionAwareTransport = {
     name: "mock-transport",
     selectDevice: vi.fn().mockResolvedValue(undefined),
     open: vi.fn().mockResolvedValue(undefined),
@@ -18,6 +29,7 @@ function createMockTransport(overrides: Partial<Transport> = {}): Transport {
     removeEventListeners: vi.fn(),
     ...overrides,
   };
+  return t;
 }
 
 describe("SessionManager", () => {
