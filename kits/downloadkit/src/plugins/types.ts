@@ -7,6 +7,8 @@ import type {
 import type { StlinkTargetVariant } from "../transports/adapters/stlink.adapter";
 import type { Transport } from "../transports/types";
 
+export type HardwareType = "serial" | "usb" | "hid";
+
 export type ChipFamily = "stm32" | "esp32" | "gd32" | "ch32";
 export type FlasherType = "serial" | "usb-dfu" | "st-link" | "dap-link";
 
@@ -61,6 +63,7 @@ export interface FlasherPlugin {
   displayName: string;
   chipFamily: ChipFamily;
   flasherType: FlasherType;
+  connectionType: HardwareType;
   canSelectConnection: boolean;
   canFlash: boolean;
   priority: number;

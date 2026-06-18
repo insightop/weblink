@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.4.0",
+  "packageManager": "pnpm@11.6.0",
   "scripts": {
     "dev": "turbo dev --filter=@weblink/web",
     "dev:web": "turbo dev --filter=@weblink/web",
@@ -32,7 +32,7 @@
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^16.2.0",
     "prettier": "^3.8.3",
-    "turbo": "^2.9.14",
+    "turbo": "^2.9.18",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.4",

@@ -35,6 +35,7 @@ export const stm32SerialPlugin: FlasherPlugin = {
   displayName: "STM32 Serial",
   chipFamily: "stm32",
   flasherType: "serial",
+  connectionType: "serial",
   canSelectConnection: true,
   canFlash: true,
   priority: 100,

@@ -45,6 +45,7 @@ export const stm32StlinkPlugin: FlasherPlugin = {
   displayName: "STM32 ST-Link",
   chipFamily: "stm32",
   flasherType: "st-link",
+  connectionType: "usb",
   canSelectConnection: true,
   canFlash: true,
   priority: 100,

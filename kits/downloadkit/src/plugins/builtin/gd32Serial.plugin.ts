@@ -35,6 +35,7 @@ export const gd32SerialPlugin: FlasherPlugin = {
   displayName: "GD32 Serial",
   chipFamily: "gd32",
   flasherType: "serial",
+  connectionType: "serial",
   canSelectConnection: true,
   canFlash: true,
   priority: 100,

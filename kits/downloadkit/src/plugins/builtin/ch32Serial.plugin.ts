@@ -35,6 +35,7 @@ export const ch32SerialPlugin: FlasherPlugin = {
   displayName: "CH32 Serial (WCH ISP)",
   chipFamily: "ch32",
   flasherType: "serial",
+  connectionType: "serial",
   canSelectConnection: true,
   canFlash: true,
   priority: 100,

@@ -41,6 +41,7 @@ export const esp32SerialPlugin: FlasherPlugin = {
   displayName: "ESP32 Serial",
   chipFamily: "esp32",
   flasherType: "serial",
+  connectionType: "serial",
   canSelectConnection: true,
   canFlash: true,
   priority: 100,
