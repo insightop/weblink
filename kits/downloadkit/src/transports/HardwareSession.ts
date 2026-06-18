@@ -12,7 +12,11 @@ import { WebHidTransport } from './hid/WebHidTransport';
 export interface HardwareSessionDeps {
   store?: DeviceIdentityStore;
   createSelector?: (type: HardwareType) => DeviceSelector<unknown>;
-  createTransport?: (type: HardwareType, config?: Record<string, unknown>) => Transport;
+  createTransport?: (
+    type: HardwareType,
+    device?: unknown,
+    config?: Record<string, unknown>,
+  ) => Transport;
 }
 
 export class HardwareSession {
@@ -26,7 +30,11 @@ export class HardwareSession {
 
   private readonly store: DeviceIdentityStore;
   private readonly createSelectorFn: (type: HardwareType) => DeviceSelector<unknown>;
-  private readonly createTransportFn: (type: HardwareType, config?: Record<string, unknown>) => Transport;
+  private readonly createTransportFn: (
+    type: HardwareType,
+    device?: unknown,
+    config?: Record<string, unknown>,
+  ) => Transport;
 
   private constructor(deps?: HardwareSessionDeps) {
     this.store = deps?.store ?? new DeviceIdentityStore();
@@ -66,10 +74,8 @@ export class HardwareSession {
         ? (await this.tryMatchGranted(selector, identity)) ?? (await selector.request())
         : await selector.request();
 
-      const transport = this.createTransportFn(type, identity?.lastConfig);
+      const transport = this.createTransportFn(type, device, identity?.lastConfig);
       const hardwareIdentity = selector.getIdentity(device);
-
-      this.injectDevice(transport, type, device);
 
       this._disconnectBound = () => {
         this._status = 'disconnected';
@@ -127,8 +133,7 @@ export class HardwareSession {
 
     await transport.close().catch(() => undefined);
 
-    const newTransport = this.createTransportFn(type, config);
-    this.injectDevice(newTransport, type, device);
+    const newTransport = this.createTransportFn(type, device, config);
 
     await newTransport.open();
 
@@ -155,10 +160,14 @@ export class HardwareSession {
     }
   }
 
-  private defaultCreateTransport(type: HardwareType, config?: Record<string, unknown>): Transport {
+  private defaultCreateTransport(
+    type: HardwareType,
+    device?: unknown,
+    config?: Record<string, unknown>,
+  ): Transport {
     switch (type) {
       case 'serial':
-        return new WebSerialTransport((config?.baudRate as number) ?? 115200);
+        return new WebSerialTransport(device as SerialPort, (config?.baudRate as number) ?? 115200);
       case 'usb':
         return new WebUsbTransport();
       case 'hid':
@@ -184,20 +193,6 @@ export class HardwareSession {
         );
       }) ?? null
     );
-  }
-
-  private injectDevice(transport: Transport, type: HardwareType, device: unknown): void {
-    switch (type) {
-      case 'serial':
-        (transport as WebSerialTransport).replacePort(device as SerialPort);
-        break;
-      case 'usb':
-        (transport as WebUsbTransport).replaceDevice(device as USBDevice);
-        break;
-      case 'hid':
-        (transport as WebHidTransport).replaceDevice(device as HIDDevice);
-        break;
-    }
   }
 
   private extractDevice(transport: Transport, type: HardwareType): unknown {

@@ -1,32 +1,23 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it, beforeEach, vi, type Mock } from 'vitest';
 import { HardwareSession } from '../HardwareSession';
-import type { SessionStatus, HardwareType, HardwareIdentity } from '../HardwareSession.types';
+import type { HardwareType, HardwareIdentity } from '../HardwareSession.types';
 import type { DeviceSelector } from '../selectors/DeviceSelector';
 import type { Transport } from '../types';
 import { DeviceIdentityStore } from '../DeviceIdentityStore';
 
-function makeMockTransport(): Transport {
+function makeMockTransport(device?: unknown): Transport {
+  let mockPort = device ?? null;
   return {
     name: 'mock-transport',
-    open: vi.fn(),
-    close: vi.fn(),
-    write: vi.fn(),
-    read: vi.fn(),
-  } as unknown as Transport;
-}
-
-function makeSerialMockTransport() {
-  let mockPort: unknown = null;
-  return {
-    name: 'mock-serial',
+    get port() {
+      return mockPort;
+    },
     open: vi.fn().mockResolvedValue(undefined),
     close: vi.fn().mockResolvedValue(undefined),
     write: vi.fn(),
     read: vi.fn(),
-    get port() { return mockPort; },
-    replacePort: vi.fn((p: unknown) => { mockPort = p; }),
-  };
+  } as unknown as Transport;
 }
 
 function makeMockSelector(): DeviceSelector<unknown> {
@@ -55,11 +46,11 @@ describe('HardwareSession', () => {
 
     return HardwareSession.getInstance({
       createSelector: () => mockSelector,
-      createTransport: (_type, config) => {
+      createTransport: (_type, device, config) => {
         lastConfig = config;
-        const t = makeSerialMockTransport();
+        const t = makeMockTransport(device);
         transports.push(t);
-        return t as unknown as Transport;
+        return t;
       },
     });
   }
@@ -159,7 +150,6 @@ describe('HardwareSession', () => {
 
   it('带 identity 时优先匹配已授权设备', async () => {
     const session = createSession();
-    const matching = { usbVendorId: 0x1234, usbProductId: 0x5678 };
     (mockSelector.getIdentity as Mock).mockImplementation((d) => ({
       type: 'serial',
       usbVendorId: d.usbVendorId,
