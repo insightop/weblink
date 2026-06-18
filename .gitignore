@@ -37,6 +37,7 @@ coverage
 # Environment files
 .env
 .env.*
+!.env.example
 
 # Security
 *.pem
