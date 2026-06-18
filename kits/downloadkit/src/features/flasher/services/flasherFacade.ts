@@ -11,7 +11,7 @@ import { useFlasherStore } from "../stores/flasher.store";
 import { flasherLogger } from "./flasherLogger";
 import { i18n } from "../../../i18n";
 import { formatBytes, formatSpeed } from "../../../shared/format/formatBytes";
-import { HardwareSession } from "../../../transports/HardwareSession";
+import { FlasherSession } from "../../../transports/FlasherSession";
 import { DeviceIdentityStore } from "../../../transports/DeviceIdentityStore";
 
 function t(key: string, values?: Record<string, unknown>): string {
@@ -71,7 +71,7 @@ export function getCurrentPluginMeta(): FlasherPlugin | null {
 }
 
 export function getCurrentDeviceDetails(): string[] {
-  const hs = HardwareSession.getInstance();
+  const hs = FlasherSession.getInstance();
   if (hs.getStatus() !== 'ready') return [];
   const identity = hs.getDeviceIdentity();
   if (!identity) return [];
@@ -151,7 +151,7 @@ export async function tryRestoreConnection(): Promise<boolean> {
   const plugin = resolveCurrentPlugin();
   if (!plugin || !plugin.canSelectConnection) return false;
 
-  const hs = HardwareSession.getInstance();
+  const hs = FlasherSession.getInstance();
   const restored = await hs.tryRestore();
   if (!restored) return false;
 
@@ -192,7 +192,7 @@ export async function prepareFlasherForCurrentSelection(options?: { forceReselec
 
   const configSnapshot = getPluginConfigSnapshot(plugin);
   const configKey = JSON.stringify(configSnapshot);
-  const hs = HardwareSession.getInstance();
+  const hs = FlasherSession.getInstance();
 
   // 检测配置变更或插件切换
   if (hs.getStatus() !== 'idle') {
@@ -217,7 +217,7 @@ export async function prepareFlasherForCurrentSelection(options?: { forceReselec
     return;
   }
 
-  // 使用 HardwareSession 管理连接流程
+  // 使用 FlasherSession 管理连接流程
   store.setFlasherState({ status: 'pending', label: null, error: null });
 
   try {
@@ -291,7 +291,7 @@ export async function startFlash(input: unknown, deps: PluginRuntimeDeps = {}): 
     store.setDownloadResult("error");
     throw new Error(t("flasherPage.flashNotImplemented"));
   }
-  const hs = HardwareSession.getInstance();
+  const hs = FlasherSession.getInstance();
   const existingTransport = hs.getStatus() === 'ready' ? hs.getTransport() : null;
 
   let transport: Transport;

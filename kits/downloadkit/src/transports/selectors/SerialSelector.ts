@@ -1,5 +1,5 @@
 import type { DeviceSelector } from './DeviceSelector';
-import type { HardwareIdentity, HardwareType } from '../HardwareSession.types';
+import type { HardwareIdentity, HardwareType } from '../FlasherSession.types';
 
 function getNavigatorSerial(): Serial | undefined {
   if (typeof navigator === 'undefined') return undefined;

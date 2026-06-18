@@ -1,4 +1,4 @@
-import type { HardwareIdentity, HardwareType } from '../HardwareSession.types';
+import type { HardwareIdentity, HardwareType } from '../FlasherSession.types';
 
 export interface DeviceSelector<T> {
   readonly type: HardwareType;

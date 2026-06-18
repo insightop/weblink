@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it, beforeEach, vi, type Mock } from 'vitest';
-import { HardwareSession } from '../HardwareSession';
-import type { HardwareType, HardwareIdentity } from '../HardwareSession.types';
+import { FlasherSession } from '../FlasherSession';
+import type { HardwareType, HardwareIdentity } from '../FlasherSession.types';
 import type { DeviceSelector } from '../selectors/DeviceSelector';
 import type { Transport } from '../types';
 import { DeviceIdentityStore } from '../DeviceIdentityStore';
@@ -31,7 +31,7 @@ function makeMockSelector(): DeviceSelector<unknown> {
   };
 }
 
-describe('HardwareSession', () => {
+describe('FlasherSession', () => {
   let mockSelector: DeviceSelector<unknown>;
   let mockDevice: object;
   let transports: Transport[];
@@ -44,7 +44,7 @@ describe('HardwareSession', () => {
     mockDevice = { id: 'device-1' };
     (mockSelector.request as Mock).mockResolvedValue(mockDevice);
 
-    return HardwareSession.getInstance({
+    return FlasherSession.getInstance({
       createSelector: () => mockSelector,
       createTransport: (_type, device, config) => {
         lastConfig = config;
@@ -56,7 +56,7 @@ describe('HardwareSession', () => {
   }
 
   beforeEach(() => {
-    HardwareSession.resetInstance();
+    FlasherSession.resetInstance();
   });
 
   it('初始状态为 idle', () => {
@@ -189,21 +189,21 @@ describe('HardwareSession', () => {
     await store.save({ type: 'serial', usbVendorId: 1, usbProductId: 2 });
     expect(await store.load()).not.toBeNull();
 
-    const session = HardwareSession.getInstance({ store });
+    const session = FlasherSession.getInstance({ store });
     await session.clearIdentity();
     expect(await store.load()).toBeNull();
   });
 
   it('getInstance 返回同一个实例', () => {
-    const a = HardwareSession.getInstance();
-    const b = HardwareSession.getInstance();
+    const a = FlasherSession.getInstance();
+    const b = FlasherSession.getInstance();
     expect(a).toBe(b);
   });
 
   describe('tryRestore', () => {
     it('返回 false 当无存储的 identity', async () => {
       const store = new DeviceIdentityStore();
-      const session = HardwareSession.getInstance({ store, createSelector: () => makeMockSelector() });
+      const session = FlasherSession.getInstance({ store, createSelector: () => makeMockSelector() });
       const result = await session.tryRestore();
       expect(result).toBe(false);
       expect(session.getStatus()).toBe('idle');
@@ -216,7 +216,7 @@ describe('HardwareSession', () => {
       const store = new DeviceIdentityStore();
       await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 });
 
-      const session = HardwareSession.getInstance({
+      const session = FlasherSession.getInstance({
         store,
         createSelector: () => mockSelector,
         createTransport: (_t, _d, _c) => makeMockTransport(),
@@ -239,7 +239,7 @@ describe('HardwareSession', () => {
       const store = new DeviceIdentityStore();
       await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 });
 
-      const session = HardwareSession.getInstance({
+      const session = FlasherSession.getInstance({
         store,
         createSelector: () => mockSelector,
         createTransport: (_t, _d, _c) => makeMockTransport(),
@@ -258,7 +258,7 @@ describe('HardwareSession', () => {
       const store = new DeviceIdentityStore();
       await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 });
 
-      const session = HardwareSession.getInstance({
+      const session = FlasherSession.getInstance({
         store,
         createSelector: () => mockSelector,
         createTransport: (_t, _d, _c) => makeMockTransport(),

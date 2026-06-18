@@ -1,5 +1,5 @@
 import { DeviceIdentityStore, type PersistedHardwareIdentity } from './DeviceIdentityStore';
-import type { HardwareIdentity, HardwareType, SessionStatus } from './HardwareSession.types';
+import type { HardwareIdentity, HardwareType, SessionStatus } from './FlasherSession.types';
 import type { DeviceSelector } from './selectors/DeviceSelector';
 import type { Transport } from './types';
 import { SerialSelector } from './selectors/SerialSelector';
@@ -9,7 +9,7 @@ import { WebSerialTransport } from './serial/WebSerialTransport';
 import { WebUsbTransport } from './usb/WebUsbTransport';
 import { WebHidTransport } from './hid/WebHidTransport';
 
-export interface HardwareSessionDeps {
+export interface FlasherSessionDeps {
   store?: DeviceIdentityStore;
   createSelector?: (type: HardwareType) => DeviceSelector<unknown>;
   createTransport?: (
@@ -19,8 +19,8 @@ export interface HardwareSessionDeps {
   ) => Transport;
 }
 
-export class HardwareSession {
-  private static instance: HardwareSession | null = null;
+export class FlasherSession {
+  private static instance: FlasherSession | null = null;
 
   private _status: SessionStatus = 'idle';
   private _transport: Transport | null = null;
@@ -38,21 +38,21 @@ export class HardwareSession {
     config?: Record<string, unknown>,
   ) => Transport;
 
-  private constructor(deps?: HardwareSessionDeps) {
+  private constructor(deps?: FlasherSessionDeps) {
     this.store = deps?.store ?? new DeviceIdentityStore();
     this.createSelectorFn = deps?.createSelector ?? this.defaultCreateSelector;
     this.createTransportFn = deps?.createTransport ?? this.defaultCreateTransport;
   }
 
-  static getInstance(deps?: HardwareSessionDeps): HardwareSession {
-    if (!HardwareSession.instance) {
-      HardwareSession.instance = new HardwareSession(deps);
+  static getInstance(deps?: FlasherSessionDeps): FlasherSession {
+    if (!FlasherSession.instance) {
+      FlasherSession.instance = new FlasherSession(deps);
     }
-    return HardwareSession.instance;
+    return FlasherSession.instance;
   }
 
   static resetInstance(): void {
-    HardwareSession.instance = null;
+    FlasherSession.instance = null;
   }
 
   getStatus(): SessionStatus {

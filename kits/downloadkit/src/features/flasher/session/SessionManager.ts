@@ -7,7 +7,7 @@ export type StatusChangeHandler = (status: ConnectionStatus) => void;
  * USB 设备会话管理器（简化版）。
  *
  * 职责：管理设备从「选择 → 连接」的简单生命周期。
- * 设备选择由 HardwareSession 统一管理。
+ * 设备选择由 FlasherSession 统一管理。
  *
  * 状态机：
  *   idle → pending → selecting → ready
