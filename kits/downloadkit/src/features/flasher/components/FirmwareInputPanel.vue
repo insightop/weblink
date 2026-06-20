@@ -22,6 +22,8 @@ import { formatBytes } from "../../../shared/format/formatBytes";
 const store = useFlasherStore();
 const { t } = useI18n();
 
+const props = defineProps<{ disabled?: boolean }>();
+
 const rows = ref<FirmwareRowDraft[]>([]);
 
 const capabilities = computed(() => detectBrowserCapabilities());
@@ -209,6 +211,7 @@ defineExpose({
       v-if="effectivePolicy"
       :policy="effectivePolicy"
       :model-value="rows"
+      :disabled="props.disabled"
       @update:model-value="onRowsUpdate"
     />
   </FunctionZone>

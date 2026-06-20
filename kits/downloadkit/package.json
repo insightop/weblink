@@ -19,6 +19,7 @@
     "build:standalone": "vite build"
   },
   "dependencies": {
+    "@weblink/device-session": "workspace:*",
     "@weblink/tokens": "workspace:*",
     "@weblink/ui-vue": "workspace:*",
     "@weblink/utils": "workspace:*",

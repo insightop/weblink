@@ -3,7 +3,7 @@ import { normalizeConfigBySchema } from "../config/pluginConfig.validators";
 import { stm32FixedAddressPolicy } from "../firmwareInputPresets";
 import type { FlasherPlugin } from "../types";
 import { Gd32SerialProtocol } from "../../protocols/gd32/serial/Gd32SerialProtocol";
-import { WebSerialTransport } from "../../transports/serial/WebSerialTransport";
+import { WebSerialTransport } from "@weblink/device-session";
 import type { SerialTransport } from "../../transports/types";
 
 const SERIAL_CONFIG_SCHEMA = {

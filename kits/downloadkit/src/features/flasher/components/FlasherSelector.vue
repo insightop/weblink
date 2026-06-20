@@ -17,6 +17,7 @@ const props = defineProps<{
   status: DeviceStatus;
   configSchema: PluginConfigSchema | null;
   config: PluginConfigObject;
+  disabled?: boolean;
 }>();
 const emit = defineEmits<{
   "update:value": [value: "serial" | "usb-dfu" | "st-link" | "dap-link"];
@@ -53,7 +54,7 @@ function onClickFlasher(value: "serial" | "usb-dfu" | "st-link" | "dap-link"): v
         :key="option.pluginId"
         class="btn"
         :type="buttonType(option)"
-        :disabled="!option.isSupported"
+        :disabled="props.disabled || !option.isSupported"
         @click="onClickFlasher(option.flasherType)"
       >
         {{ option.flasherType }}
@@ -62,6 +63,7 @@ function onClickFlasher(value: "serial" | "usb-dfu" | "st-link" | "dap-link"): v
     <PluginConfigPanel
       :schema="props.configSchema"
       :config="props.config"
+      :disabled="props.disabled"
       @update:field="(key, value) => emit('update:field', key, value)"
     />
   </FunctionZone>

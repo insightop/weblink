@@ -1,4 +1,4 @@
-import { computed, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { SerialSession, type ConnectionState } from "../../../infrastructure/serial/serialSession";
 import type { SerialUserError } from "../../../infrastructure/serial/serialErrors";
 import { requestSerialPort } from "../../../infrastructure/serial/webSerial";
@@ -6,6 +6,7 @@ import { createStreamingDecoder, encodeText, type LineEnding } from "@weblink/ut
 import { formatHex, parseHex } from "@weblink/utils/hex";
 import { ByteLineFramer } from "../../../domain/serial/framing";
 import { useLogStore } from "@weblink/ui-vue";
+import { DeviceIdentityStore } from "@weblink/device-session";
 
 const MAX_RX_LINES = 2000;
 
@@ -53,6 +54,8 @@ export function useSerialConsole() {
 
   const rxVm = computed(() => rxLines.value);
 
+  const identityStore = new DeviceIdentityStore("serialkit:console");
+
   async function selectPort(): Promise<void> {
     lastError.value = null;
     try {
@@ -76,6 +79,24 @@ export function useSerialConsole() {
         parity: parity.value,
         flowControl: flowControl.value,
       });
+
+      // Persist device identity for auto-restore on next visit
+      const info = port.getInfo?.();
+      if (info?.usbVendorId != null) {
+        await identityStore.save({
+          type: "serial",
+          usbVendorId: info.usbVendorId,
+          usbProductId: info.usbProductId,
+          lastConfig: {
+            baudRate: baudRate.value,
+            dataBits: dataBits.value,
+            stopBits: stopBits.value,
+            parity: parity.value,
+            flowControl: flowControl.value,
+          },
+        });
+      }
+
       pushLog({ level: "info", scope: "serial", message: "已连接" });
     } catch (e) {
       setError(e, "连接失败");
@@ -88,6 +109,34 @@ export function useSerialConsole() {
     lastError.value = null;
     await session.close();
     pushLog({ level: "info", scope: "serial", message: "已断开" });
+  }
+
+  /** Attempt silent auto-restore of a previously-used serial port. */
+  async function tryRestorePort(): Promise<void> {
+    if (session.connectionState !== "idle") return;
+    try {
+      const stored = await identityStore.load();
+      if (!stored?.usbVendorId || !stored.usbProductId) return;
+      if (!("serial" in navigator)) return;
+      const ports = await navigator.serial.getPorts();
+      const match = ports.find((p) => {
+        const info = p.getInfo?.();
+        return info?.usbVendorId === stored.usbVendorId && info?.usbProductId === stored.usbProductId;
+      });
+      if (!match) return;
+      // Restore baud rate from stored config
+      if (stored.lastConfig?.baudRate && typeof stored.lastConfig.baudRate === "number") {
+        baudRate.value = stored.lastConfig.baudRate;
+      }
+      if (stored.lastConfig?.dataBits) dataBits.value = stored.lastConfig.dataBits as 7 | 8;
+      if (stored.lastConfig?.stopBits) stopBits.value = stored.lastConfig.stopBits as 1 | 2;
+      if (stored.lastConfig?.parity) parity.value = stored.lastConfig.parity as SerialParity;
+      if (stored.lastConfig?.flowControl) flowControl.value = stored.lastConfig.flowControl as SerialFlowControl;
+      await connect(match);
+      pushLog({ level: "info", scope: "serial", message: "自动恢复上次串口连接" });
+    } catch {
+      // Silent failure — user can manually select port
+    }
   }
 
   async function send(): Promise<void> {
@@ -136,6 +185,10 @@ export function useSerialConsole() {
     pushLog({ level: "error", scope: "serial", message: e.message, data: e.cause });
   });
 
+  onMounted(() => {
+    void tryRestorePort();
+  });
+
   onUnmounted(() => {
     offData();
     offStatus();
@@ -156,6 +209,7 @@ export function useSerialConsole() {
     flowControl,
     selectPort,
     disconnect,
+    tryRestorePort,
 
     // rx
     rxVm,

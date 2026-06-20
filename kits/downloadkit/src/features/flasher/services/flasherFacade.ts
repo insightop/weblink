@@ -12,7 +12,6 @@ import { flasherLogger } from "./flasherLogger";
 import { i18n } from "../../../i18n";
 import { formatBytes, formatSpeed } from "../../../shared/format/formatBytes";
 import { FlasherSession } from "../../../transports/FlasherSession";
-import { DeviceIdentityStore } from "../../../transports/DeviceIdentityStore";
 
 function t(key: string, values?: Record<string, unknown>): string {
   return String(i18n.global.t(key, (values ?? {}) as Record<string, unknown>));
@@ -221,15 +220,13 @@ export async function prepareFlasherForCurrentSelection(options?: { forceReselec
   store.setFlasherState({ status: 'pending', label: null, error: null });
 
   try {
-    // 从持久化存储读取上次的设备身份（如有）
-    const identityStore = new DeviceIdentityStore();
-    const stored = await identityStore.load();
-
-    // 首次连接时传入插件配置，确保 lastConfig 被持久化
-    const identity = stored ?? {
-      type: plugin.connectionType,
-      lastConfig: getPluginConfigSnapshot(plugin) as Record<string, unknown>,
-    };
+    // forceReselect 时不传 identity，强制弹出浏览器设备选择框
+    const identity = options?.forceReselect
+      ? undefined
+      : await hs.loadPersistedIdentity() ?? {
+          type: plugin.connectionType,
+          lastConfig: getPluginConfigSnapshot(plugin) as Record<string, unknown>,
+        };
 
     const transport = await withTimeout(
       hs.acquire(plugin.connectionType, identity),

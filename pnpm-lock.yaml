@@ -283,6 +283,9 @@ importers:
       '@vicons/ionicons5':
         specifier: ^0.13.0
         version: 0.13.0
+      '@weblink/device-session':
+        specifier: workspace:*
+        version: link:../../packages/device-session
       '@weblink/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -704,6 +707,9 @@ importers:
 
   kits/serialkit:
     dependencies:
+      '@weblink/device-session':
+        specifier: workspace:*
+        version: link:../../packages/device-session
       '@weblink/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -913,6 +919,31 @@ importers:
       zod:
         specifier: ^3.25.0
         version: 3.25.76
+
+  packages/device-session:
+    dependencies:
+      idb:
+        specifier: ^8.0.2
+        version: 8.0.3
+    devDependencies:
+      '@types/w3c-web-serial':
+        specifier: ^1.0.8
+        version: 1.0.8
+      '@types/w3c-web-usb':
+        specifier: ^1.0.10
+        version: 1.0.14
+      '@weblink/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      fake-indexeddb:
+        specifier: ^6.0.0
+        version: 6.2.5
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.4(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(vite@8.0.16(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.48.0)(tsx@4.22.4))
 
   packages/eslint-config:
     dependencies:
@@ -12120,7 +12151,7 @@ snapshots:
 
   estree-walker@3.0.3:
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
 
   esutils@2.0.3: {}
 
@@ -14603,7 +14634,7 @@ snapshots:
       std-env: 4.1.0
       tinybench: 2.9.0
       tinyexec: 1.1.1
-      tinyglobby: 0.2.16
+      tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
       vite: 8.0.16(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.6.1)(terser@5.48.0)(tsx@4.22.4)
       why-is-node-running: 2.3.0
@@ -14631,7 +14662,7 @@ snapshots:
       std-env: 4.1.0
       tinybench: 2.9.0
       tinyexec: 1.1.1
-      tinyglobby: 0.2.16
+      tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
       vite: 8.0.8(@types/node@24.12.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.48.0)(tsx@4.22.4)
       why-is-node-running: 2.3.0

@@ -1,0 +1,25 @@
+{
+  "name": "@weblink/device-session",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": ["src"],
+  "scripts": {
+    "test": "vitest run",
+    "clean": "rm -rf dist node_modules/.cache"
+  },
+  "dependencies": {
+    "idb": "^8.0.2"
+  },
+  "devDependencies": {
+    "@types/w3c-web-serial": "^1.0.8",
+    "@types/w3c-web-usb": "^1.0.10",
+    "@weblink/tsconfig": "workspace:*",
+    "fake-indexeddb": "^6.0.0",
+    "typescript": "~6.0.2",
+    "vitest": "^4.1.4"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "extends": "@weblink/tsconfig/node.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["node", "w3c-web-serial", "w3c-web-usb"]
+  },
+  "include": ["src"]
+}

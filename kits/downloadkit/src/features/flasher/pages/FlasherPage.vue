@@ -61,6 +61,9 @@ const isHydratingPersistence = ref(true);
 const urlCtrl = useUrlParams();
 const targetLocked = computed(() => Boolean(urlCtrl.params.value.target));
 
+/** 下载进行中时禁用 target / flasher / firmware 控件 */
+const isDownloading = computed(() => store.downloadResult === "running");
+
 let persistDebounceTimer: ReturnType<typeof window.setTimeout> | null = null;
 const onPaneResized = (event: { size: number }[]): void => {
   if (!logPanelExpanded.value) return;
@@ -399,7 +402,7 @@ onMounted(async () => {
           </div>
           <TargetSelector
             :value="store.chipFamily"
-            :disabled="targetLocked"
+            :disabled="targetLocked || isDownloading"
             @update:value="onTargetSelected"
           />
           <FlasherSelector
@@ -409,11 +412,15 @@ onMounted(async () => {
             :status="store.flasherStatus"
             :config-schema="currentPluginConfigSchema"
             :config="currentPluginConfig"
+            :disabled="isDownloading"
             @update:value="onFlasherSelected"
             @reenter="onFlasherReenter"
             @update:field="onPluginConfigFieldUpdate"
           />
-          <FirmwareInputPanel ref="firmwareInput" />
+          <FirmwareInputPanel
+            ref="firmwareInput"
+            :disabled="isDownloading"
+          />
           <DownloadPanel
             :can-start="store.canStartDownload"
             :can-cancel="store.downloadResult === 'running'"

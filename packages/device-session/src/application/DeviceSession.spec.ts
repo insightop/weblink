@@ -1,10 +1,12 @@
 import 'fake-indexeddb/auto'
 import { describe, expect, it, beforeEach, vi, type Mock } from 'vitest'
-import { FlasherSession } from '../FlasherSession'
-import { DeviceIdentityStore } from '@weblink/device-session'
-import type { HardwareType, HardwareIdentity, DeviceSelector, Transport } from '@weblink/device-session'
+import { DeviceSession } from './DeviceSession'
+import type { HardwareType, HardwareIdentity } from '../domain/types'
+import type { DeviceSelector } from '../domain/selector'
+import type { Transport } from '../domain/transport'
+import { DeviceIdentityStore } from '../infrastructure/DeviceIdentityStore'
 
-function makeMockTransport(device?: unknown): Transport {
+function makeMockTransport(device?: unknown): Transport & { port: unknown } {
   let mockPort = device ?? null
   return {
     name: 'mock-transport',
@@ -15,7 +17,7 @@ function makeMockTransport(device?: unknown): Transport {
     close: vi.fn().mockResolvedValue(undefined),
     write: vi.fn(),
     read: vi.fn(),
-  } as unknown as Transport
+  }
 }
 
 function makeMockSelector(): DeviceSelector<unknown> {
@@ -29,20 +31,21 @@ function makeMockSelector(): DeviceSelector<unknown> {
   }
 }
 
-describe('FlasherSession', () => {
+describe('DeviceSession', () => {
   let mockSelector: DeviceSelector<unknown>
   let mockDevice: object
   let transports: Transport[]
   let lastConfig: Record<string, unknown> | undefined
 
-  function createSession() {
+  function createSession(storageKey = 'test') {
     transports = []
     lastConfig = undefined
     mockSelector = makeMockSelector()
     mockDevice = { id: 'device-1' }
     ;(mockSelector.request as Mock).mockResolvedValue(mockDevice)
 
-    return FlasherSession.getInstance({
+    return new DeviceSession({
+      storageKey,
       createSelector: () => mockSelector,
       createTransport: (_type, device, config) => {
         lastConfig = config
@@ -52,10 +55,6 @@ describe('FlasherSession', () => {
       },
     })
   }
-
-  beforeEach(() => {
-    FlasherSession.resetInstance()
-  })
 
   it('初始状态为 idle', () => {
     const session = createSession()
@@ -127,7 +126,63 @@ describe('FlasherSession', () => {
     await expect(session.reopen({ baudRate: 9600 })).rejects.toThrow('No active session')
   })
 
-  it('断开回调触发状态变化', async () => {
+  it('reopen 失败时回到 idle 并清理状态', async () => {
+    const session = createSession()
+    await session.acquire('serial')
+    expect(session.getStatus()).toBe('ready')
+
+    // 让新 transport 的 open 失败
+    const failingTransport = {
+      name: 'failing',
+      open: vi.fn().mockRejectedValue(new Error('device busy')),
+      close: vi.fn().mockResolvedValue(undefined),
+      write: vi.fn(),
+      read: vi.fn(),
+    }
+    ;(mockSelector.request as Mock).mockResolvedValue(mockDevice)
+
+    const sessionWithFailing = new DeviceSession({
+      storageKey: 'reopen-fail-test',
+      createSelector: () => mockSelector,
+      createTransport: (_type, _device, config) => {
+        if (config && 'forceFail' in config) return failingTransport as unknown as Transport
+        const t = makeMockTransport()
+        transports.push(t)
+        return t
+      },
+    })
+    await sessionWithFailing.acquire('serial')
+    expect(sessionWithFailing.getStatus()).toBe('ready')
+
+    await expect(sessionWithFailing.reopen({ forceFail: true })).rejects.toThrow('device busy')
+    expect(sessionWithFailing.getStatus()).toBe('idle')
+    expect(sessionWithFailing.getTransport()).toBeNull()
+  })
+
+  it('acquire 失败时清理 disconnect watcher', async () => {
+    const session = createSession()
+    ;(mockSelector.request as Mock).mockResolvedValue(mockDevice)
+
+    // 让 transport.open 失败
+    const failSession = new DeviceSession({
+      storageKey: 'acquire-fail-test',
+      createSelector: () => mockSelector,
+      createTransport: () => ({
+        name: 'fail',
+        open: vi.fn().mockRejectedValue(new Error('port busy')),
+        close: vi.fn(),
+        write: vi.fn(),
+        read: vi.fn(),
+      }),
+    })
+
+    await expect(failSession.acquire('serial')).rejects.toThrow('port busy')
+    expect(failSession.getStatus()).toBe('idle')
+    // unwatchDisconnect 应该被调用以清理 watcher
+    expect(mockSelector.unwatchDisconnect).toHaveBeenCalledOnce()
+  })
+
+  it('断开事件触发状态变化', async () => {
     const session = createSession()
 
     let disconnectHandler: (() => void) | undefined
@@ -136,7 +191,7 @@ describe('FlasherSession', () => {
     })
 
     const onDisconnect = vi.fn()
-    session.onDisconnect(onDisconnect)
+    session.on('disconnect', onDisconnect)
     await session.acquire('serial')
 
     expect(session.getStatus()).toBe('ready')
@@ -183,85 +238,91 @@ describe('FlasherSession', () => {
   })
 
   it('clearIdentity 清空持久化记录', async () => {
-    const store = new DeviceIdentityStore('test-clear')
+    const store = new DeviceIdentityStore('clear-test')
     await store.save({ type: 'serial', usbVendorId: 1, usbProductId: 2 })
     expect(await store.load()).not.toBeNull()
 
-    const session = FlasherSession.getInstance({ store })
+    const session = new DeviceSession({ store })
     await session.clearIdentity()
     expect(await store.load()).toBeNull()
-  })
 
-  it('getInstance 返回同一个实例', () => {
-    const a = FlasherSession.getInstance()
-    const b = FlasherSession.getInstance()
-    expect(a).toBe(b)
+    await store.clear()
   })
 
   describe('tryRestore', () => {
     it('返回 false 当无存储的 identity', async () => {
-      const store = new DeviceIdentityStore('test-restore-empty')
-      const session = FlasherSession.getInstance({
+      const store = new DeviceIdentityStore('restore-empty')
+      const session = new DeviceSession({
         store,
+        storageKey: 'restore-empty',
         createSelector: () => makeMockSelector(),
       })
       const result = await session.tryRestore()
       expect(result).toBe(false)
       expect(session.getStatus()).toBe('idle')
+
+      await store.clear()
     })
 
     it('返回 false 当无匹配的已授权设备', async () => {
-      const mockSelector = makeMockSelector()
-      ;(mockSelector.getGranted as Mock).mockResolvedValue([])
+      const sel = makeMockSelector()
+      ;(sel.getGranted as Mock).mockResolvedValue([])
 
-      const store = new DeviceIdentityStore('test-restore-nomatch')
+      const store = new DeviceIdentityStore('restore-no-match')
       await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 })
 
-      const session = FlasherSession.getInstance({
+      const session = new DeviceSession({
         store,
-        createSelector: () => mockSelector,
+        storageKey: 'restore-no-match',
+        createSelector: () => sel,
         createTransport: () => makeMockTransport(),
       })
       const result = await session.tryRestore()
       expect(result).toBe(false)
       expect(session.getStatus()).toBe('idle')
+
+      await store.clear()
     })
 
     it('返回 true 当匹配到已授权设备并建立连接', async () => {
-      const mockDevice = { id: 'device-1', usbVendorId: 0x1234, usbProductId: 0x5678 }
-      const mockSelector = makeMockSelector()
-      ;(mockSelector.getGranted as Mock).mockResolvedValue([mockDevice])
-      ;(mockSelector.getIdentity as Mock).mockImplementation((d) => ({
+      const device = { id: 'device-1', usbVendorId: 0x1234, usbProductId: 0x5678 }
+      const sel = makeMockSelector()
+      ;(sel.getGranted as Mock).mockResolvedValue([device])
+      ;(sel.getIdentity as Mock).mockImplementation((d) => ({
         type: 'serial',
         usbVendorId: d.usbVendorId,
         usbProductId: d.usbProductId,
       }))
 
-      const store = new DeviceIdentityStore('test-restore-match')
+      const store = new DeviceIdentityStore('restore-match')
       await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 })
 
-      const session = FlasherSession.getInstance({
+      const session = new DeviceSession({
         store,
-        createSelector: () => mockSelector,
+        storageKey: 'restore-match',
+        createSelector: () => sel,
         createTransport: () => makeMockTransport(),
       })
       const result = await session.tryRestore()
       expect(result).toBe(true)
       expect(session.getStatus()).toBe('ready')
       expect(session.getTransport()).not.toBeNull()
+
+      await store.clear()
     })
 
     it('返回 false 当会话已激活', async () => {
-      const mockDevice = { id: 'device-1', usbVendorId: 0x1234, usbProductId: 0x5678 }
-      const mockSelector = makeMockSelector()
-      ;(mockSelector.request as Mock).mockResolvedValue(mockDevice)
+      const device = { id: 'device-1', usbVendorId: 0x1234, usbProductId: 0x5678 }
+      const sel = makeMockSelector()
+      ;(sel.request as Mock).mockResolvedValue(device)
 
-      const store = new DeviceIdentityStore('test-restore-active')
+      const store = new DeviceIdentityStore('restore-active')
       await store.save({ type: 'serial', usbVendorId: 0x1234, usbProductId: 0x5678 })
 
-      const session = FlasherSession.getInstance({
+      const session = new DeviceSession({
         store,
-        createSelector: () => mockSelector,
+        storageKey: 'restore-active',
+        createSelector: () => sel,
         createTransport: () => makeMockTransport(),
       })
       await session.acquire('serial')
@@ -269,6 +330,60 @@ describe('FlasherSession', () => {
 
       const result = await session.tryRestore()
       expect(result).toBe(false)
+
+      await store.clear()
+    })
+  })
+
+  describe('多实例与事件', () => {
+    it('多实例独立', async () => {
+      const session1 = createSession('s1')
+      const session2 = createSession('s2')
+
+      await session1.acquire('serial')
+      expect(session1.getStatus()).toBe('ready')
+      expect(session2.getStatus()).toBe('idle')
+
+      await session1.release()
+      expect(session1.getStatus()).toBe('idle')
+    })
+
+    it('on("disconnect") 支持多订阅者', async () => {
+      const session = createSession()
+
+      let disconnectHandler: (() => void) | undefined
+      ;(mockSelector.watchDisconnect as Mock).mockImplementation((_d, cb) => {
+        disconnectHandler = cb
+      })
+
+      const h1 = vi.fn()
+      const h2 = vi.fn()
+      session.on('disconnect', h1)
+      session.on('disconnect', h2)
+
+      await session.acquire('serial')
+      disconnectHandler!()
+
+      expect(h1).toHaveBeenCalledOnce()
+      expect(h2).toHaveBeenCalledOnce()
+    })
+
+    it('unsubscribe 后不再收到事件', async () => {
+      const session = createSession()
+
+      let disconnectHandler: (() => void) | undefined
+      ;(mockSelector.watchDisconnect as Mock).mockImplementation((_d, cb) => {
+        disconnectHandler = cb
+      })
+
+      const handler = vi.fn()
+      const unsub = session.on('disconnect', handler)
+
+      await session.acquire('serial')
+      unsub()
+
+      disconnectHandler!()
+      expect(handler).not.toHaveBeenCalled()
     })
   })
 })

@@ -6,9 +6,10 @@ import PresetNumberField from "./config-fields/PresetNumberField.vue";
 import SelectField from "./config-fields/SelectField.vue";
 import type { PluginConfigObject, PluginConfigSchema } from "../../../plugins/config/pluginConfig.types";
 
-defineProps<{
+const props = defineProps<{
   schema: PluginConfigSchema | null;
   config: PluginConfigObject;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -20,6 +21,8 @@ const emit = defineEmits<{
   <div
     v-if="schema && schema.fields.length > 0"
     class="plugin-params"
+    :inert="props.disabled || undefined"
+    :class="{ 'plugin-params--disabled': props.disabled }"
   >
     <div class="config-grid">
       <FormFieldRow
@@ -72,5 +75,10 @@ const emit = defineEmits<{
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+.plugin-params--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
 }
 </style>

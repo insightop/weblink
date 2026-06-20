@@ -11,6 +11,7 @@ import { formatBytes } from "../../../shared/format/formatBytes";
 const props = defineProps<{
   policy: FirmwareInputPolicy;
   modelValue: FirmwareRowDraft[];
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -98,6 +99,7 @@ const addrInputTitle = computed(() => {
             :max="1"
             :file-list="uploadListFor(row)"
             accept=".hex,.bin,.elf"
+            :disabled="props.disabled"
             @update:file-list="onFileListUpdate(index, $event)"
           >
             <NUploadDragger class="slot-dragger">
@@ -115,6 +117,7 @@ const addrInputTitle = computed(() => {
                   circle
                   size="tiny"
                   class="file-pill-clear"
+                  :disabled="props.disabled"
                   :aria-label="t('firmware.clearFile')"
                   @click.stop="clearFile(index)"
                 >
@@ -132,7 +135,7 @@ const addrInputTitle = computed(() => {
               class="addr-input"
               :value="row.addressStr"
               size="medium"
-              :disabled="!policy.addressUserEditable"
+              :disabled="props.disabled || !policy.addressUserEditable"
               :placeholder="defaultAddrPlaceholder"
               :title="addrInputTitle"
               :aria-label="t('firmware.flashAddress')"
@@ -160,7 +163,7 @@ const addrInputTitle = computed(() => {
             circle
             type="error"
             size="small"
-            :disabled="modelValue.length <= policy.minRows"
+            :disabled="props.disabled || modelValue.length <= policy.minRows"
             :aria-label="t('firmware.removeRow')"
             @click="removeRow(index)"
           >
@@ -180,7 +183,7 @@ const addrInputTitle = computed(() => {
         quaternary
         circle
         size="medium"
-        :disabled="!canAdd"
+        :disabled="props.disabled || !canAdd"
         :aria-label="t('firmware.addRow')"
         @click="addRow"
       >
