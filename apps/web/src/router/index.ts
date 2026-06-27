@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import KitWrapper from "../views/KitWrapper.vue";
 import { findKit } from "@/config/kitRegistry";
+import { BUILD_VERSION, SITE_TITLE } from "@/utils/buildVersion";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,11 +15,11 @@ const router = createRouter({
 
 router.afterEach((to) => {
   if (to.name === "home") {
-    document.title = "Weblink";
+    document.title = SITE_TITLE;
   } else if (to.params.kitId) {
     const kitId = to.params.kitId as string;
     const kit = findKit(kitId);
-    document.title = kit ? `${kit.title} - Weblink` : "Weblink";
+    document.title = kit ? `${kit.title} - ${SITE_TITLE}` : SITE_TITLE;
   }
 });
 

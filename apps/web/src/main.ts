@@ -1,23 +1,14 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import * as Sentry from "@sentry/vue";
+import posthog from "posthog-js";
 import { inject } from "@vercel/analytics";
 import App from "./App.vue";
 import router from "./router";
 import { i18n } from "./i18n";
+import { BUILD_VERSION } from "./utils/buildVersion";
 import "@weblink/tokens/index.css";
 import "./styles/app.css";
-
-declare const __BUILD_TIME__: string;
-{
-  const dt = new Date(__BUILD_TIME__);
-  const y = String(dt.getFullYear()).slice(2);
-  const M = String(dt.getMonth() + 1).padStart(2, "0");
-  const d = String(dt.getDate()).padStart(2, "0");
-  const h = String(dt.getHours()).padStart(2, "0");
-  const m = String(dt.getMinutes()).padStart(2, "0");
-  document.title = `Weblink(${y}${M}${d}${h}${m})`;
-}
 
 const app = createApp(App);
 
@@ -41,21 +32,22 @@ const __deploy =
 Sentry.init({
   app,
   dsn: import.meta.env.VITE_SENTRY_DSN || undefined,
+  release: `weblink@${BUILD_VERSION}`,
   environment: import.meta.env.MODE,
   debug: import.meta.env.DEV,
 
   // --- Performance Tracing ---
-  tracesSampleRate: import.meta.env.DEV ? 1.0 : 0.2,
+  tracesSampleRate: 1.0,
   tracePropagationTargets: ["localhost", "127.0.0.1"],
 
   // --- Session Replay ---
-  replaysSessionSampleRate: import.meta.env.DEV ? 1.0 : 0.1,
+  replaysSessionSampleRate: 1.0,
   replaysOnErrorSampleRate: 1.0,
 
   // --- Integrations ---
   integrations: [
-    // Performance: browser tracing (navigation, resource, XHR/fetch spans)
-    Sentry.browserTracingIntegration({ router }),
+    // Performance: browser tracing (navigation, resource, XHR/fetch, long animation frames)
+    Sentry.browserTracingIntegration({ router, enableLongAnimationFrame: true }),
 
     // Replay: full session recording + error replay
     Sentry.replayIntegration({
@@ -82,6 +74,9 @@ Sentry.init({
       onunhandledrejection: true,
     }),
 
+    // Vue component tracking (mount / update / unmount spans)
+    Sentry.vueIntegration({ trackComponents: true }),
+
     // Deduplication: don't send the same error twice
     Sentry.dedupeIntegration(),
 
@@ -92,6 +87,22 @@ Sentry.init({
 
 Sentry.setTag("platform", __platform);
 Sentry.setTag("deploy", __deploy);
+
+// --- PostHog ---
+if (import.meta.env.VITE_POSTHOG_KEY) {
+  posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
+    api_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com",
+    person_profiles: "identified_only",
+    autocapture: true,
+    capture_pageview: "history_change",
+    session_recording: {
+      maskAllInputs: false,
+      maskTextSelector: "",
+      compress_events: true,
+    },
+  });
+  posthog.register({ build_version: BUILD_VERSION });
+}
 
 // --- PWA: notify user when a new version is available ---
 if (import.meta.env.PROD) {
