@@ -1,0 +1,146 @@
+.admin-app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--weblink-bg-primary, #1a1a1a);
+  color: var(--weblink-text-primary, #e0e0e0);
+}
+
+.admin-app__viewer {
+  position: relative;
+}
+
+.admin-app__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--weblink-bg-secondary, #2a2a2a);
+}
+
+.admin-app__demo-link {
+  color: var(--weblink-text-link, #5b9bf5);
+  text-decoration: none;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.admin-app__demo-link:hover {
+  text-decoration: underline;
+}
+
+.screen-viewer {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+}
+
+.screen-viewer--empty {
+  color: #888;
+}
+
+.screen-viewer__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.screen-viewer__label {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.room-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.room-panel__input {
+  width: 140px;
+  padding: 6px 10px;
+  border: 1px solid var(--weblink-border, #444);
+  border-radius: 4px;
+  background: var(--weblink-bg-primary, #1a1a1a);
+  color: var(--weblink-text-primary, #e0e0e0);
+  font-size: 14px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.room-panel--active {
+  justify-content: space-between;
+}
+
+.room-panel__info {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+}
+
+.room-panel__error {
+  color: #f44;
+  font-size: 12px;
+  margin: 0;
+}
+
+.voice-control {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  background: var(--weblink-bg-secondary, #2a2a2a);
+}
+
+.voice-control__btn {
+  padding: 6px 16px;
+  cursor: pointer;
+}
+
+/* ── Camera PIP ── */
+
+.camera-pip {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 200px;
+  height: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  cursor: move;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.camera-pip__header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.6);
+  font-size: 11px;
+  color: #ccc;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.camera-pip__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

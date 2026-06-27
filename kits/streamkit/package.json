@@ -1,0 +1,46 @@
+{
+  "name": "@weblink/streamkit",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./vue": "./src/vue-entry.ts"
+  },
+  "type": "module",
+  "description": "远程支持工具包 — 屏幕共享 + 双向语音 + 远程批注，基于 Cloudflare Realtime",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.react.json",
+    "typecheck:vue": "vue-tsc --noEmit -p tsconfig.json",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "dev:worker": "wrangler dev --config workers/signaling/wrangler.toml --port 8788",
+    "deploy:worker": "wrangler deploy --config workers/signaling/wrangler.toml",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@weblink/tokens": "workspace:*",
+    "@weblink/utils": "workspace:*",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "vue": "^3.5.32"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251125.0",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react-swc": "^4.3.1",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
+    "@weblink/vite-config": "workspace:*",
+    "happy-dom": "^18.0.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.6",
+    "wrangler": "^4.54.0"
+  }
+}

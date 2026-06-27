@@ -1,0 +1,8 @@
+{
+  "extends": "@weblink/tsconfig/vue-app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "skipLibCheck": true
+  },
+  "include": ["vite.config.ts", "vitest.config.ts", "src/vue-entry.ts"]
+}

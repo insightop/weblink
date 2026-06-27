@@ -1,0 +1,94 @@
+.demo-app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.share-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.share-screen h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--weblink-text-primary, #e0e0e0);
+}
+
+.share-screen__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.share-screen__form input {
+  padding: 8px 12px;
+  border: 1px solid var(--weblink-border, #444);
+  border-radius: 4px;
+  background: var(--weblink-bg-primary, #1a1a1a);
+  color: var(--weblink-text-primary, #e0e0e0);
+  font-size: 14px;
+}
+
+.share-screen__form button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background: var(--weblink-accent, #5b9bf5);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.share-screen__connecting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.share-screen__code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  background: var(--weblink-bg-secondary, #2a2a2a);
+  border-radius: 8px;
+}
+
+.share-screen__code-label {
+  margin: 0;
+  font-size: 14px;
+  color: var(--weblink-text-secondary, #999);
+}
+
+.share-screen__code-value {
+  margin: 0;
+  font-size: 48px;
+  font-weight: 700;
+  font-family: "SF Mono", "Fira Code", monospace;
+  letter-spacing: 6px;
+  color: var(--weblink-text-primary, #e0e0e0);
+}
+
+.share-screen__active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.share-screen__error {
+  color: #f44;
+  font-size: 13px;
+}

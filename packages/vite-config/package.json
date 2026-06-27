@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./react": "./dist/react.js"
   },
   "files": ["dist"],
   "scripts": {
@@ -19,8 +20,12 @@
     "vitest": "^4.1.4"
   },
   "peerDependencies": {
+    "@vitejs/plugin-react-swc": "^4.0.0",
     "@vitejs/plugin-vue": "^6.0.0",
     "vite": "^8.0.0",
     "vitest": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@vitejs/plugin-react-swc": { "optional": true }
   }
 }

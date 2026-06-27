@@ -95,6 +95,12 @@ export const KIT_REGISTRY: KitConfig[] = [
     description: "OpenBLT 协议调试",
     loader: () => import("@weblink/otakit"),
   },
+  {
+    id: "streamkit",
+    title: "StreamKit",
+    description: "远程屏幕共享与语音通话",
+    loader: () => import("@weblink/streamkit/vue"),
+  },
 ]
 
 export function findKit(id: string): KitConfig | undefined {

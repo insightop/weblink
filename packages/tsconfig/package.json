@@ -5,6 +5,7 @@
   "exports": {
     "./base.json": "./base.json",
     "./vue-app.json": "./vue-app.json",
+    "./react-app.json": "./react-app.json",
     "./node.json": "./node.json"
   },
   "files": ["*.json"],

@@ -39,9 +39,7 @@ function ensureLocalStorageForDevtools() {
 export default defineConfig(async () => {
   const enableVueDevtools = process.env.VITE_VUE_DEVTOOLS === '1'
   if (enableVueDevtools) ensureLocalStorageForDevtools()
-  const vueDevTools = enableVueDevtools
-    ? (await import('vite-plugin-vue-devtools')).default
-    : null
+  const vueDevTools = enableVueDevtools ? (await import('vite-plugin-vue-devtools')).default : null
 
   return {
     plugins: [vue(), ...(vueDevTools ? [vueDevTools()] : [])],

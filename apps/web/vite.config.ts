@@ -1,5 +1,7 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import react from "@vitejs/plugin-react-swc";
+import basicSsl from "@vitejs/plugin-basic-ssl";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath, URL } from "node:url";
 
@@ -13,7 +15,9 @@ export default defineConfig(({ mode }) => ({
     __BUILD_TIME__: JSON.stringify(buildTimeTag()),
   },
   plugins: [
+    basicSsl(),
     vue(),
+    react(),
     VitePWA({
       registerType: "prompt",
       workbox: {
@@ -30,6 +34,16 @@ export default defineConfig(({ mode }) => ({
     tsconfigPaths: true,
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
+  server: {
+    host: "::",
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8788",
+        changeOrigin: true,
+        ws: true,
+      },
     },
   },
   build: {

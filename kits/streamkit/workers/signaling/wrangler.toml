@@ -1,0 +1,27 @@
+# 独立 Worker：承载 Durable Object（Pages 不支持 migrations）
+# 部署：npx wrangler deploy --config workers/signaling/wrangler.toml
+name = "streamkit-worker"
+main = "src/index.ts"
+compatibility_date = "2025-11-01"
+
+[placement]
+mode = "smart"
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 0.25
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.1
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["StreamKit"]
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "StreamKit"

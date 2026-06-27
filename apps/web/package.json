@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "vue-tsc -b --noEmit"
+    "typecheck": "vue-tsc -b --noEmit",
+    "deploy:worker": "wrangler deploy --config ../../kits/streamkit/workers/signaling/wrangler.toml",
+    "deploy:pages": "vite build && wrangler pages deploy dist",
+    "deploy": "pnpm run deploy:worker && pnpm run deploy:pages"
   },
   "dependencies": {
     "@sentry/vue": "^10.56.0",
@@ -23,6 +26,7 @@
     "@weblink/otakit": "workspace:*",
     "@weblink/sensorkit": "workspace:*",
     "@weblink/serialkit": "workspace:*",
+    "@weblink/streamkit": "workspace:*",
     "@weblink/tokens": "workspace:*",
     "@weblink/vkvmkit": "workspace:*",
     "@weblink/webrtckit": "workspace:*",
@@ -36,6 +40,8 @@
   },
   "devDependencies": {
     "@types/node": "^24.12.2",
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "@vitejs/plugin-react-swc": "^4.3.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "@weblink/eslint-config": "workspace:*",
     "@weblink/tsconfig": "workspace:*",

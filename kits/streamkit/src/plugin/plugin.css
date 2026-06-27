@@ -1,0 +1,28 @@
+.streamkit-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #5b9bf5;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.streamkit-fab:hover {
+  background: #4a8ae4;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.streamkit-fab:active {
+  transform: scale(0.95);
+}

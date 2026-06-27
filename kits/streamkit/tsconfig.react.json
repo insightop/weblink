@@ -1,0 +1,17 @@
+{
+  "extends": "@weblink/tsconfig/react-app.json",
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "skipLibCheck": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.react.tsbuildinfo",
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] },
+    "types": ["vite/client", "react", "react-dom"]
+  },
+  "include": [
+    "src/admin/**/*.ts",
+    "src/admin/**/*.tsx",
+    "src/demo/**/*.ts",
+    "src/demo/**/*.tsx"
+  ]
+}

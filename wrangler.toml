@@ -3,3 +3,8 @@ compatibility_date = "2026-06-01"
 
 [pages]
 build_output_dir = "apps/web/dist"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "StreamKit"
+script_name = "streamkit-worker"

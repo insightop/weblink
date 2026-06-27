@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./index.js"
+    ".": "./index.js",
+    "./react": "./react.js"
   },
   "peerDependencies": {
     "eslint": "^10.0.0",
