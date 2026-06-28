@@ -8,9 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc -b --noEmit",
-    "deploy:worker": "wrangler deploy --config ../../kits/streamkit/workers/signaling/wrangler.toml",
     "deploy:pages": "vite build && wrangler pages deploy dist",
-    "deploy": "pnpm run deploy:worker && pnpm run deploy:pages"
+    "deploy": "pnpm run deploy:pages"
   },
   "dependencies": {
     "@sentry/vue": "^10.56.0",

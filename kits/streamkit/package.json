@@ -14,13 +14,12 @@
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "test": "vitest run",
-    "dev:worker": "wrangler dev --config workers/signaling/wrangler.toml --port 8788",
-    "deploy:worker": "wrangler deploy --config workers/signaling/wrangler.toml",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@weblink/tokens": "workspace:*",
     "@weblink/utils": "workspace:*",
+    "@weblink/webrtckit": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "vue": "^3.5.32"

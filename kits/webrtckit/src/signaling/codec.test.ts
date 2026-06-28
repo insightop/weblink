@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parseServerMessage } from "./messageCodec";
-import { SIGNALING_VERSION } from "./messageTypes";
+import { parseServerMessage } from "./codec";
+import { SIGNALING_VERSION } from "./types";
 
 describe("parseServerMessage", () => {
   it("parses welcome", () => {

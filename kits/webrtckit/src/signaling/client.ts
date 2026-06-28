@@ -1,6 +1,6 @@
-import { parseServerMessage, stringifyClientMessage } from "../../domain/signaling/messageCodec";
-import type { ClientToServerMessage, ServerToClientMessage } from "../../domain/signaling/messageTypes";
-import type { SignalingTransport } from "./signalingTransport";
+import { parseServerMessage, stringifyClientMessage } from "./codec";
+import type { ClientToServerMessage, ServerToClientMessage } from "./types";
+import type { SignalingTransport } from "./transport";
 
 const RECONNECT_MAX = 5;
 const RECONNECT_BASE_MS = 800;

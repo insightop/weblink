@@ -1,5 +1,5 @@
-import type { IceCandidatePayload, SignalPayload } from "../../domain/signaling/messageTypes";
-import { isPolitePeer } from "../../domain/signaling/roomPolicy";
+import type { IceCandidatePayload, SignalPayload } from "../signaling/types";
+import { isPolitePeer } from "../signaling/roomPolicy";
 
 /**
  * One RTCPeerConnection per remote peer, with perfect-negotiation-style SDP sequencing.

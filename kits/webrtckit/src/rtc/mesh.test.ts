@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MeshGraph } from "./meshGraph";
+import { MeshGraph } from "./mesh";
 
 describe("MeshGraph", () => {
   it("ignores self", () => {

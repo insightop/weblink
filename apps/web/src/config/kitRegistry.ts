@@ -41,7 +41,7 @@ export const KIT_REGISTRY: KitConfig[] = [
     id: "webrtckit",
     title: "WebRTC Kit",
     description: "WebRTC P2P / 信令调试",
-    loader: () => import("@weblink/webrtckit"),
+    loader: () => import("@weblink/webrtckit/app"),
   },
   {
     id: "flashkit",

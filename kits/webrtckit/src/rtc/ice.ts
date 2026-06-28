@@ -1,4 +1,9 @@
-import type { RTCIceServer } from "./iceTypes";
+/** Minimal shape for rtcConfiguration.iceServers */
+export type RTCIceServer = {
+  urls: string | string[];
+  username?: string;
+  credential?: string;
+};
 
 /** Default public STUN — replace in production if policy requires */
 export const DEFAULT_ICE_SERVERS: RTCIceServer[] = [

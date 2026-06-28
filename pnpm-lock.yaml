@@ -774,6 +774,9 @@ importers:
       '@weblink/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@weblink/webrtckit':
+        specifier: workspace:*
+        version: link:../webrtckit
       react:
         specifier: ^19.1.0
         version: 19.2.7
