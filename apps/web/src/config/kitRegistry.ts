@@ -62,6 +62,12 @@ export const KIT_REGISTRY: KitConfig[] = [
     loader: () => import("@weblink/ipkit"),
   },
   {
+    id: "webtransportkit",
+    title: "WebTransport Kit",
+    description: "WebTransport 实验调试",
+    loader: () => import("@weblink/webtransportkit/vue"),
+  },
+  {
     id: "gnsskit",
     title: "GNSS Kit",
     description: "GNSS / NMEA 数据分析",
