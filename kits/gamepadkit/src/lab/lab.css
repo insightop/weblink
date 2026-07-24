@@ -1,0 +1,185 @@
+/* ── GamepadKit Lab 页面样式 ─────────────────────────── */
+
+:root {
+  --gp-color-idle: rgba(128, 128, 128, 0.15);
+  --gp-color-active: #4fc3f7;
+  --gp-color-active-text: #fff;
+  --gp-color-border: rgba(255, 255, 255, 0.2);
+  --gp-color-text: rgba(255, 255, 255, 0.85);
+  --gp-color-muted: rgba(255, 255, 255, 0.45);
+  --gp-radius: 8px;
+  --gp-card-bg: rgba(255, 255, 255, 0.04);
+}
+
+.gp-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+}
+
+.gp-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.gp-topbar__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.gp-topbar__meta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.gp-topbar__warn {
+  font-size: 0.85rem;
+  color: #ffb74d;
+}
+
+.gp-topbar__ok {
+  font-size: 0.85rem;
+  color: #81c784;
+}
+
+.gp-topbar__idle {
+  font-size: 0.85rem;
+  color: var(--gp-color-muted);
+}
+
+.gp-body {
+  border: 1px solid var(--gp-color-border);
+  border-radius: var(--gp-radius);
+  background: var(--gp-card-bg);
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.gp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--gp-color-muted);
+  text-align: center;
+}
+
+.gp-empty p {
+  margin: 0 0 8px;
+}
+
+.gp-empty__hint {
+  font-size: 0.85rem;
+}
+
+.gp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+/* ── Card ── */
+
+.gp-card {
+  border: 1px solid var(--gp-color-border);
+  border-radius: var(--gp-radius);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.gp-viz {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ── Connection panel ── */
+
+.gp-info {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.gp-info__label {
+  color: var(--gp-color-muted);
+  padding: 2px 8px 2px 0;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.gp-info__value {
+  color: var(--gp-color-text);
+  padding: 2px 0;
+  word-break: break-all;
+}
+
+.gp-info__value--mono {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.75rem;
+}
+
+/* ── Button grid ── */
+
+.gp-buttonsvg {
+  flex: 1;
+  min-width: 200px;
+  max-height: 220px;
+}
+
+/* ── Joystick ── */
+
+.gp-joystick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.gp-joystick__svg {
+  display: block;
+}
+
+.gp-joystick__label {
+  font-size: 0.75rem;
+  color: var(--gp-color-muted);
+}
+
+.gp-joystick__value {
+  font-size: 0.65rem;
+  color: var(--gp-color-muted);
+  font-family: "SF Mono", "Fira Code", monospace;
+}
+
+.gp-sticks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Trigger ── */
+
+.gp-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.gp-trigger__label {
+  font-size: 0.75rem;
+  color: var(--gp-color-muted);
+}
+
+.gp-triggers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

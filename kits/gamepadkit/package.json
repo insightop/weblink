@@ -1,0 +1,40 @@
+{
+  "name": "@weblink/gamepadkit",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "type": "module",
+  "description": "Gamepad Kit — 手柄调试测试工具包",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.react.json",
+    "typecheck:vue": "vue-tsc --noEmit -p tsconfig.json",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@weblink/tokens": "workspace:*",
+    "@weblink/utils": "workspace:*",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react-swc": "^4.3.1",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
+    "@weblink/vite-config": "workspace:*",
+    "happy-dom": "^18.0.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.6"
+  }
+}
