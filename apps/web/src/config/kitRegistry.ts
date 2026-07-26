@@ -102,6 +102,12 @@ export const KIT_REGISTRY: KitConfig[] = [
     loader: () => import("@weblink/otakit"),
   },
   {
+    id: "gamepadkit",
+    title: "Gamepad Kit",
+    description: "手柄调试测试工具",
+    loader: () => import("@weblink/gamepadkit"),
+  },
+  {
     id: "streamkit",
     title: "StreamKit",
     description: "远程屏幕共享与语音通话",

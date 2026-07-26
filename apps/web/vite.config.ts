@@ -15,7 +15,9 @@ export default defineConfig(({ mode }) => ({
     __BUILD_TIME__: JSON.stringify(buildTimeTag()),
   },
   plugins: [
-    basicSsl(),
+    // basicSsl is only needed for non-localhost environments (CodeSandbox, etc.)
+    // localhost is a Secure Context — HTTPS is not required for dev
+    ...(mode === "development" && process.env.CODESPACES !== "true" ? [] : [basicSsl()]),
     vue(),
     react(),
     VitePWA({
