@@ -10,3 +10,10 @@ export { captureScreen, captureMicrophone } from "./webrtc/mediaTrack";
 export type { LocalMedia } from "./webrtc/mediaTrack";
 export { TopControlBar } from "./components/TopControlBar";
 export { StreamKitPlugin } from "./plugin/StreamKitPlugin";
+
+// RoomService adapters — re-exported from @weblink/webrtckit
+export {
+  LiveKitRoomService,
+  ApiTokenProvider,
+} from "@weblink/webrtckit";
+export type { TokenProvider, LiveKitJoinOptions } from "@weblink/webrtckit";

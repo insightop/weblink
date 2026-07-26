@@ -29,3 +29,14 @@ export type ServerToClientMessage =
   | { v: typeof SIGNALING_VERSION; type: "peer-left"; peerId: string }
   | { v: typeof SIGNALING_VERSION; type: "signal"; from: string; payload: SignalPayload }
   | { v: typeof SIGNALING_VERSION; type: "error"; message: string };
+
+/** Streamkit 版信令传输层接口，使用扩展后的消息类型。 */
+export type SignalingTransport = {
+  connect(url: string): Promise<void>;
+  disconnect(): void;
+  send(msg: ClientToServerMessage): void;
+  onMessage: (handler: (msg: ServerToClientMessage) => void) => void;
+  onClose: (handler: (code: number, reason: string) => void) => void;
+  onError: (handler: (err: unknown) => void) => void;
+  readonly connected: boolean;
+};

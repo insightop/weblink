@@ -21,6 +21,7 @@ const STATE_LABELS: Record<string, string> = {
   disconnected: "未连接",
   connecting: "连接中...",
   connected: "已连接",
+  reconnecting: "重连中...",
   error: "连接失败",
 };
 

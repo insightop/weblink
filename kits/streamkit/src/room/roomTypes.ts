@@ -1,3 +1,4 @@
+import type { RoomService } from "@weblink/webrtckit"
 import type { EncodingStrategy } from "../signaling/messageTypes";
 
 /**
@@ -5,10 +6,20 @@ import type { EncodingStrategy } from "../signaling/messageTypes";
  */
 
 export interface SessionOptions {
-  /** WebSocket signaling server base URL */
-  signalingUrl: string;
   /**
-   * Room ID (8-digit share code).
+   * WebSocket signaling server base URL.
+   * Required when no `roomService` is provided (DO Worker backend).
+   * Ignored when `roomService` is set.
+   */
+  signalingUrl?: string;
+  /**
+   * RoomService adapter instance (from @weblink/webrtckit).
+   * When set, streamkit uses the generic RoomService interface instead of
+   * its own DO Worker signaling + PeerConnection code.
+   */
+  roomService?: RoomService;
+  /**
+   * Room ID (8-digit share code for DO backend, or any backend-specific ID).
    * For createRoom: leave blank to auto-generate.
    * For joinRoom: required.
    */
@@ -17,7 +28,7 @@ export interface SessionOptions {
   iceServers?: RTCIceServer[];
 }
 
-export type SessionState = "connecting" | "connected" | "disconnected" | "error";
+export type SessionState = "connecting" | "connected" | "disconnected" | "reconnecting" | "error";
 
 export interface Session {
   readonly roomId: string;

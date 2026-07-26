@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoom, joinRoom, generateShareCode } from "./roomManager";
 import { SIGNALING_VERSION } from "../signaling/messageTypes";
-import type { SignalingTransport } from "../signaling/signalingTransport";
-import type { ServerToClientMessage } from "../signaling/messageTypes";
+import type { ServerToClientMessage, SignalingTransport } from "../signaling/messageTypes";
 
 vi.mock("../signaling/signalingClient", () => ({
   createSignalingClient: vi.fn(),

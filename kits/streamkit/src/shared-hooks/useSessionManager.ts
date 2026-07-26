@@ -1,10 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { RoomService } from "@weblink/webrtckit"
 import { createRoom, joinRoom } from "../room/roomManager";
 import type { Session, SessionOptions, SessionState } from "../room/roomTypes";
 import type { EncodingStrategy } from "../signaling/messageTypes";
 
 export interface UseSessionManagerOptions {
-  signalingUrl: string;
+  /**
+   * WebSocket signaling server base URL (required for DO Worker backend).
+   * Ignored when `roomService` is provided.
+   */
+  signalingUrl?: string;
+  /**
+   * RoomService adapter instance (from @weblink/webrtckit).
+   * When provided, uses the generic RoomService interface instead of
+   * the built-in DO Worker signaling.
+   */
+  roomService?: RoomService;
   onRemoteStream?: (stream: MediaStream | null) => void;
   onCameraStream?: (stream: MediaStream | null) => void;
   onMicRequest?: () => void;
@@ -36,7 +47,7 @@ export interface UseSessionManagerReturn {
  * 以及媒体轨道添加/移除、设备请求等辅助方法。
  */
 export function useSessionManager(options: UseSessionManagerOptions): UseSessionManagerReturn {
-  const { signalingUrl } = options;
+  const { signalingUrl, roomService } = options;
   const [state, setState] = useState<SessionState>("disconnected");
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +108,7 @@ export function useSessionManager(options: UseSessionManagerOptions): UseSession
       setError(null);
       setState("connecting");
 
-      const sess = await createRoom({ signalingUrl });
+      const sess = await createRoom({ signalingUrl, roomService });
       sessionRef.current = sess;
       setRoomCode(sess.roomId);
       setupSessionEvents(sess);
@@ -126,7 +137,7 @@ export function useSessionManager(options: UseSessionManagerOptions): UseSession
       setError(null);
       setState("connecting");
 
-      const options: SessionOptions = { signalingUrl, roomId: code };
+      const options: SessionOptions = { signalingUrl, roomService, roomId: code };
       const sess = await joinRoom(options);
       sessionRef.current = sess;
       setRoomCode(sess.roomId);

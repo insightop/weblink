@@ -1,5 +1,5 @@
 import { createSignalingClient as createBaseClient } from "@weblink/webrtckit";
-import type { SignalingTransport } from "./signalingTransport";
+import type { SignalingTransport } from "./messageTypes";
 
 /**
  * Create a signaling client typed with streamkit's extended message types.

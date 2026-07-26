@@ -1,11 +1,11 @@
 import { createSignalingClient } from "../signaling/signalingClient";
 import { createPeerConnection } from "../webrtc/peerConnection";
 import { ICE_CONFIG } from "../webrtc/iceConfig";
-import type { SignalingTransport } from "../signaling/signalingTransport";
 import type { PeerConnectionManager } from "../webrtc/peerConnection";
-import type { ServerToClientMessage, SignalPayload } from "../signaling/messageTypes";
+import type { ServerToClientMessage, SignalPayload, SignalingTransport } from "../signaling/messageTypes";
 import { SIGNALING_VERSION } from "../signaling/messageTypes";
 import type { Session, SessionEventMap, SessionOptions, SessionState } from "./roomTypes";
+import { RoomServiceSessionAdapter } from "./roomServiceSessionAdapter";
 
 type EventHandler<K extends keyof SessionEventMap> = SessionEventMap[K];
 
@@ -22,51 +22,11 @@ export function generateShareCode(): string {
  * 生成 8 位分享码，等待运维端加入后发起 WebRTC 连接。
  */
 export async function createRoom(options: SessionOptions): Promise<Session> {
-  const roomId = generateShareCode();
-  const peerId = `demo-${generateShareCode().slice(0, 4)}`;
-  const iceConfig = options.iceServers ? { iceServers: options.iceServers } : ICE_CONFIG;
+  if (options.roomService) return createViaRoomService(options, "demo")
+  if (!options.signalingUrl) throw new Error("signalingUrl is required when no roomService is provided")
 
-  const signaling = createSignalingClient();
-  const eventHandlers = createEventHandlerMap();
-  let state: SessionState = "connecting";
-  const remoteStreams = new Map<string, MediaStream>();
-  let pc: PeerConnectionManager | null = null;
-  let currentPeer: string | null = null;
-  const cameraRef = { current: null as MediaStream | null };
-
-  const url = buildSignalingUrl(options.signalingUrl, roomId, peerId);
-  const welcomePromise = waitForWelcome(signaling);
-  signaling.connect(url);
-  const welcomeMsg = await welcomePromise;
-  const actualPeerId = welcomeMsg.self;
-
-  signaling.onMessage((msg) => {
-    handleSignalingMessage(msg, {
-      signaling,
-      peerId: actualPeerId,
-      iceConfig,
-      eventHandlers,
-      remoteStreams,
-      cameraRef,
-      getPeerConnection: () => pc,
-      setPeerConnection: (newPc, newPeer) => {
-        pc = newPc;
-        currentPeer = newPeer;
-      },
-      getPeerId: () => currentPeer,
-      setState: (s) => {
-        state = s;
-        eventHandlers.get("state-change")?.forEach((h) => h(s));
-      },
-      get isOfferer() {
-        return true;
-      },
-    }).catch((err) => {
-      console.error("[streamkit] handleSignalingMessage error:", err);
-    });
-  });
-
-  return buildSession({ roomId, peerId: actualPeerId, state, remoteStreams, cameraRef, signaling, eventHandlers, getPc: () => pc, setPc: (p) => { pc = p; }, getPeerId: () => currentPeer, setState: (s) => { state = s; } });
+  const roomId = generateShareCode()
+  return connectViaSignaling({ ...options, roomId, signalingUrl: options.signalingUrl! }, "demo", true)
 }
 
 /**
@@ -74,53 +34,11 @@ export async function createRoom(options: SessionOptions): Promise<Session> {
  * 通过 8 位分享码加入，接收远端媒体流。
  */
 export async function joinRoom(options: SessionOptions): Promise<Session> {
-  if (!options.roomId) throw new Error("roomId (share code) is required to join a room");
+  if (options.roomService) return createViaRoomService(options, "admin")
+  if (!options.signalingUrl) throw new Error("signalingUrl is required when no roomService is provided")
+  if (!options.roomId) throw new Error("roomId (share code) is required to join a room")
 
-  const roomId = options.roomId;
-  const peerId = `admin-${generateShareCode().slice(0, 4)}`;
-  const iceConfig = options.iceServers ? { iceServers: options.iceServers } : ICE_CONFIG;
-
-  const signaling = createSignalingClient();
-  const eventHandlers = createEventHandlerMap();
-  let state: SessionState = "connecting";
-  const remoteStreams = new Map<string, MediaStream>();
-  let pc: PeerConnectionManager | null = null;
-  let currentPeer: string | null = null;
-  const cameraRef = { current: null as MediaStream | null };
-
-  const url = buildSignalingUrl(options.signalingUrl, roomId, peerId);
-  const welcomePromise = waitForWelcome(signaling);
-  signaling.connect(url);
-  const welcomeMsg = await welcomePromise;
-  const actualPeerId = welcomeMsg.self;
-
-  signaling.onMessage((msg) => {
-    handleSignalingMessage(msg, {
-      signaling,
-      peerId: actualPeerId,
-      iceConfig,
-      eventHandlers,
-      remoteStreams,
-      cameraRef,
-      getPeerConnection: () => pc,
-      setPeerConnection: (newPc, newPeer) => {
-        pc = newPc;
-        currentPeer = newPeer;
-      },
-      getPeerId: () => currentPeer,
-      setState: (s) => {
-        state = s;
-        eventHandlers.get("state-change")?.forEach((h) => h(s));
-      },
-      get isOfferer() {
-        return false;
-      },
-    }).catch((err) => {
-      console.error("[streamkit] handleSignalingMessage error:", err);
-    });
-  });
-
-  return buildSession({ roomId, peerId: actualPeerId, state, remoteStreams, cameraRef, signaling, eventHandlers, getPc: () => pc, setPc: (p) => { pc = p; }, getPeerId: () => currentPeer, setState: (s) => { state = s; } });
+  return connectViaSignaling({ ...options, signalingUrl: options.signalingUrl!, roomId: options.roomId }, "admin", false)
 }
 
 // ── Internal helpers ──────────────────────────────────────────────
@@ -235,6 +153,68 @@ function waitForWelcome(signaling: SignalingTransport): Promise<{ self: string; 
         resolve({ self: msg.self, peers: msg.peers });
       }
     });
+  });
+}
+
+/** 公共 DO Worker 信令连接逻辑。createRoom / joinRoom 均委托至此。 */
+async function connectViaSignaling(
+  options: SessionOptions & { roomId: string; signalingUrl: string },
+  role: "admin" | "demo",
+  isOfferer: boolean,
+): Promise<Session> {
+  const peerIdPrefix = role;
+  const peerId = `${peerIdPrefix}-${generateShareCode().slice(0, 4)}`;
+  const iceConfig = options.iceServers ? { iceServers: options.iceServers } : ICE_CONFIG;
+
+  const signaling = createSignalingClient();
+  const eventHandlers = createEventHandlerMap();
+  const mutable = {
+    state: "connecting" as SessionState,
+    pc: null as PeerConnectionManager | null,
+    peer: null as string | null,
+  };
+  const remoteStreams = new Map<string, MediaStream>();
+  const cameraRef = { current: null as MediaStream | null };
+
+  const url = buildSignalingUrl(options.signalingUrl, options.roomId, peerId);
+  const welcomePromise = waitForWelcome(signaling);
+  signaling.connect(url);
+  const welcomeMsg = await welcomePromise;
+  const actualPeerId = welcomeMsg.self;
+
+  signaling.onMessage((msg) => {
+    handleSignalingMessage(msg, {
+      signaling,
+      peerId: actualPeerId,
+      iceConfig,
+      eventHandlers,
+      remoteStreams,
+      cameraRef,
+      getPeerConnection: () => mutable.pc,
+      setPeerConnection: (newPc, newPeer) => { mutable.pc = newPc; mutable.peer = newPeer; },
+      getPeerId: () => mutable.peer,
+      setState: (s) => {
+        mutable.state = s;
+        eventHandlers.get("state-change")?.forEach((h) => h(s));
+      },
+      isOfferer,
+    }).catch((err) => {
+      console.error("[streamkit] handleSignalingMessage error:", err);
+    });
+  });
+
+  return buildSession({
+    roomId: options.roomId,
+    peerId: actualPeerId,
+    state: mutable.state,
+    remoteStreams,
+    cameraRef,
+    signaling,
+    eventHandlers,
+    getPc: () => mutable.pc,
+    setPc: (p) => { mutable.pc = p; },
+    getPeerId: () => mutable.peer,
+    setState: (s) => { mutable.state = s; },
   });
 }
 
@@ -399,4 +379,24 @@ async function handleSignalPayload(payload: SignalPayload, pc: PeerConnectionMan
       await pc.setEncodingStrategy(payload.strategy);
       break;
   }
+}
+
+// ── RoomService path ───────────────────────────────────────────────────
+
+function peerId(role: "admin" | "demo"): string {
+  const suffix = generateShareCode().slice(0, 4)
+  return `${role}-${suffix}`
+}
+
+async function createViaRoomService(options: SessionOptions, role: "admin" | "demo"): Promise<Session> {
+  const svc = options.roomService!
+  const roomId = role === "demo" ? (options.roomId ?? generateShareCode()) : options.roomId!
+  const id = peerId(role)
+
+  const { session } = await svc.joinRoom(
+    { id, name: id },
+    { roomId, iceServers: options.iceServers },
+  )
+
+  return new RoomServiceSessionAdapter(roomId, id, session)
 }
