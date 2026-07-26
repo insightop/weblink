@@ -1,3 +1,16 @@
+// Room Service (abstract WebRTC backend)
+export type * from "./room-service/types"
+export { RoomError, ErrorCode } from "./room-service/errors"
+export type { ErrorCode as ErrorCodeType } from "./room-service/errors"
+export {
+  DoRoomService,
+  createDoRoomService,
+  LiveKitRoomService,
+  ApiTokenProvider,
+  CfRealtimeRoomService,
+} from "./room-service/adapters"
+export type { TokenProvider, LiveKitJoinOptions } from "./room-service/adapters"
+
 // Signaling
 export { createSignalingClient } from "./signaling/client"
 export type { SignalingTransport } from "./signaling/transport"

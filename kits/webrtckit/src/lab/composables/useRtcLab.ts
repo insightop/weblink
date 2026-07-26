@@ -1,45 +1,59 @@
 import { computed, onUnmounted, ref, shallowRef } from "vue";
 import { DEFAULT_ICE_SERVERS, parseIceServersInput } from "../../rtc/ice";
-import { MeshGraph } from "../../rtc/mesh";
 import { createLogEntry } from "@weblink/ui-vue";
 import type { LogEntry, LogLevel } from "@weblink/ui-vue";
-import type { SignalPayload } from "../../signaling/types";
-import type { ServerToClientMessage } from "../../signaling/types";
-import { isPolitePeer } from "../../signaling/roomPolicy";
-import { acceptDebugDataChannel, createDebugDataChannel } from "../../rtc/dataChannel";
+import { createDoRoomService } from "../../room-service/adapters/do-adapter";
+import type { RoomSession, ConnectionState, TrackPublication } from "../../room-service/types";
 import { captureDisplayMedia, captureUserMedia } from "../../rtc/mediaCapture";
-import { createPeerConnection } from "../../rtc/peerConnection";
-import { PeerSession } from "../../rtc/peerSession";
-import { createSignalingClient } from "../../signaling/client";
-import { buildSignalingWsUrl } from "../../signaling/url";
 import { randomPeerId, randomRoomId } from "../../utils/id";
 
-const MAX_MESH_PEERS = 8;
 const LOG_CAP = 800;
 
 export function useRtcLab() {
+  // === Config / Identity ===
   const roomId = ref("");
   const localPeerId = ref(randomPeerId());
-  const connected = ref(false);
-  const logLevel = ref<LogLevel | "all">("all");
-  const logKeyword = ref("");
-  const logs = ref<LogEntry[]>([]);
   const iceServersText = ref("");
   const useCamera = ref(true);
   const useMic = ref(true);
-  const sharingScreen = ref(false);
 
+  // === Connection ===
+  const connected = ref(false);
+
+  // === Media ===
+  const sharingScreen = ref(false);
   const localStream = shallowRef<MediaStream | null>(null);
+  const previewStream = computed(() => {
+    if (sharingScreen.value && screenCapture?.stream) return screenCapture.stream;
+    return localStream.value;
+  });
   const remoteStreams = ref<Map<string, MediaStream>>(new Map());
-  const mesh = shallowRef(new MeshGraph(localPeerId.value));
+
+  // === Stats ===
   const peerStats = ref<Record<string, { connectionState: string; iceConnectionState: string }>>({});
 
-  const sessions = new Map<string, PeerSession>();
+  // === Logging ===
+  const logLevel = ref<LogLevel | "all">("all");
+  const logKeyword = ref("");
+  const logs = ref<LogEntry[]>([]);
+  const displayedLogs = computed(() => {
+    const kw = logKeyword.value.trim().toLowerCase();
+    return logs.value.filter((e) => {
+      if (logLevel.value !== "all" && e.level !== logLevel.value) return false;
+      if (!kw) return true;
+      return e.message.toLowerCase().includes(kw) || (e.scope?.toLowerCase().includes(kw) ?? false);
+    });
+  });
+
+  // === Internal ===
+  const roomService = createDoRoomService();
+  let session: RoomSession | null = null;
   let localMedia: { stream: MediaStream; stop: () => void } | null = null;
   let screenCapture: { stream: MediaStream; stop: () => void } | null = null;
+  let publishedTracks = new Map<string, TrackPublication>();
+  let subs: (() => void)[] = [];
 
-  const signaling = createSignalingClient();
-
+  // ---- logging helper ----
   function log(level: LogLevel, scope: string, message: string, data?: unknown): void {
     logs.value = [...logs.value, createLogEntry({ level, scope, message, data })].slice(-LOG_CAP);
   }
@@ -49,174 +63,81 @@ export function useRtcLab() {
     return parsed ?? DEFAULT_ICE_SERVERS;
   }
 
-  function emitSignal(to: string, payload: SignalPayload): void {
-    signaling.send({ v: 1, type: "signal", to, payload });
+  // ---- subscribe to session events ----
+  function wireSession(s: RoomSession): void {
+    subs = [
+      s.onConnectionStateChanged((state: ConnectionState) => {
+        connected.value = state === "connected" || state === "reconnecting";
+        log("info", "session", `连接状态: ${state}`);
+      }),
+
+      s.onParticipantJoined((p) => {
+        log("info", "room", `参与者加入: ${p.id.slice(0, 8)}…`);
+      }),
+
+      s.onParticipantLeft((p) => {
+        log("info", "room", `参与者离开: ${p.id.slice(0, 8)}…`);
+        const next = new Map(remoteStreams.value);
+        next.delete(p.id);
+        remoteStreams.value = next;
+      }),
+
+      s.onTrackSubscribed((track, participant) => {
+        log("info", "media", `收到 ${participant.id.slice(0, 8)}… 的 ${track.kind} 轨道`);
+        if (track.track) {
+          const ms = new MediaStream([track.track]);
+          const next = new Map(remoteStreams.value);
+          next.set(participant.id, ms);
+          remoteStreams.value = next;
+        }
+      }),
+
+      s.onTrackUnsubscribed((track, participant) => {
+        log("info", "media", `${participant.id.slice(0, 8)}… 的 ${track.kind} 轨道已移除`);
+      }),
+    ];
   }
 
-  function wireDataChannel(dc: RTCDataChannel, remotePeerId: string): void {
-    dc.addEventListener("message", (ev) => {
-      log("info", "datachannel", `[${remotePeerId.slice(0, 8)}] ${String(ev.data)}`);
-    });
-    dc.addEventListener("open", () => {
-      log("info", "datachannel", `open ↔ ${remotePeerId.slice(0, 8)}`);
-    });
-  }
-
-  function removePeer(remotePeerId: string): void {
-    mesh.value.removePeer(remotePeerId);
-    const s = sessions.get(remotePeerId);
-    if (s) {
-      s.dispose();
-      sessions.delete(remotePeerId);
-    }
-    const next = new Map(remoteStreams.value);
-    next.delete(remotePeerId);
-    remoteStreams.value = next;
-    const ps = { ...peerStats.value };
-    delete ps[remotePeerId];
-    peerStats.value = ps;
-  }
-
-  async function ensurePeer(remotePeerId: string): Promise<void> {
-    if (remotePeerId === localPeerId.value) return;
-    if (sessions.has(remotePeerId)) return;
-    if (sessions.size >= MAX_MESH_PEERS) {
-      log("warn", "mesh", `已达到建议上限 ${MAX_MESH_PEERS} 条连接`);
-      return;
-    }
-
-    const pc = createPeerConnection(iceServers());
-    const session = new PeerSession(
-      remotePeerId,
-      localPeerId.value,
-      pc,
-      (payload) => emitSignal(remotePeerId, payload),
-      (ice) => emitSignal(remotePeerId, { kind: "candidate", ice }),
-      (msg, detail) => log("debug", `pc:${remotePeerId.slice(0, 6)}`, msg, detail),
-    );
-
-    pc.addEventListener("track", (ev) => {
-      const ms = ev.streams[0];
-      if (ms) {
-        const m = new Map(remoteStreams.value);
-        m.set(remotePeerId, ms);
-        remoteStreams.value = m;
-      }
-    });
-
-    if (localMedia?.stream) {
-      for (const t of localMedia.stream.getTracks()) {
-        pc.addTrack(t, localMedia.stream);
-      }
-    }
-    if (screenCapture?.stream) {
-      const vt = screenCapture.stream.getVideoTracks()[0];
-      if (vt) pc.addTrack(vt, screenCapture.stream);
-    }
-
-    if (isPolitePeer(localPeerId.value, remotePeerId)) {
-      const dc = createDebugDataChannel(pc);
-      wireDataChannel(dc, remotePeerId);
-    } else {
-      acceptDebugDataChannel(pc, (dc) => wireDataChannel(dc, remotePeerId));
-    }
-
-    sessions.set(remotePeerId, session);
-  }
-
-  function handleServerMessage(msg: ServerToClientMessage): void {
-    if (msg.type === "welcome") {
-      for (const p of msg.peers) {
-        if (mesh.value.addPeer(p)) void ensurePeer(p);
-      }
-      return;
-    }
-    if (msg.type === "peer-joined") {
-      if (mesh.value.addPeer(msg.peerId)) void ensurePeer(msg.peerId);
-      log("info", "room", `peer 加入: ${msg.peerId.slice(0, 8)}…`);
-      return;
-    }
-    if (msg.type === "peer-left") {
-      log("info", "room", `peer 离开: ${msg.peerId.slice(0, 8)}…`);
-      removePeer(msg.peerId);
-      return;
-    }
-    if (msg.type === "error") {
-      log("error", "signal", msg.message);
-      return;
-    }
-    if (msg.type === "signal") {
-      const s = sessions.get(msg.from);
-      if (s) void s.handleRemoteSignal(msg.payload);
-      return;
-    }
-  }
-
-  signaling.onMessage((m) => handleServerMessage(m));
-
-  signaling.onClose((code, reason) => {
-    log("warn", "signal", `WebSocket 关闭 ${code} ${reason}`);
-    connected.value = false;
-  });
-
-  signaling.onError((e) => {
-    log("error", "signal", "WebSocket error", e);
-  });
-
-  let statsTimer: ReturnType<typeof setInterval> | null = null;
-
-  function startStatsPolling(): void {
-    stopStatsPolling();
-    statsTimer = setInterval(() => {
-      const out: Record<string, { connectionState: string; iceConnectionState: string }> = {};
-      for (const [id, sess] of sessions) {
-        const pc = sess.getPeerConnection();
-        out[id] = {
-          connectionState: pc.connectionState,
-          iceConnectionState: pc.iceConnectionState,
-        };
-      }
-      peerStats.value = out;
-    }, 1500);
-  }
-
-  function stopStatsPolling(): void {
-    if (statsTimer) {
-      clearInterval(statsTimer);
-      statsTimer = null;
-    }
-  }
-
-  async function startLocalMedia(): Promise<void> {
-    if (localMedia) {
-      localMedia.stop();
-      localMedia = null;
-    }
-    if (!useCamera.value && !useMic.value) {
-      localStream.value = null;
-      return;
-    }
-    localMedia = await captureUserMedia(useMic.value, useCamera.value);
-    localStream.value = localMedia.stream;
-  }
-
+  // ---- actions ----
   async function connect(): Promise<void> {
     const rid = roomId.value.trim();
     if (!rid) {
       log("error", "room", "请填写房间 ID");
       return;
     }
-    mesh.value = new MeshGraph(localPeerId.value);
-    await startLocalMedia();
-    const url = buildSignalingWsUrl(rid, localPeerId.value);
-    log("info", "signal", `连接 ${url}`);
+
+    // 1. Capture local media for preview
+    if (useCamera.value || useMic.value) {
+      try {
+        localMedia = await captureUserMedia(useMic.value, useCamera.value);
+        localStream.value = localMedia.stream;
+      } catch (e) {
+        log("error", "media", "媒体捕获失败", e);
+      }
+    }
+
+    // 2. Join room (RoomService 自动连接信令)
+    log("info", "session", `加入房间 ${rid}`);
     try {
-      await signaling.connect(url);
+      const result = await roomService.joinRoom(
+        { id: localPeerId.value, name: localPeerId.value },
+        { roomId: rid, iceServers: iceServers() },
+      );
+      session = result.session;
+      wireSession(session);
+      log("info", "session", "已加入房间");
+
+      // 3. Publish local tracks
+      if (localMedia) {
+        for (const t of localMedia.stream.getTracks()) {
+          const pub = await session.publishTrack(t);
+          publishedTracks.set(t.id, pub);
+        }
+      }
+
       connected.value = true;
-      log("info", "signal", "信令已连接，等待成员…");
-      startStatsPolling();
     } catch (e) {
-      log("error", "signal", "连接失败", e);
+      log("error", "session", "加入房间失败", e);
       if (localMedia) {
         localMedia.stop();
         localMedia = null;
@@ -226,9 +147,15 @@ export function useRtcLab() {
   }
 
   function disconnect(): void {
-    stopStatsPolling();
-    signaling.disconnect();
+    if (session) {
+      session.disconnect();
+      session = null;
+    }
+    subs.forEach((fn) => fn());
+    subs = [];
+    publishedTracks.clear();
     connected.value = false;
+
     if (localMedia) {
       localMedia.stop();
       localMedia = null;
@@ -239,11 +166,6 @@ export function useRtcLab() {
       screenCapture = null;
       sharingScreen.value = false;
     }
-    for (const id of [...sessions.keys()]) {
-      removePeer(id);
-    }
-    sessions.clear();
-    mesh.value = new MeshGraph(localPeerId.value);
     remoteStreams.value = new Map();
     peerStats.value = {};
     log("info", "room", "已断开");
@@ -254,45 +176,31 @@ export function useRtcLab() {
       screenCapture.stop();
       screenCapture = null;
       sharingScreen.value = false;
-      await replaceVideoOnPeers(null);
+      for (const [id, pub] of publishedTracks) {
+        if (pub.source === "screen") {
+          session?.unpublishTrack(pub);
+          publishedTracks.delete(id);
+        }
+      }
       log("info", "media", "已停止屏幕共享");
       return;
     }
-    try {
-      screenCapture = await captureDisplayMedia(true);
-      sharingScreen.value = true;
-      const vtrack = screenCapture.stream.getVideoTracks()[0];
-      if (vtrack) {
-        await replaceVideoOnPeers(vtrack);
-        for (const sess of sessions.values()) {
-          const pc = sess.getPeerConnection();
-          const hasVideo = pc.getSenders().some((s) => s.track?.kind === "video");
-          if (!hasVideo) {
-            pc.addTrack(vtrack, screenCapture!.stream);
-          }
-        }
-      }
-      log("info", "media", "屏幕共享中");
-      vtrack?.addEventListener("ended", () => {
-        void toggleScreenShare();
-      });
-    } catch (e) {
-      log("error", "media", "屏幕共享失败", e);
-    }
-  }
 
-  async function replaceVideoOnPeers(track: MediaStreamTrack | null): Promise<void> {
-    for (const sess of sessions.values()) {
-      const pc = sess.getPeerConnection();
-      const senders = pc.getSenders().filter((s) => s.track?.kind === "video");
-      if (track && senders.length > 0) {
-        for (const s of senders) {
-          await s.replaceTrack(track);
+    if (!sharingScreen.value) {
+      try {
+        screenCapture = await captureDisplayMedia(true);
+        sharingScreen.value = true;
+        const vt = screenCapture.stream.getVideoTracks()[0];
+        if (vt && session) {
+          const pub = await session.publishTrack(vt);
+          publishedTracks.set(vt.id, pub);
         }
-      } else if (!track && senders.length > 0) {
-        for (const s of senders) {
-          await s.replaceTrack(null);
-        }
+        vt?.addEventListener("ended", () => {
+          void toggleScreenShare();
+        });
+        log("info", "media", "屏幕共享中");
+      } catch (e) {
+        log("error", "media", "屏幕共享失败", e);
       }
     }
   }
@@ -300,7 +208,6 @@ export function useRtcLab() {
   function regeneratePeerId(): void {
     if (connected.value) return;
     localPeerId.value = randomPeerId();
-    mesh.value = new MeshGraph(localPeerId.value);
   }
 
   function newRoomId(): void {
@@ -309,31 +216,16 @@ export function useRtcLab() {
   }
 
   function sendDcPing(): void {
-    signaling.send({ v: 1, type: "ping" });
+    log("debug", "datachannel", "sendDcPing 已废弃 — RoomService 内部管理 DataChannel");
   }
-
-  const displayedLogs = computed(() => {
-    const kw = logKeyword.value.trim().toLowerCase();
-    return logs.value.filter((e) => {
-      if (logLevel.value !== "all" && e.level !== logLevel.value) return false;
-      if (!kw) return true;
-      return e.message.toLowerCase().includes(kw) || (e.scope?.toLowerCase().includes(kw) ?? false);
-    });
-  });
 
   function clearLogs(): void {
     logs.value = [];
   }
 
-  const previewStream = computed(() => {
-    if (sharingScreen.value && screenCapture?.stream) return screenCapture.stream;
-    return localStream.value;
-  });
-
+  // ---- lifecycle ----
   onUnmounted(() => {
     disconnect();
-    if (localMedia) localMedia.stop();
-    if (screenCapture) screenCapture.stop();
   });
 
   return {
