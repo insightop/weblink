@@ -143,6 +143,18 @@ describe('SerialTransport.connect', () => {
     expect(session.initializeCalls).toBe(1)
   })
 
+  it('reflects an already-provisioned device as PROVISIONED after connect (not forced READY)', async () => {
+    const { transport, session } = makeHarness()
+    // 设备之前已配网：initialize 内部先发 REQUEST_CURRENT_STATE，session.state
+    // 已是设备真实状态 PROVISIONED（4）。connect 成功收尾必须反映该真实状态，
+    // 而不是无条件强制 READY——否则「已配网」信息丢失，界面只显示配网表单
+    session.state = ImprovSerialCurrentState.PROVISIONED
+
+    await transport.connect()
+
+    expect(transport.state).toBe('PROVISIONED')
+  })
+
   it('switches to CONNECTING while initialize is pending, and only to READY after it settles', async () => {
     const { transport, session } = makeHarness()
     let resolveInit: (info: SessionInfoLike) => void = () => {}

@@ -143,6 +143,23 @@ describe('ProvisionView 状态渲染', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Change Wi-Fi' }))
     expect(props.changeWifi).toHaveBeenCalledTimes(1)
   })
+
+  it('PROVISIONED 且无 lastUrl（连接时设备已配网）：成功页 + 更换 Wi-Fi，不渲染外链', () => {
+    const props = makeSession({
+      state: 'PROVISIONED',
+      deviceInfo: DEVICE,
+      lastUrl: undefined,
+    })
+    render(
+      <I18nProvider locale="en-US">
+        <ProvisionView {...props} />
+      </I18nProvider>,
+    )
+    // 连接时已配网（非刚配网成功）：设备未提供跳转 URL，成功页仍渲染
+    expect(screen.getByText('Provisioning Successful')).toBeTruthy()
+    expect(screen.queryByRole('link', { name: 'Visit Device' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Change Wi-Fi' })).toBeTruthy()
+  })
 })
 
 describe('zh-CN 文案抽查', () => {

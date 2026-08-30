@@ -155,8 +155,12 @@ export function useImprovSession(options: UseImprovSessionOptions = {}): UseImpr
         // 等待期间会话被 reset / 卸载：代际不匹配，丢弃迟到结果
         if (generationRef.current !== gen) return
         setDeviceInfo(info)
-        // connect 成功即进入 READY：按 spec 自动扫一次网络（首扫失败同样走错误记录）
-        await runScan(transport, gen)
+        // connect 成功即进入 READY：按 spec 自动扫一次网络（首扫失败同样走错误记录）。
+        // 但设备已配网（PROVISIONED）时无需扫描——扫描会干扰已配网设备，且其状态
+        // 已由传输反映为成功态，直接呈现成功页即可
+        if (transport.state === 'READY') {
+          await runScan(transport, gen)
+        }
       } catch (cause) {
         if (generationRef.current === gen) recordError(cause)
       } finally {

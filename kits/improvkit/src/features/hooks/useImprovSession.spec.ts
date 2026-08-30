@@ -96,6 +96,14 @@ class FakeTransport implements IImprovTransport {
       return DEVICE_INFO
     })
   }
+
+  /** 测试辅助：模拟「连接时设备已配网」——connect resolve 时状态已是 PROVISIONED */
+  scriptConnectProvisioned(): void {
+    this.connect.mockImplementation(async () => {
+      this.emitState('PROVISIONED')
+      return DEVICE_INFO
+    })
+  }
 }
 
 /** 装配 hook：每次 createTransport 调用都产生新 fake 并记录，便于断言重建时机 */
@@ -171,6 +179,22 @@ describe('useImprovSession', () => {
     })
     expect(result.current.networks).toEqual(NETWORKS)
     expect(result.current.scanUnavailable).toBe(false)
+    expect(result.current.busy).toBe(false)
+  })
+
+  it('connect 成功但设备已配网（PROVISIONED）：不自动扫描，直接呈现成功态', async () => {
+    const { result, current } = setup()
+    const fake = current()
+    fake.scriptConnectProvisioned()
+    fake.scan.mockResolvedValue(NETWORKS)
+
+    await act(async () => {
+      result.current.connect()
+    })
+    expect(result.current.state).toBe('PROVISIONED')
+    expect(result.current.deviceInfo).toEqual(DEVICE_INFO)
+    // 已配网设备无需扫描（且扫描会干扰已配网设备）：connect 后不得触发首扫
+    expect(fake.scan).not.toHaveBeenCalled()
     expect(result.current.busy).toBe(false)
   })
 

@@ -232,7 +232,12 @@ export class SerialTransport implements IImprovTransport {
       // 默认 1s 偏紧易误报 NOT_IMPROV_DEVICE；放宽到 5s 降低真机误报。
       const info = await session.initialize(5000)
       const deviceInfo = mapSessionInfo(info)
-      this.setState('READY')
+      // 设备可能已配网：initialize 内部先发 REQUEST_CURRENT_STATE，session.state
+      // 已是设备真实状态。connect 成功收尾必须反映真实状态而非强制 READY——否则
+      // 「已配网」信息丢失，界面只显示配网表单。PROVISIONED → PROVISIONED，
+      // 其余（READY / undefined）→ READY（保持向后兼容）
+      const mapped = SDK_STATE_TO_IMPROV[session.state ?? -1]
+      this.setState(mapped === 'PROVISIONED' ? 'PROVISIONED' : 'READY')
       return deviceInfo
     } catch (cause) {
       await this.handleConnectFailure(session, port, generation)
