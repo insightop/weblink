@@ -1,0 +1,44 @@
+{
+  "name": "@weblink/improvkit",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./vue": "./src/vue-entry.ts"
+  },
+  "type": "module",
+  "description": "Improv Wi-Fi Serial 配网工具包 — 基于 improv-wifi-serial-sdk 的浏览器端设备配网",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.react.json",
+    "typecheck:vue": "vue-tsc --noEmit -p tsconfig.json",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@weblink/tokens": "workspace:*",
+    "improv-wifi-serial-sdk": "^2.8.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "vue": "^3.5.32",
+    "vue-i18n": "^9.14.5"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@vue/test-utils": "^2.4.6",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/w3c-web-serial": "^1.0.8",
+    "@vitejs/plugin-react-swc": "^4.3.1",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@weblink/eslint-config": "workspace:*",
+    "@weblink/tsconfig": "workspace:*",
+    "happy-dom": "^18.0.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.6"
+  }
+}
