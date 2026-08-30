@@ -21,6 +21,7 @@
     "@weblink/downloadkit": "workspace:*",
     "@weblink/flashkit": "workspace:*",
     "@weblink/hidkit": "workspace:*",
+    "@weblink/improvkit": "workspace:*",
     "@weblink/ipkit": "workspace:*",
     "@weblink/otakit": "workspace:*",
     "@weblink/sensorkit": "workspace:*",
