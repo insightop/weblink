@@ -11,6 +11,7 @@ const NETWORKS: Ssid[] = [
 
 function renderForm(props: {
   networks?: Ssid[] | null
+  scanGraceExpired?: boolean
   busy?: boolean
   onSubmit?: (ssid: string, password: string) => void
   onRescan?: () => void
@@ -21,6 +22,7 @@ function renderForm(props: {
     <I18nProvider locale="en-US">
       <WifiForm
         networks={props.networks}
+        scanGraceExpired={props.scanGraceExpired ?? false}
         busy={props.busy ?? false}
         onSubmit={onSubmit}
         onRescan={onRescan}
@@ -30,19 +32,58 @@ function renderForm(props: {
   return { onSubmit, onRescan, ...utils }
 }
 
+/** 以新 networks 重新渲染（同一渲染根，保留组件内部 ref 状态） */
+function rerenderWifiForm(
+  utils: ReturnType<typeof renderForm>,
+  props: { networks?: Ssid[] | null },
+) {
+  utils.rerender(
+    <I18nProvider locale="en-US">
+      <WifiForm
+        networks={props.networks}
+        busy={false}
+        onSubmit={utils.onSubmit}
+        onRescan={utils.onRescan}
+      />
+    </I18nProvider>,
+  )
+}
+
 afterEach(() => cleanup())
 
 describe('WifiForm', () => {
-  it('网络列表：渲染名称，点选条目回填 SSID 输入框并使提交可用', () => {
+  it('网络列表首次就绪：自动预选信号最强的网络（home-5g）填入手动输入框', () => {
     renderForm({ networks: NETWORKS })
     expect(screen.getByRole('button', { name: /home-5g/ })).toBeTruthy()
     expect(screen.getByRole('button', { name: /guest/ })).toBeTruthy()
 
     const ssidInput = screen.getByLabelText('Wi-Fi Network') as HTMLInputElement
-    expect(ssidInput.value).toBe('')
+    // 预选最强网络（D15）：home-5g 的 RSSI -42 > guest -67
+    expect(ssidInput.value).toBe('home-5g')
     expect((screen.getByRole('button', { name: 'Connect' }) as HTMLButtonElement).disabled).toBe(
-      true,
+      false,
     )
+  })
+
+  it('慢启动：首次扫描返回空数组、第二轮才返回含网络的数组时，仍预选信号最强的网络', () => {
+    // 刚烧录/刚启动设备首扫尚未返回网络（[]），随后才扫出信号强度不同的网络。
+    // 预选必须在「首个非空数组」到达时触发，而非首个数组（否则空数组会吞掉预选）。
+    const utils = renderForm({ networks: [] })
+    expect((screen.getByLabelText('Wi-Fi Network') as HTMLInputElement).value).toBe('')
+
+    rerenderWifiForm(utils, { networks: NETWORKS })
+    const ssidInput = screen.getByLabelText('Wi-Fi Network') as HTMLInputElement
+    // 第二轮非空列表到达：home-5g（rssi -42）最强，应被预选填入手动输入框
+    expect(ssidInput.value).toBe('home-5g')
+    expect((screen.getByRole('button', { name: 'Connect' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    )
+  })
+
+  it('点选列表条目回填 SSID 输入框并替换预选', () => {
+    renderForm({ networks: NETWORKS })
+    const ssidInput = screen.getByLabelText('Wi-Fi Network') as HTMLInputElement
+    expect(ssidInput.value).toBe('home-5g') // 预选
 
     fireEvent.click(screen.getByRole('button', { name: /guest/ }))
     expect(ssidInput.value).toBe('guest')
@@ -84,12 +125,19 @@ describe('WifiForm', () => {
     )
   })
 
-  it('networks 为空数组（已扫描但无网络）：显示「未发现网络」提示；未扫描（undefined）不显示', () => {
+  it('networks 为空数组（已扫描但无网络）：显示「未发现网络」提示；undefined 未就绪时显示「正在扫描」', () => {
     renderForm({ networks: [] })
     expect(screen.getByText('No networks found.')).toBeTruthy()
     cleanup()
     renderForm({})
+    // 未就绪（undefined）不显示空态，而是"正在扫描"
     expect(screen.queryByText('No networks found.')).toBeNull()
+    expect(screen.getByText('Scanning for networks…')).toBeTruthy()
+  })
+
+  it('首扫宽限期已过仍无结果（networks undefined + scanGraceExpired）：显示「未发现网络」空态', () => {
+    renderForm({ networks: undefined, scanGraceExpired: true })
+    expect(screen.getByText('No networks found.')).toBeTruthy()
   })
 
   it('同名校、不同信号与加密态的网络均渲染：复合 key 不触发重复键告警', () => {
@@ -167,5 +215,71 @@ describe('WifiForm', () => {
     const { onRescan } = renderForm({ networks: NETWORKS })
     fireEvent.click(screen.getByRole('button', { name: 'Rescan' }))
     expect(onRescan).toHaveBeenCalledTimes(1)
+  })
+
+  it('选中的网络从后续扫描消失：回填手动输入框、保留密码并提示掉线回填', () => {
+    // 首次列表预选 home-5g；用户再输入密码
+    const utils = renderForm({ networks: NETWORKS })
+    const ssidInput = screen.getByLabelText('Wi-Fi Network') as HTMLInputElement
+    expect(ssidInput.value).toBe('home-5g')
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'secret' } })
+
+    // 下一轮扫描 home-5g 消失（只剩 guest）：选中的 home-5g 被回填到输入框
+    rerenderWifiForm(utils, {
+      networks: [{ name: 'guest', rssi: -60, secured: false }],
+    })
+    expect(ssidInput.value).toBe('home-5g') // 回填保留选择
+    expect((screen.getByLabelText('Password') as HTMLInputElement).value).toBe('secret') // 密码保留
+    expect(screen.getByTestId('scan-backfill')).toBeTruthy() // 回填提示
+    expect((screen.getByRole('button', { name: 'Connect' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    ) // 可直接提交重试
+  })
+
+  it('用户手动改过 SSID 后再刷新列表：不覆盖其手动输入', () => {
+    const utils = renderForm({ networks: NETWORKS })
+    const ssidInput = screen.getByLabelText('Wi-Fi Network') as HTMLInputElement
+    fireEvent.change(ssidInput, { target: { value: 'my-manual-wifi' } })
+
+    rerenderWifiForm(utils, { networks: NETWORKS })
+    expect(ssidInput.value).toBe('my-manual-wifi')
+  })
+
+  it('预选后手动改 SSID，目标网络掉线：不回填不覆盖用户输入、不弹回填提示', () => {
+    // F1 回归：预选 home-5g（selectedSsidRef 记录为 home-5g）后用户手动改为 foo，
+    // 此时已脱离"列表选中项"跟踪。下一轮网络 home-5g 掉线，掉线检测不得再以
+    // 预选残留的 home-5g 对本来源生效——否则会把用户手动输入覆盖回 home-5g。
+    const utils = renderForm({ networks: NETWORKS })
+    const ssidInput = screen.getByLabelText('Wi-Fi Network') as HTMLInputElement
+    expect(ssidInput.value).toBe('home-5g') // 预选写入
+
+    // 手动改写 SSID：脱离列表选中跟踪
+    fireEvent.change(ssidInput, { target: { value: 'foo' } })
+    expect(ssidInput.value).toBe('foo')
+
+    // 下一轮扫描 home-5g 消失（只剩 guest）：不得触发回填覆盖手动输入 foo
+    rerenderWifiForm(utils, {
+      networks: [{ name: 'guest', rssi: -60, secured: false }],
+    })
+    expect(ssidInput.value).toBe('foo') // 保留用户手动输入
+    expect(screen.queryByTestId('scan-backfill')).toBeNull()
+  })
+
+  it('首扫预选后，二扫出现更强的网络：不翻转已建立的预选（guard 隔离）', () => {
+    // F3 回归：selectionEstablishedRef guard 保证「已有选择决策」后，更强的网络
+    // 不得在后续扫描翻转当前 SSID。二扫 home-5g 仍在，只新增更强的 zzz 时，
+    // SSID 必须保持 home-5g，且不触发回填提示（home-5g 并未掉线）。
+    const utils = renderForm({ networks: NETWORKS })
+    const ssidInput = screen.getByLabelText('Wi-Fi Network') as HTMLInputElement
+    expect(ssidInput.value).toBe('home-5g') // 首扫预选
+
+    rerenderWifiForm(utils, {
+      networks: [
+        { name: 'zzz', rssi: -20, secured: false }, // 新增更强信号
+        ...NETWORKS, // home-5g（-42）仍在
+      ],
+    })
+    expect(ssidInput.value).toBe('home-5g') // 不被更强的 zzz 抢走
+    expect(screen.queryByTestId('scan-backfill')).toBeNull() // home-5g 未掉线
   })
 })

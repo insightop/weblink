@@ -70,6 +70,14 @@ export interface FakeImprovPortScript {
   }
   /** cmd=4 扫描结果（仅 scanSupported 为 true 时使用） */
   networks?: Ssid[]
+  /**
+   * cmd=4 的多轮扫描应答（持续扫描模拟）：每次收到扫描命令依次弹出下一轮，
+   * 用尽后一直复用最后一轮。优先于 `networks`（提供 scanRounds 时忽略 networks）。
+   * 借此可模拟：
+   * - 持续扫描下每轮返回不同的网络集（掉线回填场景）；
+   * - 前几轮为空数组、后续才出现网络（首次扫描宽限期场景）。
+   */
+  scanRounds?: Ssid[][]
   /** 是否支持扫描；false 时 cmd=4 应答 ERROR_STATE(UNKNOWN_RPC_COMMAND=0x02) */
   scanSupported?: boolean
   /** cmd=1 配网结果；缺省按成功处理且无跳转 URL */
@@ -162,27 +170,65 @@ export function decodeFrames(bytes: Uint8Array | number[]): DecodedFrame[] {
  * 集成测试中以 `as unknown as SerialPort` 收口注入。
  */
 export class FakeImprovPort {
-  readonly readable: ReadableStream<Uint8Array>
   readonly writable: WritableStream<Uint8Array>
   /** 已从写入侧解析出的完整帧序列（客户端发来的命令），供集成测试断言 */
   readonly receivedFrames: DecodedFrame[] = []
 
   private readonly script: FakeImprovPortScript
+  private currentReadable: ReadableStream<Uint8Array> | null
   private controller: ReadableStreamDefaultController<Uint8Array> | null = null
   private closed = false
   /** 写入侧尚未凑成完整帧的残片（真实 SDK 每帧一次写入，正常恒为空） */
   private pending: number[] = []
+  /** scanRounds 当前弹出到第几轮（持续扫描模拟的游标，见 respondScan） */
+  private scanRoundIndex = 0
 
   constructor(script: FakeImprovPortScript = {}) {
     this.script = script
-    this.readable = new ReadableStream<Uint8Array>({
-      start: (controller) => {
-        this.controller = controller
-      },
-    })
+    // 构造即建流：应答在写入时同步入队，即使读取侧尚未 getReader 也能缓冲
+    // （fakeImprovDevice.spec 的 write-then-read 顺序依赖此行为）
+    this.currentReadable = this.makeReadableStream()
     this.writable = new WritableStream<Uint8Array>({
       write: (chunk) => this.onClientWrite(chunk),
     })
+  }
+
+  private makeReadableStream(): ReadableStream<Uint8Array> {
+    return new ReadableStream<Uint8Array>({
+      start: (controller) => {
+        this.controller = controller
+      },
+      cancel: () => {
+        // 流被 cancel（SDK close 释放 reader）后，下次访问 readable 时重建新流，
+        // 供 console 在释放 Improv 会话 reader 后读原始字节（「释放 reader 后仍
+        // 可读原始流」语义，见 8.1b 集成测试）
+        this.currentReadable = null
+        this.controller = null
+      },
+    })
+  }
+
+  /**
+   * 返回当前流；若前一流已被 cancel（SDK close 释放 reader），则重建一条新流。
+   * 模拟 Web Serial 的 `port.readable` getter：前一个 reader 被 cancel 后，下一
+   * 次访问得到一条新流，console 借此在释放 Improv 会话后读原始字节。
+   */
+  get readable(): ReadableStream<Uint8Array> {
+    if (!this.currentReadable) {
+      this.currentReadable = this.makeReadableStream()
+    }
+    return this.currentReadable
+  }
+
+  /** 向当前 readable 流入队原始字节（console 模式读取用），不经过协议帧解析 */
+  enqueueRaw(bytes: Uint8Array | number[]): void {
+    if (this.closed || !this.controller) return
+    try {
+      this.controller.enqueue(bytes instanceof Uint8Array ? bytes : Uint8Array.from(bytes))
+    } catch {
+      // 防御：readable 可能已被外部 cancel（如测试直接 reader.cancel()），此时
+      // enqueue 会抛 TypeError——连接已终结、应答无人消费，吞掉即可
+    }
   }
 
   /** 终止 readable 流：真实 SDK 的读取循环会因此 read() 得到 done 并派发 disconnect */
@@ -268,8 +314,18 @@ export class FakeImprovPort {
       this.sendFrame(ImprovSerialMessageType.ERROR_STATE, [ERROR_STATE_CODE.UNKNOWN_RPC_COMMAND])
       return
     }
+    // 多轮扫描模拟：每次扫描命令弹出下一轮，用尽后复用最后一轮（持续轮询会
+    // 不断发扫描命令，需稳定应答而非越界）。scanRounds 缺省回退到单发 networks
+    let round: Ssid[]
+    if (this.script.scanRounds) {
+      round =
+        this.script.scanRounds[Math.min(this.scanRoundIndex, this.script.scanRounds.length - 1)]
+      this.scanRoundIndex += 1
+    } else {
+      round = this.script.networks ?? []
+    }
     // 逐行（每个网络一条）发 RPC_RESULT，最后以空结果收尾结束多包模式
-    for (const network of this.script.networks ?? []) {
+    for (const network of round) {
       const encoded = [
         encodePrefixed(network.name),
         encodePrefixed(String(network.rssi)),

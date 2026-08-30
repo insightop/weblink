@@ -28,6 +28,7 @@ function makeSession(overrides: Partial<ProvisionViewProps> = {}): ProvisionView
     deviceInfo: undefined,
     networks: undefined,
     scanUnavailable: false,
+    scanGraceExpired: false,
     errorCategory: undefined,
     lastUrl: undefined,
     busy: false,
@@ -37,6 +38,12 @@ function makeSession(overrides: Partial<ProvisionViewProps> = {}): ProvisionView
     changeWifi: vi.fn(),
     reset: vi.fn(),
     onReconnect: vi.fn(),
+    enterConsole: vi.fn(),
+    exitConsole: vi.fn(),
+    resetConsole: vi.fn(),
+    resetDevice: vi.fn(async () => {}),
+    resetNotice: false,
+    onReset: vi.fn(async () => {}),
     ...overrides,
   }
 }
@@ -222,5 +229,112 @@ describe('ProvisionPage 能力检测门', () => {
     vi.stubGlobal('isSecureContext', true)
     render(<ProvisionPage locale="zh-CN" />)
     expect(screen.getByRole('button', { name: '连接设备' })).toBeTruthy()
+  })
+})
+
+describe('ProvisionView 控制台接线', () => {
+  it('READY 表单态提供「日志与控制台」入口，点击触发 enterConsole 回调', () => {
+    const enterConsole = vi.fn()
+    renderView({ state: 'READY', deviceInfo: DEVICE, networks: NETWORKS, enterConsole })
+    const entry = screen.getByRole('button', { name: 'Logs & Console' })
+    expect(entry).toBeTruthy()
+    fireEvent.click(entry)
+    expect(enterConsole).toHaveBeenCalledTimes(1)
+  })
+
+  it('consolePort 存在时渲染 ConsoleView 替代配网视图（表单被屏蔽）', () => {
+    const exitConsole = vi.fn()
+    const onReset = vi.fn(async () => {})
+    renderView({
+      state: 'READY',
+      deviceInfo: DEVICE,
+      networks: NETWORKS,
+      consolePort: { readable: null, writable: null },
+      exitConsole,
+      onReset,
+    })
+    // 控制台视图替代配网表单：表单与网络列表均不渲染
+    expect(screen.getByText('Serial Console')).toBeTruthy()
+    expect(screen.queryByLabelText('Wi-Fi Network')).toBeNull()
+    expect(screen.queryByRole('button', { name: /home-5g/ })).toBeNull()
+  })
+
+  it('consolePort 存在时渲染 ConsoleView 替代成功页（成功页被屏蔽）', () => {
+    renderView({
+      state: 'PROVISIONED',
+      deviceInfo: DEVICE,
+      lastUrl: 'http://device.local',
+      consolePort: { readable: null, writable: null },
+    })
+    expect(screen.getByText('Serial Console')).toBeTruthy()
+    expect(screen.queryByText('Provisioning Successful')).toBeNull()
+  })
+
+  it('ConsoleView 的退出按钮触发 exitConsole 回调', () => {
+    const exitConsole = vi.fn()
+    renderView({
+      state: 'READY',
+      deviceInfo: DEVICE,
+      consolePort: { readable: null, writable: null },
+      exitConsole,
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Exit' }))
+    expect(exitConsole).toHaveBeenCalledTimes(1)
+  })
+
+  it('ConsoleView 的复位按钮触发 onReset 回调（handleReset）', () => {
+    const onReset = vi.fn(async () => {})
+    renderView({
+      state: 'READY',
+      deviceInfo: DEVICE,
+      consolePort: { readable: null, writable: null },
+      onReset,
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Reset Device' }))
+    expect(onReset).toHaveBeenCalledTimes(1)
+  })
+
+  it('handleReset 返回真实复位 promise：复位失败时 ConsoleView 展示失败提示（I1）', async () => {
+    // 模拟真实接线：SessionHost 的 handleReset 在 resetDevice 存在时返回其 promise，
+    // 复位失败会 reject → ConsoleView 的 handleReset 捕获并展示错误提示
+    const onReset = vi.fn(async () => {
+      throw new Error('reset failed')
+    })
+    renderView({
+      state: 'READY',
+      deviceInfo: DEVICE,
+      consolePort: { readable: null, writable: null },
+      onReset,
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Reset Device' }))
+    // 复位失败路径经真实 promise 传播到 ConsoleView 的错误提示
+    expect(await screen.findByText('Reset failed')).toBeTruthy()
+  })
+
+  it('复位后（resetNotice）回到配网入口视图并提示重新连接（console_reset_reconnect）', () => {
+    renderView({
+      state: 'IDLE',
+      resetNotice: true,
+    })
+    // 复位重启设备后 Improv 会话失效：回到连接入口，提示用户重新连接
+    expect(screen.getByRole('heading', { name: 'Improv Wi-Fi Setup' })).toBeTruthy()
+    expect(screen.getByText('Device reset. Reconnect to continue.')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Connect Device' })).toBeTruthy()
+  })
+
+  it('复位后（resetNotice）在 READY 表单语境同样展示重新连接提示', () => {
+    renderView({
+      state: 'READY',
+      deviceInfo: DEVICE,
+      networks: NETWORKS,
+      resetNotice: true,
+    })
+    expect(screen.getByText('Device reset. Reconnect to continue.')).toBeTruthy()
+    expect(screen.getByLabelText('Password')).toBeTruthy()
+  })
+
+  it('zh-CN：复位后提示重新连接为中文', () => {
+    renderView({ state: 'IDLE', resetNotice: true }, 'zh-CN')
+    expect(screen.getByText('设备已复位，请重新连接以继续')).toBeTruthy()
   })
 })

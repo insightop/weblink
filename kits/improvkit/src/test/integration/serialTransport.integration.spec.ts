@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { ImprovSerial } from 'improv-wifi-serial-sdk/dist/serial.js'
 import type { DomainErrorCategory } from '../../domain/errors'
 import { DomainProvisioningError } from '../../domain/errors'
+import type { Ssid } from '../../domain/types'
 import { FakeImprovPort, type FakeImprovPortScript } from '../fakes/fakeImprovDevice'
 import {
   SerialTransport,
@@ -167,5 +168,86 @@ describe('SerialTransport integration with real ImprovSerial', () => {
     await transport.connect()
     expect(transport.state).toBe('READY')
     expect(getPort().receivedFrames.some((frame) => frame.data[0] === 3)).toBe(true)
+  })
+
+  it('subscribeSSIDs merges multi-round scans (keyed by name, newest wins) until cancelled', async () => {
+    const { transport } = makeTransport({
+      scanRounds: [
+        [{ name: 'home', rssi: -42, secured: true }],
+        [
+          { name: 'home', rssi: -40, secured: true },
+          { name: 'guest', rssi: -60, secured: false },
+        ],
+      ],
+    })
+    await transport.connect()
+
+    const seen: Array<Ssid[] | null> = []
+    const cancel = transport.subscribeSSIDs((ssids) => seen.push(ssids))
+
+    // SDK 订阅即首扫：第一轮结果落地（合并、按名排序）
+    await vi.waitFor(() => expect(seen[0]).toEqual([{ name: 'home', rssi: -42, secured: true }]), {
+      timeout: 3000,
+    })
+
+    // SDK 内部 3s 间隔后自动发起第二轮：home 最新信号覆盖、新增 guest 合并
+    await vi.waitFor(
+      () =>
+        expect(seen[seen.length - 1]).toEqual([
+          { name: 'guest', rssi: -60, secured: false },
+          { name: 'home', rssi: -40, secured: true },
+        ]),
+      { timeout: 4000 },
+    )
+
+    await cancel()
+    const snapshot = seen.length
+    // 取消后停止轮询：SDK 不再回调（留出大于一个扫描间隔的时间观察）
+    await new Promise((resolve) => setTimeout(resolve, 4000))
+    expect(seen.length).toBe(snapshot)
+  }, 15000)
+
+  it('subscribeSSIDs calls back null once on an unsupported scan and stops', async () => {
+    const { transport } = makeTransport({ scanSupported: false })
+    await transport.connect()
+
+    const seen: Array<Ssid[] | null> = []
+    const cancel = transport.subscribeSSIDs((ssids) => seen.push(ssids))
+
+    // 首次扫描即 UNKNOWN_RPC_COMMAND → 回调一次 null 并停止
+    await vi.waitFor(() => expect(seen).toEqual([null]), { timeout: 3000 })
+    await cancel()
+    const snapshot = seen.length
+    await new Promise((resolve) => setTimeout(resolve, 4000))
+    expect(seen.length).toBe(snapshot)
+  }, 10000)
+
+  it('enterConsole hands off the port for raw log reading, then exitConsole restores provisioning', async () => {
+    const { transport, getPort } = makeTransport({
+      networks: [{ name: 'home', rssi: -42, secured: true }],
+    })
+    await transport.connect()
+    expect(transport.state).toBe('READY')
+
+    // 进入 console：关闭 Improv 会话（释放 reader），返回裸端口，state 转 IDLE
+    const consolePort = await transport.enterConsole()
+    expect(transport.state).toBe('IDLE')
+    expect(consolePort.readable).not.toBeNull()
+    expect(consolePort.writable).not.toBeNull()
+
+    // console 读一段原始字节（不经过协议帧解析）
+    const reader = consolePort.readable!.getReader()
+    getPort().enqueueRaw([0x41, 0x42, 0x43]) // "ABC"
+    const { value } = await reader.read()
+    expect(value).toEqual(Uint8Array.from([0x41, 0x42, 0x43]))
+    reader.releaseLock()
+
+    // 退出 console：重建 Improv 会话，恢复可配网状态
+    await transport.exitConsole()
+    expect(transport.state).toBe('READY')
+
+    // 恢复后可正常 scan（新会话的 RPC 通道可用）
+    const networks = await transport.scan()
+    expect(networks).toEqual([{ name: 'home', rssi: -42, secured: true }])
   })
 })

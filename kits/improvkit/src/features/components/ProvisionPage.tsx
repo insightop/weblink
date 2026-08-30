@@ -2,6 +2,7 @@ import { isSecureContext, isWebSerialSupported } from '../capabilities'
 import { useImprovSession, type UseImprovSessionResult } from '../hooks/useImprovSession'
 import { I18nProvider, resolveLocale, useKitI18n, type Locale } from '../i18n/react'
 import { ConnectionPanel } from './ConnectionPanel'
+import { ConsoleView } from './ConsoleView'
 import { DeviceInfoCard } from './DeviceInfoCard'
 import { ErrorBanner } from './ErrorBanner'
 import { ProgressView } from './ProgressView'
@@ -68,9 +69,22 @@ function SessionHost() {
     session.reset()
     session.connect()
   }
+  // 复位设备：优先走真实 esptool-js 硬件复位（transport.resetDevice，DTR/RTS
+  // 重启设备）；transport 未实现 resetDevice 时回退到 resetConsole（= exitConsole，
+  // 退出控制台回到配网视图）。真实复位会重启设备、使 Improv 会话失效，hook 侧
+  // 已清理会话状态并置 resetNotice 提示用户重新连接。
+  // 返回真实复位 promise（I1）：ConsoleView 的 handleReset 据此 await 真实复位，
+  // 使 busy 态与错误路径真实——复位失败时 promise reject，ConsoleView 展示失败提示
+  const handleReset = (): Promise<void> => {
+    if (session.resetDevice) {
+      return session.resetDevice()
+    }
+    session.resetConsole?.()
+    return Promise.resolve()
+  }
   return (
     <div className="improv-page">
-      <ProvisionView {...session} onReconnect={handleReconnect} />
+      <ProvisionView {...session} onReconnect={handleReconnect} onReset={handleReset} />
     </div>
   )
 }
@@ -79,6 +93,8 @@ function SessionHost() {
 export interface ProvisionViewProps extends UseImprovSessionResult {
   /** ERROR + DISCONNECTED（表单语境物理断连）时渲染的恢复入口：重置后立即重连 */
   onReconnect: () => void
+  /** 控制台复位设备回调（由 SessionHost 组装；ConsoleView 的 onReset 接线） */
+  onReset: () => Promise<void>
 }
 
 /**
@@ -94,6 +110,7 @@ export function ProvisionView(props: ProvisionViewProps) {
     state,
     deviceInfo,
     networks,
+    scanGraceExpired,
     errorCategory,
     lastUrl,
     busy,
@@ -103,7 +120,19 @@ export function ProvisionView(props: ProvisionViewProps) {
     changeWifi,
     reset,
     onReconnect,
+    onReset,
+    consolePort,
+    enterConsole,
+    exitConsole,
+    resetNotice,
   } = props
+
+  // 控制台模式：consolePort 存在即渲染 ConsoleView 替代配网视图（hook 已保证
+  // 配网操作被拒绝，UI 层同样屏蔽表单/成功页，双保险）。onExit 接 exitConsole
+  // 退出控制台回到配网视图；onReset 接宿主组装的 handleReset
+  if (consolePort) {
+    return <ConsoleView port={consolePort} onExit={() => exitConsole?.()} onReset={onReset} />
+  }
 
   const showForm = state === 'READY' || (state === 'ERROR' && !!deviceInfo)
 
@@ -112,6 +141,11 @@ export function ProvisionView(props: ProvisionViewProps) {
       <>
         {deviceInfo && <DeviceInfoCard info={deviceInfo} />}
         {errorCategory && <ErrorBanner category={errorCategory} />}
+        {resetNotice && (
+          <div className="improv-reset-notice" role="status">
+            {t('console_reset_reconnect')}
+          </div>
+        )}
         {state === 'ERROR' && errorCategory === 'DISCONNECTED' && (
           <button
             type="button"
@@ -123,10 +157,18 @@ export function ProvisionView(props: ProvisionViewProps) {
         )}
         <WifiForm
           networks={networks}
+          scanGraceExpired={scanGraceExpired}
           busy={busy}
           onSubmit={submitCredentials}
           onRescan={refreshScan}
         />
+        <button
+          type="button"
+          className="improv-button improv-button--ghost improv-console-open"
+          onClick={() => enterConsole?.()}
+        >
+          {t('console_open')}
+        </button>
       </>
     )
   }
@@ -135,18 +177,32 @@ export function ProvisionView(props: ProvisionViewProps) {
     case 'PROVISIONING':
       return <ProgressView label={t('provisioning')} />
     case 'PROVISIONED':
-      return <ResultView deviceInfo={deviceInfo} lastUrl={lastUrl} onChangeWifi={changeWifi} />
+      return (
+        <ResultView
+          deviceInfo={deviceInfo}
+          lastUrl={lastUrl}
+          onChangeWifi={changeWifi}
+          onOpenConsole={() => enterConsole?.()}
+        />
+      )
     default:
       // IDLE / CONNECTING / ERROR（连接期失败无表单语境）；AUTHORIZATION_REQUIRED
       // 为 BLE 预留态，串口流程不可达，统一回落入口视图
       return (
-        <ConnectionPanel
-          state={state === 'CONNECTING' ? 'CONNECTING' : state === 'ERROR' ? 'ERROR' : 'IDLE'}
-          errorCategory={errorCategory}
-          busy={busy}
-          onConnect={connect}
-          onCancel={reset}
-        />
+        <>
+          {resetNotice && (
+            <div className="improv-reset-notice" role="status">
+              {t('console_reset_reconnect')}
+            </div>
+          )}
+          <ConnectionPanel
+            state={state === 'CONNECTING' ? 'CONNECTING' : state === 'ERROR' ? 'ERROR' : 'IDLE'}
+            errorCategory={errorCategory}
+            busy={busy}
+            onConnect={connect}
+            onCancel={reset}
+          />
+        </>
       )
   }
 }

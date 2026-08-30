@@ -206,6 +206,26 @@ describe('FakeImprovPort', () => {
     expect(frames).toEqual([{ type: 2, data: [2] }])
   })
 
+  it('scanRounds: serves each scan command its own round, then reuses the last', async () => {
+    const port = new FakeImprovPort({
+      scanRounds: [
+        [{ name: 'home', rssi: -42, secured: true }],
+        [],
+        [{ name: 'guest', rssi: -60, secured: false }],
+      ],
+    })
+    // 三次扫描按轮次期望的网络名；rounds[i] 的应答帧数 = 网络条数 + 1 条空收尾
+    const expectedRounds = [['home'], [], ['guest']]
+    for (const names of expectedRounds) {
+      await writeFrames(port, encodeFrame(3, [4, 0]))
+      const frames = await readFrames(port, (names.length || 0) + 1)
+      const gotNames = frames.slice(0, -1).map((frame) => decodePrefixedStrings(frame.data)[0])
+      expect(gotNames).toEqual(names)
+      // 最后一帧是空结果收尾
+      expect(frames[frames.length - 1]).toEqual({ type: 4, data: [4, 0] })
+    }
+  })
+
   it('provisions ok: PROVISIONING → PROVISIONED → RPC_RESULT with nextUrl', async () => {
     const port = new FakeImprovPort({
       provisionOutcome: { kind: 'ok', nextUrl: 'https://example.com/setup' },

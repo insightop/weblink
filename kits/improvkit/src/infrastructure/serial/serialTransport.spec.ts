@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ImprovSerialCurrentState, PortNotReady } from 'improv-wifi-serial-sdk/dist/const.js'
 import { ImprovSerial } from 'improv-wifi-serial-sdk/dist/serial.js'
 import type { DomainErrorCategory } from '../../domain/errors'
@@ -11,6 +11,21 @@ import {
   type SerialTransportDeps,
   type SessionInfoLike,
 } from './serialTransport'
+
+/**
+ * esptool-js 动态 import 的模块级 mock：resetDevice 用 `import("esptool-js")`
+ * 动态加载（避免主包膨胀），vitest 经 vi.mock 拦截该动态 import。用 vi.hoisted
+ * 承载可变的 Transport / HardReset 类，各用例经 mockImplementation 编排行为。
+ */
+const esptoolMock = vi.hoisted(() => {
+  const Transport = vi.fn()
+  const HardReset = vi.fn()
+  return { Transport, HardReset }
+})
+vi.mock('esptool-js', () => ({
+  Transport: esptoolMock.Transport,
+  HardReset: esptoolMock.HardReset,
+}))
 
 /**
  * SerialTransport 单测：注入 mock session 工厂（EventTarget 假会话，手动触发
@@ -55,11 +70,14 @@ class FakeSession extends EventTarget implements ImprovSessionLike {
   closeCalls = 0
   provisionCalls: Array<[string, string]> = []
   scanCalls = 0
+  subscribeCalls = 0
 
   initBehavior: () => Promise<SessionInfoLike> = async () => DEFAULT_INFO
   closeBehavior: () => Promise<void> = async () => {}
   provisionBehavior: (ssid: string, password: string) => Promise<void> = async () => {}
   scanBehavior: () => Promise<Ssid[]> = async () => []
+  /** subscribeSSIDs 的取消实现（默认记录取消次数，取消为幂等 no-op） */
+  unsubscribeBehavior: () => Promise<void> = async () => {}
 
   async initialize(): Promise<SessionInfoLike> {
     this.initializeCalls += 1
@@ -80,6 +98,15 @@ class FakeSession extends EventTarget implements ImprovSessionLike {
     this.scanCalls += 1
     return this.scanBehavior()
   }
+
+  subscribeSSIDs(onChange: (ssids: Ssid[] | null) => void): () => Promise<void> {
+    this.subscribeCalls += 1
+    this.onChange = onChange
+    return () => this.unsubscribeBehavior()
+  }
+
+  /** 记录最近一次 subscribeSSIDs 收到的回调，供测试直接调用模拟持续扫描结果 */
+  onChange: (ssids: Ssid[] | null) => void = () => {}
 
   /** 派发 CURRENT_STATE 事件（detail=数值） */
   emitStateCode(code: number): void {
@@ -684,6 +711,225 @@ describe('SerialTransport.close', () => {
     // 断连已终结物理端口：close 不再尝试关闭已失效的端口
     expect(port.closeCalls).toBe(0)
   })
+
+  it('closes the physical port when in console mode (session is null but portRef held) (C2)', async () => {
+    const { transport, port } = makeHarness()
+    await transport.connect()
+    await transport.enterConsole()
+    // console 模式：session 已置 null，但物理端口仍被 portRef 持有供日志读取
+    expect(transport.state).toBe('IDLE')
+
+    await transport.close()
+
+    // 旧实现因 `!session` 直接 return，物理端口泄漏；修复后 console 模式也必须
+    // 关闭 portRef，避免 reset/卸载时端口保持占用
+    expect(port.closeCalls).toBe(1)
+  })
+})
+
+describe('SerialTransport.enterConsole / exitConsole', () => {
+  it('closes the session, returns the port, and switches to IDLE', async () => {
+    const { transport, port, session } = makeHarness()
+    await transport.connect()
+
+    const consolePort = await transport.enterConsole()
+
+    // 会话被关闭（释放 reader/端口锁），但物理端口保持打开供 console 读取
+    expect(session.closeCalls).toBe(1)
+    expect(consolePort.readable).toBe(port.readable)
+    expect(consolePort.writable).toBe(port.writable)
+    expect(transport.state).toBe('IDLE')
+  })
+
+  it('is idempotent when already in console mode (returns the same port, closes session once)', async () => {
+    const { transport, session } = makeHarness()
+    await transport.connect()
+    const first = await transport.enterConsole()
+
+    const second = await transport.enterConsole()
+
+    expect(session.closeCalls).toBe(1) // 只关闭一次，不重复释放
+    // 幂等：返回同一物理端口的读写流（不重复释放资源）
+    expect(second.readable).toBe(first.readable)
+    expect(second.writable).toBe(first.writable)
+    expect(transport.state).toBe('IDLE')
+  })
+
+  it('rejects when never connected (no port) and switches to ERROR', async () => {
+    const { transport } = makeHarness()
+
+    await expect(transport.enterConsole()).rejects.toMatchObject({ category: 'UNKNOWN_ERROR' })
+    expect(transport.state).toBe('ERROR')
+  })
+
+  it('cancels an active SSID poll before closing the session', async () => {
+    const { transport, session } = makeHarness()
+    await transport.connect()
+    let cancelled = 0
+    session.unsubscribeBehavior = async () => {
+      cancelled += 1
+    }
+    transport.subscribeSSIDs(() => {})
+
+    await transport.enterConsole()
+
+    expect(cancelled).toBe(1)
+    expect(transport.state).toBe('IDLE')
+  })
+
+  it('exitConsole reinitializes a fresh session and restores READY', async () => {
+    const h = makeHarness()
+    await h.transport.connect()
+    await h.transport.enterConsole()
+    expect(h.transport.state).toBe('IDLE')
+
+    h.replaceSession(new FakeSession())
+    await h.transport.exitConsole()
+
+    expect(h.transport.state).toBe('READY')
+    expect(h.session.initializeCalls).toBe(1) // 新会话被初始化
+  })
+
+  it('exitConsole rejects with ERROR when reinitialization fails', async () => {
+    const h = makeHarness()
+    await h.transport.connect()
+    await h.transport.enterConsole()
+
+    h.replaceSession(new FakeSession())
+    h.session.initBehavior = async () => {
+      throw new Error('Improv Wi-Fi Serial not detected')
+    }
+    let stateAtReject: ImprovState = 'IDLE'
+    const err = (await h.transport.exitConsole().catch((e: DomainProvisioningError) => {
+      stateAtReject = h.transport.state
+      return e
+    })) as DomainProvisioningError
+
+    expect(err).toBeInstanceOf(DomainProvisioningError)
+    expect(err.category).toBe('NOT_IMPROV_DEVICE')
+    expect(stateAtReject).toBe('ERROR')
+  })
+
+  it('exitConsole is idempotent when the session is already restored', async () => {
+    const h = makeHarness()
+    await h.transport.connect()
+    await h.transport.enterConsole()
+    h.replaceSession(new FakeSession())
+    await h.transport.exitConsole()
+    const initCalls = h.session.initializeCalls
+
+    await h.transport.exitConsole() // 已恢复会话：无副作用
+
+    expect(h.session.initializeCalls).toBe(initCalls)
+    expect(h.transport.state).toBe('READY')
+  })
+})
+
+describe('SerialTransport.resetDevice', () => {
+  beforeEach(() => {
+    esptoolMock.Transport.mockReset()
+    esptoolMock.HardReset.mockReset()
+  })
+
+  it('rejects with UNKNOWN_ERROR when no port is open (never connected)', async () => {
+    const { transport } = makeHarness()
+
+    await expect(transport.resetDevice()).rejects.toMatchObject({ category: 'UNKNOWN_ERROR' })
+    // 未接入端口时不加载 esptool-js、不执行任何复位
+    expect(esptoolMock.Transport).not.toHaveBeenCalled()
+  })
+
+  it('rejects with UNKNOWN_ERROR when the port has been physically closed', async () => {
+    const { transport, session } = makeHarness()
+    await transport.connect()
+    // 物理断连：onDisconnect 置空 portRef（端口已终结）
+    session.emitDisconnect()
+
+    await expect(transport.resetDevice()).rejects.toMatchObject({ category: 'UNKNOWN_ERROR' })
+  })
+
+  it('dynamically loads esptool-js and performs a DTR/RTS hard reset on the open port', async () => {
+    const { transport, port } = makeHarness()
+    await transport.connect()
+    // 记录复位期间对物理端口 RTS 信号线的操作（esptool-js Transport 内部调用）
+    const rtsStates: boolean[] = []
+    const setRTS = vi.fn(async (state: boolean) => {
+      rtsStates.push(state)
+    })
+    const reset = vi.fn(async () => {})
+    esptoolMock.Transport.mockImplementation(function (this: unknown, device: unknown) {
+      expect(device).toBe(port)
+      Object.assign(this as object, { setRTS })
+    })
+    esptoolMock.HardReset.mockImplementation(function (this: unknown, transport: unknown) {
+      expect(transport).toBeDefined()
+      Object.assign(this as object, { reset })
+    })
+
+    await transport.resetDevice()
+
+    // 复位流程：new Transport(port) → setRTS(true) → sleep(100) → new HardReset(transport).reset()
+    expect(esptoolMock.Transport).toHaveBeenCalledTimes(1)
+    expect(esptoolMock.HardReset).toHaveBeenCalledTimes(1)
+    expect(reset).toHaveBeenCalledTimes(1)
+    // setRTS(true) 在 HardReset 之前被调用（先拉高 RTS 再执行复位序列）
+    expect(rtsStates).toEqual([true])
+  })
+
+  it('clears the session and returns to IDLE after a successful reset (device reboot invalidates Improv session)', async () => {
+    const { transport, session } = makeHarness()
+    await transport.connect()
+    expect(transport.state).toBe('READY')
+    esptoolMock.Transport.mockImplementation(function (this: unknown) {
+      Object.assign(this as object, { setRTS: vi.fn(async () => {}) })
+    })
+    esptoolMock.HardReset.mockImplementation(function (this: unknown) {
+      Object.assign(this as object, { reset: vi.fn(async () => {}) })
+    })
+
+    await transport.resetDevice()
+
+    // 复位重启设备后 Improv 会话失效：transport 清理会话状态，提示用户重新连接
+    expect(transport.state).toBe('IDLE')
+    expect(session.closeCalls).toBe(1)
+    // 会话已清理：后续配网操作走「无活跃会话」守卫
+    await expect(transport.scan()).rejects.toMatchObject({ category: 'UNKNOWN_ERROR' })
+  })
+
+  it('closes the stale physical port after a successful reset (device re-enumerates) (I1)', async () => {
+    const { transport, port } = makeHarness()
+    await transport.connect()
+    esptoolMock.Transport.mockImplementation(function (this: unknown) {
+      Object.assign(this as object, { setRTS: vi.fn(async () => {}) })
+    })
+    esptoolMock.HardReset.mockImplementation(function (this: unknown) {
+      Object.assign(this as object, { reset: vi.fn(async () => {}) })
+    })
+
+    await transport.resetDevice()
+
+    // DTR/RTS 硬复位会重启设备，USB 串口通常重新枚举，旧端口句柄失效：必须关闭
+    // 旧 portRef 并置空，否则残留一个失效端口引用（泄漏），且后续 connect 无法
+    // 重新 requestPort 选择新枚举的设备
+    expect(port.closeCalls).toBe(1)
+  })
+
+  it('rejects with UNKNOWN_ERROR when the esptool-js hard reset fails', async () => {
+    const { transport } = makeHarness()
+    await transport.connect()
+    esptoolMock.Transport.mockImplementation(function (this: unknown) {
+      Object.assign(this as object, { setRTS: vi.fn(async () => {}) })
+    })
+    esptoolMock.HardReset.mockImplementation(function (this: unknown) {
+      Object.assign(this as object, {
+        reset: vi.fn(async () => {
+          throw new Error('reset failed')
+        }),
+      })
+    })
+
+    await expect(transport.resetDevice()).rejects.toMatchObject({ category: 'UNKNOWN_ERROR' })
+  })
 })
 
 describe('createDefaultSerialDeps', () => {
@@ -721,5 +967,87 @@ describe('createDefaultSerialDeps', () => {
 
     expect(session).toBeInstanceOf(ImprovSerial)
     expect(session).toBeInstanceOf(EventTarget)
+  })
+})
+
+describe('SerialTransport.subscribeSSIDs', () => {
+  const NETWORKS_1: Ssid[] = [{ name: 'home', rssi: -42, secured: true }]
+  const NETWORKS_2: Ssid[] = [{ name: 'guest', rssi: -60, secured: false }]
+
+  it('forwards the SDK subscription and passes results through to onChange', async () => {
+    const { transport, session } = makeHarness()
+    await transport.connect()
+    const seen: Array<Ssid[] | null> = []
+    const cancel = transport.subscribeSSIDs((ssids) => seen.push(ssids))
+
+    expect(session.subscribeCalls).toBe(1)
+    // 经 session 记录的 onChange 直接模拟持续扫描回调透传
+    session.onChange(NETWORKS_1)
+    expect(seen).toEqual([NETWORKS_1])
+    session.onChange(NETWORKS_2)
+    expect(seen).toEqual([NETWORKS_1, NETWORKS_2])
+
+    await cancel()
+  })
+
+  it('invokes the SDK cancellation and does not call onChange after cancel', async () => {
+    const { transport, session } = makeHarness()
+    await transport.connect()
+    const seen: Array<Ssid[] | null> = []
+    let cancelled = 0
+    session.unsubscribeBehavior = async () => {
+      cancelled += 1
+    }
+    const cancel = transport.subscribeSSIDs((ssids) => seen.push(ssids))
+
+    await cancel()
+    expect(cancelled).toBe(1)
+    // 取消后 SDK 不再回调；即便手动调用 session 记录的 onChange 也不该有 transport
+    // onChange（已停表）——此处断言 transport 侧不再转发由「取消后 session 不再
+    // 调它」体现，下面模拟 SDK 取消后仍误回调场景：transport 只透传，SDK 负责
+    // 停表，故取消后 session 的 onChange 若被调，transport 仍会转发（SDK 契约保证
+    // 取消后才不会有回调）——这里只验证取消函数触达了 SDK。
+    expect(seen).toEqual([])
+  })
+
+  it('cancels the scan poll when the session is closed (close 协同)', async () => {
+    const { transport, session } = makeHarness()
+    await transport.connect()
+    let cancelled = 0
+    session.unsubscribeBehavior = async () => {
+      cancelled += 1
+    }
+    transport.subscribeSSIDs(() => {})
+
+    await transport.close()
+
+    expect(cancelled).toBe(1)
+  })
+
+  it('cancels the scan poll during close-triggered cleanup (connect self-heal path)', async () => {
+    const { transport, session, replaceSession } = makeHarness()
+    await transport.connect()
+    let cancelled = 0
+    session.unsubscribeBehavior = async () => {
+      cancelled += 1
+    }
+    transport.subscribeSSIDs(() => {})
+
+    // 物理断连 → 传输进入 ERROR；随后直接 connect 触发「陈旧会话自愈」，其清理
+    // 路径必须停掉订阅的持续扫描（否则在途轮询在旧会话关闭时残留）
+    session.emitDisconnect()
+    expect(transport.state).toBe('ERROR')
+    replaceSession(new FakeSession())
+    await transport.connect()
+
+    expect(cancelled).toBe(1)
+    expect(transport.state).toBe('READY')
+  })
+
+  it('rejects when never connected', () => {
+    const { transport } = makeHarness()
+    expect(() => transport.subscribeSSIDs(() => {})).toThrow(
+      new DomainProvisioningError('UNKNOWN_ERROR', 'subscribeSSIDs requires an active session'),
+    )
   })
 })

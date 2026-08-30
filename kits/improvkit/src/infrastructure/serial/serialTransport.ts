@@ -14,11 +14,37 @@ import { ImprovSerialCurrentState } from 'improv-wifi-serial-sdk/dist/const.js'
 import { ImprovSerial } from 'improv-wifi-serial-sdk/dist/serial.js'
 import type { DomainErrorCategory } from '../../domain/errors'
 import { DomainProvisioningError, mapSdkErrorMessage } from '../../domain/errors'
-import type { DeviceInfo, ImprovState, ProvisionResult, Ssid } from '../../domain/types'
+import type {
+  ConsolePort,
+  DeviceInfo,
+  ImprovState,
+  ProvisionResult,
+  Ssid,
+} from '../../domain/types'
 import type { ErrorListener, IImprovTransport, StateListener } from '../../domain/transport'
 
 /** Improv Wi-Fi Serial 协议约定波特率（上游 SDK 文档/示例固定值） */
 const DEFAULT_BAUD_RATE = 115200
+
+/**
+ * 硬件复位前拉高 RTS 的稳定等待（毫秒）：参考 esp-web-tools 的 HardReset 流程，
+ * 先 setRTS(true) 让设备进入复位状态，等待 100ms 后再执行复位序列，保证信号稳定。
+ */
+const RESET_RTS_SETTLE_MS = 100
+
+/**
+ * 动态加载 esptool-js（与 downloadkit 的 loadEsptool 一致）：把 vendor 代码拆出
+ * 主包，仅在真实硬件复位路径才加载，避免主包膨胀。返回模块命名空间，含
+ * Transport（Web Serial 封装）与 HardReset（DTR/RTS 复位策略）。
+ */
+function loadEsptool(): Promise<typeof import('esptool-js')> {
+  return import('esptool-js')
+}
+
+/** 等待指定毫秒（复位流程的时序控制） */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 /** 会话信息（initialize 的 resolve 形态，字段与领域 DeviceInfo 一一对应） */
 export interface SessionInfoLike {
@@ -42,6 +68,7 @@ export interface ImprovSessionLike extends EventTarget {
   close(): Promise<void>
   provision(ssid: string, password: string, timeout?: number): Promise<void>
   scan(timeout?: number): Promise<Ssid[]>
+  subscribeSSIDs(onChange: (ssids: Ssid[] | null) => void): () => Promise<void>
 }
 
 /** 传输依赖：端口获取/打开与会话创建均可注入（单测/集成测试替换点） */
@@ -107,6 +134,8 @@ export class SerialTransport implements IImprovTransport {
   /** 物理端口引用：requestPort 成功后持有，close / connect 失败 / 断连时尽力关闭并置空（F3） */
   private portRef: SerialPort | null = null
   private unsubscribeSession: (() => void) | null = null
+  /** 当前持续扫描订阅的取消函数（SDK subscribeSSIDs 返回值），关闭/重连时须一并取消 */
+  private unsubscribeSsidPoll: (() => Promise<void>) | null = null
   /**
    * 代际 token：每次 connect 自增；异步清理/提交路径执行前校验代际是否仍匹配，
    * 防止旧一代的清理毁掉新一代的订阅 / session（connect 防重入的异步侧兜底）
@@ -145,6 +174,13 @@ export class SerialTransport implements IImprovTransport {
     // 重连正常走流程；活跃会话（未断连未关闭）期间的重入仍被守卫拒绝。
     const stale = this.session
     if (stale && (this.sessionClosed || (this.disconnectedReported && this.state === 'ERROR'))) {
+      // 先停持续扫描再退订：与 close() 的清理次序一致，避免在途扫描在关闭时
+      // 回调 null / 残留轮询占用 RPC 通道
+      const stopPoll = this.unsubscribeSsidPoll
+      if (stopPoll) {
+        this.unsubscribeSsidPoll = null
+        await stopPoll().catch(() => {})
+      }
       // 先退订再关会话：旧会话 close() 派发的 disconnect 不得被当作新连接的
       // 物理断连误报（与 close() 的退订顺序同理）
       const unsubscribe = this.unsubscribeSession
@@ -267,6 +303,31 @@ export class SerialTransport implements IImprovTransport {
     }
   }
 
+  /**
+   * 订阅持续扫描（transport.ts 契约）：直接转发上游 SDK 的 subscribeSSIDs，
+   * 回调原样透传给 onChange，返回 SDK 提供的取消函数供调用方停止轮询。
+   *
+   * 与 close() 的协同：返回给调用方前，把 SDK 取消函数登记到本类，close /
+   * connect 失败清理会一并调用——保证会话关闭时持续扫描停表，不占 RPC 通道。
+   */
+  subscribeSSIDs(onChange: (ssids: Ssid[] | null) => void): () => Promise<void> {
+    if (!this.session || this.sessionClosed) {
+      throw new DomainProvisioningError(
+        'UNKNOWN_ERROR',
+        'subscribeSSIDs requires an active session',
+      )
+    }
+    const cancel = this.session.subscribeSSIDs(onChange)
+    this.unsubscribeSsidPoll = cancel
+    return async () => {
+      // 幂等：调用方可能重复取消；只在仍登记为当前订阅时执行
+      if (this.unsubscribeSsidPoll !== cancel) return
+      this.unsubscribeSsidPoll = null
+      // 内部也 await 在途扫描结束，防止取消返回后马上又对同一会话发其他 RPC
+      await cancel()
+    }
+  }
+
   async provision(ssid: string, password: string): Promise<ProvisionResult> {
     if (!this.session || this.sessionClosed) {
       throw new DomainProvisioningError('UNKNOWN_ERROR', 'provision requires an active session')
@@ -287,30 +348,166 @@ export class SerialTransport implements IImprovTransport {
     }
   }
 
+  async enterConsole(): Promise<ConsolePort> {
+    // 若当前有活跃会话：先停持续扫描、退订会话事件、close 会话（释放 reader/
+    // 端口锁），置 session=null、state=IDLE。物理端口保持打开供 console 读取
+    // ——上游 ImprovSerial.close() 只 cancel 读取流、不关物理端口（serial.js 已
+    // 核实），故此处不触碰 portRef，console 仍可经 port.readable 读原始字节。
+    if (this.session && !this.sessionClosed) {
+      const session = this.session
+      this.sessionClosed = true
+      // 先停持续扫描再退订：与 close() 的清理次序一致，避免在途扫描在关闭时
+      // 回调 null / 残留轮询占用 RPC 通道
+      const stopPoll = this.unsubscribeSsidPoll
+      this.unsubscribeSsidPoll = null
+      if (stopPoll) await stopPoll().catch(() => {})
+      // 先退订再关会话：session.close() 派发的 disconnect 不得被当作物理断连
+      const unsubscribe = this.unsubscribeSession
+      this.unsubscribeSession = null
+      unsubscribe?.()
+      await session.close().catch(() => {})
+      this.session = null
+      // console 模式不是「已关闭」：会话让渡给 console，closed 标记复位
+      this.sessionClosed = false
+      this.setState('IDLE')
+    }
+    // 端口未接入 / 已物理关闭：reject 且 state 转 ERROR
+    if (!this.portRef) {
+      this.setState('ERROR')
+      throw new DomainProvisioningError('UNKNOWN_ERROR', 'enterConsole requires an open port')
+    }
+    // 幂等：已处于 console 模式（session 已 null）时再次调用返回同一端口
+    return { readable: this.portRef.readable, writable: this.portRef.writable }
+  }
+
+  async exitConsole(): Promise<void> {
+    // 幂等：已恢复会话（非 console 模式）时无副作用
+    if (this.session) return
+    // 端口未接入 / 已物理关闭：reject 且 state 转 ERROR
+    if (!this.portRef) {
+      this.setState('ERROR')
+      throw new DomainProvisioningError('UNKNOWN_ERROR', 'exitConsole requires an open port')
+    }
+    // 端口在 enterConsole 后保持打开（不关闭物理端口），无需重新 openPort；
+    // 直接重建 Improv 会话并初始化，恢复可配网状态
+    const session = this.deps.createSession(this.portRef)
+    this.session = session
+    this.sessionClosed = false
+    this.disconnectedReported = false
+    // 先订阅再初始化：与 connect() 同理，initialize 的首个 RPC 应答需被观察到
+    this.unsubscribeSession = this.attachSessionHandlers(session)
+    this.setState('CONNECTING')
+    try {
+      // 与 connect() 相同的 5s 超时：刚重启中的设备首个 RPC 应答可能较慢
+      await session.initialize(5000)
+      const mapped = SDK_STATE_TO_IMPROV[session.state ?? -1]
+      this.setState(mapped === 'PROVISIONED' ? 'PROVISIONED' : 'READY')
+    } catch (cause) {
+      // 清理失败会话：摘监听、尽力关闭、清引用（initialize 失败时 SDK 已内部
+      // close()，此处 close 为幂等兜底），置 ERROR 后 reject
+      const unsubscribe = this.unsubscribeSession
+      this.unsubscribeSession = null
+      unsubscribe?.()
+      await session.close().catch(() => {})
+      if (this.session === session) {
+        this.session = null
+        this.sessionClosed = true
+      }
+      this.setState('ERROR')
+      throw new DomainProvisioningError('NOT_IMPROV_DEVICE', describeCause(cause))
+    }
+  }
+
+  /**
+   * 复位设备（真实 esptool-js 硬件复位）：动态加载 esptool-js，用其 Transport
+   * 封装物理端口，先 setRTS(true) 拉高 RTS 让设备进入复位状态，等待 100ms 稳定
+   * 后再执行 HardReset（DTR/RTS 复位序列）重启设备。
+   *
+   * 复位会重启设备、使当前 Improv 会话失效：成功后清理会话状态（session=null、
+   * state=IDLE），并关闭旧物理端口（复位后设备重新枚举，旧端口句柄失效），
+   * 提示用户重新连接（重新 connect 走 requestPort 选择器）。
+   *
+   * 契约：端口未接入 / 已物理关闭时以 DomainProvisioningError reject 且 state
+   * 转为 'ERROR'；复位失败同样 reject 且 state 转为 'ERROR'。
+   */
+  async resetDevice(): Promise<void> {
+    // 端口未接入 / 已物理关闭：reject 且 state 转 ERROR（与 enterConsole 同守卫）
+    if (!this.portRef) {
+      this.setState('ERROR')
+      throw new DomainProvisioningError('UNKNOWN_ERROR', 'resetDevice requires an open port')
+    }
+    // 动态加载 esptool-js（避免主包膨胀，与 downloadkit loadEsptool 一致）
+    const { Transport, HardReset } = await loadEsptool()
+    // 参考 esp-web-tools 的 HardReset 流程：new Transport(port) 封装物理端口，
+    // 先 setRTS(true) 拉高 RTS 让设备进入复位状态，等待 100ms 稳定后再执行复位
+    const transport = new Transport(this.portRef)
+    await transport.setRTS(true)
+    await sleep(RESET_RTS_SETTLE_MS)
+    const resetStrategy = new HardReset(transport)
+    try {
+      await resetStrategy.reset()
+    } catch (cause) {
+      // 复位失败：reject 且 state 转 ERROR（与 scan/provision 的错误投递契约一致）
+      this.setState('ERROR')
+      throw new DomainProvisioningError('UNKNOWN_ERROR', describeCause(cause))
+    }
+    // 复位重启设备后 Improv 会话失效：清理会话状态（退订 → 尽力关闭 → 置空），
+    // 提示用户重新连接。物理端口在复位后通常重新枚举（USB 串口），旧端口句柄
+    // 失效——必须关闭旧 portRef 并置空，否则残留失效引用（泄漏），且后续 connect
+    // 无法重新 requestPort 选择新枚举的设备（I1）
+    const session = this.session
+    if (session && !this.sessionClosed) {
+      this.sessionClosed = true
+      const stopPoll = this.unsubscribeSsidPoll
+      this.unsubscribeSsidPoll = null
+      if (stopPoll) await stopPoll().catch(() => {})
+      const unsubscribe = this.unsubscribeSession
+      this.unsubscribeSession = null
+      unsubscribe?.()
+      await session.close().catch(() => {})
+      this.session = null
+      this.sessionClosed = false
+    }
+    if (this.portRef) {
+      this.portRef.close?.().catch(() => {})
+      this.portRef = null
+    }
+    this.setState('IDLE')
+  }
+
   async close(): Promise<void> {
     const session = this.session
-    if (!session || this.sessionClosed) return // 未连接或已关闭：幂等，无副作用
-    this.sessionClosed = true
-    // 先退订再关会话：session.close() 会 cancel 读取流并派发 disconnect，若还
-    // 挂着监听会被误报为物理断开（DISCONNECTED）——正常关闭不是断开故障
-    const unsubscribe = this.unsubscribeSession
-    this.unsubscribeSession = null
-    unsubscribe?.()
-    // SDK 当前经 disconnect resolve、不会 reject，.catch 为未来兼容防御（与
-    // handleConnectFailure 的同语句一致，吞错不影响 close 的成功语义）
-    await session.close().catch(() => {})
-    // 条件式清引用：只清本次 close 持有的会话，避免与并发 connect 的新一代会话
-    // 互相踩踏（防重入的引用级兜底，语义见 connect 代际说明）。session 与
-    // portRef 同在 connect 赋值、同在清理置空，代际不匹配时自然跳过端口关闭
-    if (this.session === session) {
-      this.session = null
-      // 上游 ImprovSerial.close() 只 cancel 读取流、不关闭物理端口（serial.js
-      // 已核实）；端口释放必须由 transport 层补齐，否则端口保持占用直到页面
-      // 卸载。尽力关闭并吞错：关闭失败不影响 close 的成功语义
-      if (this.portRef) {
-        this.portRef.close?.().catch(() => {})
-        this.portRef = null
+    // console 模式（session 已 null 但 portRef 仍持有物理端口）也必须关闭端口，
+    // 否则 reset/卸载时物理端口泄漏（C2）。先处理会话关闭，再统一释放端口。
+    if (session && !this.sessionClosed) {
+      this.sessionClosed = true
+      // 先停持续扫描再关会话：SDK close() 会 cancel 读取流（在途扫描读取中断），
+      // 若仍挂着轮询可能被 SDK 当作扫描失败→回调 null，与正常关闭语义冲突
+      const stopPoll = this.unsubscribeSsidPoll
+      this.unsubscribeSsidPoll = null
+      if (stopPoll) await stopPoll().catch(() => {})
+      // 先退订再关会话：session.close() 会 cancel 读取流并派发 disconnect，若还
+      // 挂着监听会被误报为物理断开（DISCONNECTED）——正常关闭不是断开故障
+      const unsubscribe = this.unsubscribeSession
+      this.unsubscribeSession = null
+      unsubscribe?.()
+      // SDK 当前经 disconnect resolve、不会 reject，.catch 为未来兼容防御（与
+      // handleConnectFailure 的同语句一致，吞错不影响 close 的成功语义）
+      await session.close().catch(() => {})
+      // 条件式清引用：只清本次 close 持有的会话，避免与并发 connect 的新一代会话
+      // 互相踩踏（防重入的引用级兜底，语义见 connect 代际说明）。session 与
+      // portRef 同在 connect 赋值、同在清理置空，代际不匹配时自然跳过端口关闭
+      if (this.session === session) {
+        this.session = null
       }
+    }
+    // 统一释放物理端口：正常会话关闭后、或 console 模式（session 已 null）下
+    // 都走到这里。上游 ImprovSerial.close() 只 cancel 读取流、不关闭物理端口
+    // （serial.js 已核实）；端口释放必须由 transport 层补齐，否则端口保持占用
+    // 直到页面卸载。尽力关闭并吞错：关闭失败不影响 close 的成功语义
+    if (this.portRef) {
+      this.portRef.close?.().catch(() => {})
+      this.portRef = null
     }
   }
 
@@ -326,6 +523,13 @@ export class SerialTransport implements IImprovTransport {
   ): Promise<void> {
     // 代际校验：本次 connect 已不是最新一代（新 connect 已接管），直接放弃清理
     if (generation !== this.generation) return
+    // 先停持续扫描（若有）：初始化失败时 SDK 已内部 close()，在途扫描的读取会
+    // 中断，需在释放会话前停表，避免回调 null 或残留轮询
+    const stopPoll = this.unsubscribeSsidPoll
+    if (stopPoll) {
+      this.unsubscribeSsidPoll = null
+      await stopPoll().catch(() => {})
+    }
     // 先摘监听：initialize 失败时 SDK 已内部 close()（会派发 disconnect），
     // 该断开属于本次 connect 失败的一部分，由 connect() 的 reject 统一上报，
     // 不误报为物理连接的 DISCONNECTED

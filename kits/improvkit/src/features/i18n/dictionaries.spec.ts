@@ -29,6 +29,8 @@ const requiredKeys: ReadonlyArray<string> = [
   'scan',
   'scan_refresh',
   'scan_empty',
+  'scan_scanning',
+  'scan_backfill_hint',
   'scan_unavailable_hint',
   'reconnect',
   'provisioning',
@@ -37,6 +39,16 @@ const requiredKeys: ReadonlyArray<string> = [
   'change_wifi',
   'retry',
   'close',
+  // 控制台（ConsoleView）
+  'console_title',
+  'console_download',
+  'console_exit',
+  'console_disconnected',
+  'console_reset',
+  'console_reset_failed',
+  // 控制台入口（配网视图「日志与控制台」）
+  'console_open',
+  'console_reset_reconnect',
   // 错误类别映射键（REQUEST_CANCELLED 不需要文案，UI 对其静默）
   'error.NOT_IMPROV_DEVICE',
   'error.DEVICE_WIFI_DISABLED',

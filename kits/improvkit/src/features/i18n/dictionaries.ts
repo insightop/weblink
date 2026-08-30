@@ -32,6 +32,9 @@ export const messages = {
     scan: 'Scan',
     scan_refresh: 'Rescan',
     scan_empty: 'No networks found.',
+    scan_scanning: 'Scanning for networks…',
+    scan_backfill_hint:
+      'The selected network is no longer available. You can enter it manually to retry.',
     scan_unavailable_hint: 'This device cannot scan for networks. Enter the Wi-Fi name manually.',
     reconnect: 'Reconnect Device',
     provisioning: 'Provisioning…',
@@ -41,6 +44,17 @@ export const messages = {
     retry: 'Retry',
     close: 'Close',
     cancel: 'Cancel',
+    // 控制台（ConsoleView）
+    console_title: 'Serial Console',
+    console_download: 'Download Logs',
+    console_exit: 'Exit',
+    console_disconnected: 'Terminal disconnected',
+    console_reset: 'Reset Device',
+    console_reset_failed: 'Reset failed',
+    // 控制台入口（配网视图「日志与控制台」）
+    console_open: 'Logs & Console',
+    // 复位后设备重启、Improv 会话失效：提示用户重新连接
+    console_reset_reconnect: 'Device reset. Reconnect to continue.',
     // 错误类别映射（REQUEST_CANCELLED 无文案，UI 静默）
     'error.NOT_IMPROV_DEVICE': 'This device is not an Improv device.',
     'error.DEVICE_WIFI_DISABLED': 'The device Wi-Fi is disabled. Enable it and try again.',
@@ -77,6 +91,8 @@ export const messages = {
     scan: '扫描网络',
     scan_refresh: '重新扫描',
     scan_empty: '未发现网络',
+    scan_scanning: '正在扫描网络…',
+    scan_backfill_hint: '所选网络已不可用，可手动输入重试',
     scan_unavailable_hint: '设备不支持自动扫描，请手动输入 Wi-Fi 名称',
     reconnect: '重新连接设备',
     provisioning: '正在配网…',
@@ -86,6 +102,17 @@ export const messages = {
     retry: '重试',
     close: '关闭',
     cancel: '取消',
+    // 控制台（ConsoleView）
+    console_title: '串口控制台',
+    console_download: '下载日志',
+    console_exit: '退出',
+    console_disconnected: '终端已断开',
+    console_reset: '复位设备',
+    console_reset_failed: '复位失败',
+    // 控制台入口（配网视图「日志与控制台」）
+    console_open: '日志与控制台',
+    // 复位后设备重启、Improv 会话失效：提示用户重新连接
+    console_reset_reconnect: '设备已复位，请重新连接以继续',
     // 错误类别映射（REQUEST_CANCELLED 无文案，UI 静默）
     'error.NOT_IMPROV_DEVICE': '该设备不是 Improv 设备',
     'error.DEVICE_WIFI_DISABLED': '设备 Wi-Fi 已被禁用，请启用后重试',
