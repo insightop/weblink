@@ -17,18 +17,21 @@ function renderResult(props: {
   deviceInfo?: DeviceInfo
   lastUrl?: string
   onChangeWifi?: () => void
+  onOpenConsole?: () => void
 }) {
   const onChangeWifi = props.onChangeWifi ?? vi.fn()
+  const onOpenConsole = props.onOpenConsole ?? vi.fn()
   const utils = render(
     <I18nProvider locale="en-US">
       <ResultView
         deviceInfo={props.deviceInfo}
         lastUrl={props.lastUrl}
         onChangeWifi={onChangeWifi}
+        onOpenConsole={onOpenConsole}
       />
     </I18nProvider>,
   )
-  return { onChangeWifi, ...utils }
+  return { onChangeWifi, onOpenConsole, ...utils }
 }
 
 afterEach(() => cleanup())
@@ -75,5 +78,13 @@ describe('ResultView', () => {
     expect(screen.getByText('Provisioning Successful')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Change Wi-Fi' }))
     expect(onChangeWifi).toHaveBeenCalledTimes(1)
+  })
+
+  it('成功页提供「日志与控制台」入口，点击触发 onOpenConsole 回调', () => {
+    const { onOpenConsole } = renderResult({ deviceInfo: DEVICE })
+    const entry = screen.getByRole('button', { name: 'Logs & Console' })
+    expect(entry).toBeTruthy()
+    fireEvent.click(entry)
+    expect(onOpenConsole).toHaveBeenCalledTimes(1)
   })
 })

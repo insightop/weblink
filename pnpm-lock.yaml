@@ -564,6 +564,9 @@ importers:
       '@weblink/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
+      esptool-js:
+        specifier: ^0.6.0
+        version: 0.6.0
       improv-wifi-serial-sdk:
         specifier: ^2.8.1
         version: 2.8.1
