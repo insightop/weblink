@@ -3,33 +3,41 @@
   "private": true,
   "version": "0.1.0",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./vue": "./src/vue-entry.ts"
   },
   "type": "module",
-  "description": "OpenBLT 协议调试工具",
+  "description": "通用 OpenBLT OTA 升级工具",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:standalone": "echo 'No standalone build yet'",
-    "preview": "vite preview",
-    "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
+    "typecheck": "tsc --noEmit -p tsconfig.react.json",
+    "typecheck:vue": "vue-tsc --noEmit -p tsconfig.json",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "test": "vitest run",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@weblink/ui-vue": "workspace:*",
+    "@weblink/tokens": "workspace:*",
     "@weblink/utils": "workspace:*",
-    "@insightop/libopenblt": "*",
-    "vue": "^3.5.32"
+    "@insightop/libopenblt": "0.2.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "vue": "^3.5.32",
+    "vue-i18n": "^9.14.5"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/w3c-web-serial": "^1.0.8",
+    "@vitejs/plugin-react-swc": "^4.3.1",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vue/test-utils": "^2.4.6",
     "@weblink/eslint-config": "workspace:*",
     "@weblink/tsconfig": "workspace:*",
     "@weblink/vite-config": "workspace:*",
-    "@types/node": "^24.12.2",
-    "@vitejs/plugin-vue": "^6.0.5",
+    "happy-dom": "^18.0.1",
     "typescript": "~6.0.2",
     "vite": "^8.0.4",
     "vitest": "^4.1.4",

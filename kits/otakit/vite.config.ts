@@ -1,6 +1,15 @@
-import { kitLibConfig } from "@weblink/vite-config";
-import { fileURLToPath, URL } from "node:url";
+import { defineConfig, mergeConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import react from "@vitejs/plugin-react-swc";
 
-export default kitLibConfig({
-  kitRoot: fileURLToPath(new URL(".", import.meta.url)),
-});
+export default mergeConfig(
+  {
+    plugins: [vue(), react()],
+    test: {
+      environment: "happy-dom",
+      include: ["src/**/*.spec.ts", "src/**/*.spec.tsx"],
+      passWithNoTests: true,
+    },
+  },
+  defineConfig({}),
+);
