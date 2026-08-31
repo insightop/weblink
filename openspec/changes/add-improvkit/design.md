@@ -72,3 +72,32 @@ import { ImprovSerialCurrentState, ImprovSerialErrorState } from "improv-wifi-se
 ## Open Questions
 
 无（BLE 范围、波特率、iOS 取舍均已与需求方确认）。
+
+## 二期增强：esp-web-tools 功能差距补齐（#1-#5）
+
+### D13 持续扫描（#1）
+- domain `IImprovTransport` 新增 `subscribeSSIDs(onChange: (ssids: Ssid[] | null) => void): () => Promise<void>`，语义与 SDK `ImprovSerial.subscribeSSIDs` 对齐：持续扫描（SDK 内置 3s 间隔）+ 按名称合并排序 + 首次失败/不支持回调 null 一次 + 返回取消函数。
+- transport 直接转发 SDK 的 subscribeSSIDs；hook 用其替代一次性 scan（保留 refreshScan 作为手动触发，二者兼容）。
+- UI 表单显示期间订阅、离开表单时取消（对齐 esp-web-tools `_syncScanning`）。
+
+### D14 首次扫描宽限期（#2）
+- 宽限期常量 SCAN_GRACE_PERIOD（参考 esp-web-tools，取 ~12s 覆盖 SDK 4 轮扫描）。
+- hook 维护扫描宽限状态：宽限期内收到非空结果立即展示；宽限期结束仍空 → 显示"未发现网络"空态（保留手动输入）。
+
+### D15 最强网络预选 + 掉线回填（#3 #4）
+- 网络列表首次就绪时预选 `strongestSsid`（RSSI 最大）。
+- 选中网络从后续扫描消失时，将其回填到手动输入框，改为手动模式（保留密码）。
+- 预选/回填逻辑沉淀为纯函数可单测。
+
+### D16 串口日志控制台（#5）
+- **架构关键**：Logs 模式需直接读串口原始流（TextDecoderStream），与 ImprovSerial 持有 reader 冲突。因此：
+  - transport 新增 `enterConsole(): Promise<ConsolePort>`：先 close 当前 ImprovSerial 会话（释放 reader/端口锁），返回裸 SerialPort（clean 边界：仅 transport 与 console 层接触具体传输类型）。
+  - 退出控制台：关闭 console 读流（reader cancel），transport 重新 openPort + 重新 initialize 为 ImprovSerial 会话。
+  - ConsoleView 组件：原始文本日志（TextDecoderStream + 行分割）、日志累积 + 下载（Blob+URL）、HardReset。
+- **HardReset**：复用 workspace 已有 `esptool-js@0.6.0`（downloadkit 已用），`new Transport(port)` + `HardReset`（DTR/RTS）。
+- 端口重开用 baudRate:115200、bufferSize:8192（与 esp-web-tools 一致）。
+
+### D17 工作拆分
+- 批次一（#1-#4 扫描体验，耦合紧密）：domain 持续扫描接口 → transport 实现 → hook 编排（持续扫描+宽限期+预选+回填）→ WifiForm 增强 → 测试。
+- 批次二（#5 独立）：transport console 进出 → ConsoleView 组件 + HardReset + 下载 → 页面入口接线 → 测试。
+- 每批次走 TDD + 两阶段评审；不引入新 npm 依赖（esptool-js 已在 workspace）。

@@ -33,3 +33,17 @@
 
 - [ ] 6.1 kit 全量验证：lint/typecheck/typecheck:vue/test/build 全绿；monorepo 根 `pnpm build:web` 通过
 - [ ] 6.2 更新 kit README（使用方式、浏览器支持矩阵、BLE 扩展点说明）并输出手动验收清单（pnpm dev → /improvkit → 连真设备步骤）
+
+## 7. 二期增强：扫描体验（#1-#4，esp-web-tools 差距）
+
+- [ ] 7.1 domain：`IImprovTransport` 增加 `subscribeSSIDs(onChange): () => Promise<void>`（持续扫描接口，语义对齐 SDK subscribeSSIDs）
+- [ ] 7.2 transport：实现 subscribeSSIDs 转发 SDK 的持续扫描；补充 FakeImprovDevice 支持多轮扫描应答 + 测试
+- [ ] 7.3 hook：持续扫描替代一次性 scan（表单显示期间订阅/离开取消）、首扫宽限期（SCAN_GRACE_PERIOD）、最强网络预选、选中网络掉线回填；纯函数单测
+- [ ] 7.4 WifiForm 增强：持续刷新列表展示、空态（宽限期后"未发现网络"）、预选高亮、掉线回填手动输入；渲染测试
+
+## 8. 二期增强：串口日志控制台（#5，独立）
+
+- [ ] 8.1 transport：`enterConsole(): Promise<ConsolePort>`（先 close 会话释放 reader，返回裸端口）+ 退出后重新初始化会话；测试
+- [ ] 8.2 ConsoleView 组件：原始文本日志（TextDecoderStream+行分割）、日志累积+下载（Blob）、HardReset（esptool-js Transport+HardReset）；渲染测试
+- [ ] 8.3 页面接线：ProvisionView/ResultView 增加"日志与控制台"入口，进入/退出控制台与配网会话切换无泄漏；测试
+- [ ] 8.4 全量验证 + README 更新（新增扫描/控制台功能说明）
