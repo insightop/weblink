@@ -99,7 +99,7 @@ export const KIT_REGISTRY: KitConfig[] = [
     id: "otakit",
     title: "OTA Kit",
     description: "OpenBLT 协议调试",
-    loader: () => import("@weblink/otakit"),
+    loader: () => import("@weblink/otakit/vue"),
   },
   {
     id: "gamepadkit",
