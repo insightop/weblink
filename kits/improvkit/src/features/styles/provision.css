@@ -1,0 +1,428 @@
+/* ── ImprovKit 配网界面样式 ──────────────────────────────────────────────
+   BEM 类名统一 `improv-` 前缀（与 gamepadkit lab.css 的 BEM 风格一致）。
+   颜色/间距优先消费 @weblink/tokens 的全局 CSS 变量（宿主已加载 tokens 时
+   随主题自动切换）；未加载 tokens（独立调试/测试渲染）时回退到本文件
+   `--improv-*` 兜底值，保证两种环境下样式不失效（暗色不强制）。 */
+
+:root {
+  --improv-fg: var(--text-primary, #0f172a);
+  --improv-fg-muted: var(--text-muted, #64748b);
+  --improv-surface: var(--surface-bg, #ffffff);
+  --improv-surface-soft: var(--surface-elevated, #fff);
+  --improv-border: var(--border-default, #dbe3ee);
+  --improv-brand: var(--brand-500, #2563eb);
+  --improv-accent: var(--brand-500, #2563eb);
+  --improv-surface-selected: var(--brand-50, #eff6ff);
+  --improv-danger: var(--error-500, #dc2626);
+  --improv-radius: 10px;
+  --improv-shadow: var(--shadow-soft, 0 1px 2px rgba(15, 23, 42, 0.08));
+}
+
+.improv-page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  color: var(--improv-fg);
+}
+
+/* ── 能力检测提示页 ── */
+
+.improv-gate {
+  margin-top: 6rem;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--improv-border);
+  border-radius: var(--improv-radius);
+  background: var(--improv-surface);
+  box-shadow: var(--improv-shadow);
+}
+
+.improv-gate__message {
+  margin: 0;
+  color: var(--improv-fg-muted);
+}
+
+/* ── 入口面板 ── */
+
+.improv-panel {
+  padding: 1.5rem;
+  border: 1px solid var(--improv-border);
+  border-radius: var(--improv-radius);
+  background: var(--improv-surface);
+  box-shadow: var(--improv-shadow);
+}
+
+.improv-panel__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.improv-panel__description {
+  margin: 0 0 1.5rem;
+  color: var(--improv-fg-muted);
+}
+
+.improv-panel__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.improv-panel__actions--center {
+  justify-content: center;
+}
+
+/* ── 按钮 ── */
+
+.improv-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: var(--improv-radius);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.improv-button--primary {
+  background: var(--improv-brand);
+  color: #ffffff;
+}
+
+.improv-button--ghost {
+  border-color: var(--improv-border);
+  background: transparent;
+  color: var(--improv-fg);
+}
+
+.improv-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── 进度视图 ── */
+
+.improv-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 2.5rem 0;
+}
+
+.improv-progress__spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--improv-border);
+  border-top-color: var(--improv-brand);
+  border-radius: 50%;
+  animation: improv-spin 0.8s linear infinite;
+}
+
+@keyframes improv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.improv-progress__label {
+  margin: 0;
+  color: var(--improv-fg-muted);
+}
+
+/* ── 错误提示条 ── */
+
+.improv-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--improv-danger);
+  border-radius: var(--improv-radius);
+  background: var(--improv-surface-soft);
+}
+
+.improv-error__icon {
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.improv-error__text {
+  margin: 0;
+  color: var(--improv-danger);
+  font-size: 0.9rem;
+}
+
+/* ── 复位后重新连接提示 ── */
+
+.improv-reset-notice {
+  margin: 0 0 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--improv-border);
+  border-radius: var(--improv-radius);
+  background: var(--improv-surface-soft);
+  color: var(--improv-fg);
+  font-size: 0.9rem;
+}
+
+/* ── 设备信息卡 ── */
+
+.improv-card {
+  margin: 0;
+  padding: 0.25rem 0;
+}
+
+.improv-card__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--improv-border);
+}
+
+.improv-card__row:last-child {
+  border-bottom: none;
+}
+
+.improv-card__label {
+  color: var(--improv-fg-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.improv-card__value {
+  margin: 0;
+  font-weight: 600;
+  word-break: break-all;
+  text-align: right;
+}
+
+/* ── 网络列表 ── */
+
+.improv-networks {
+  margin-bottom: 0.5rem;
+}
+
+.improv-networks__header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.4rem;
+}
+
+.improv-networks__rescan {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.improv-networks__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 13rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.improv-network {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--improv-border);
+  border-radius: var(--improv-radius);
+  background: var(--improv-surface-soft);
+  color: var(--improv-fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+/* 预选/选中的网络：强调边框与背景，让用户一眼看出当前提交目标（D15） */
+.improv-network--selected {
+  border-color: var(--improv-accent);
+  background: var(--improv-surface-selected);
+}
+
+.improv-network__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.improv-network__bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.improv-network__bar {
+  width: 3px;
+  border-radius: 1px;
+  background: var(--improv-border);
+}
+
+/* 信号条高度逐格递增（弱 → 强），仅点亮格着色 */
+.improv-network__bar:nth-child(1) {
+  height: 4px;
+}
+
+.improv-network__bar:nth-child(2) {
+  height: 7px;
+}
+
+.improv-network__bar:nth-child(3) {
+  height: 10px;
+}
+
+.improv-network__bar:nth-child(4) {
+  height: 14px;
+}
+
+.improv-network__bar--on {
+  background: var(--improv-brand);
+}
+
+.improv-network__lock {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.improv-networks__hint {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  color: var(--improv-fg-muted);
+}
+
+/* ── 凭据表单 ── */
+
+.improv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.improv-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.improv-form__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--improv-fg-muted);
+}
+
+.improv-form__input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--improv-border);
+  border-radius: var(--improv-radius);
+  background: var(--improv-surface);
+  color: var(--improv-fg);
+}
+
+.improv-form__input:focus {
+  border-color: transparent;
+  outline: 2px solid var(--improv-brand);
+  outline-offset: -1px;
+}
+
+.improv-form__control {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.improv-form__toggle {
+  flex-shrink: 0;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.improv-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 配网视图「日志与控制台」入口：与表单/成功页操作区保持间距 */
+.improv-console-open {
+  margin-top: 1rem;
+}
+
+/* ── 成功页 ── */
+
+.improv-success {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.improv-success__title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.improv-success__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* ── 串口控制台（ConsoleView） ── */
+
+.improv-console {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.improv-console__title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* 日志区：等宽字体 + 固定高度滚动，模拟终端观感 */
+.improv-console__log {
+  height: 16rem;
+  padding: 0.6rem 0.7rem;
+  overflow-y: auto;
+  border: 1px solid var(--improv-border);
+  border-radius: var(--improv-radius);
+  background: var(--improv-surface-soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.improv-console__line {
+  margin: 0;
+}
+
+.improv-console__disconnected {
+  margin-top: 0.5rem;
+  color: var(--improv-danger);
+  font-weight: 600;
+}
+
+.improv-console__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}

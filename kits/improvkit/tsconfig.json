@@ -1,0 +1,15 @@
+{
+  "extends": "@weblink/tsconfig/vue-app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vue.tsbuildinfo",
+    "skipLibCheck": true,
+    "types": ["vite/client", "w3c-web-serial"],
+    // vue-entry.ts 用 h() 而非 JSX，且它导入的 features 层全是 React 组件；
+    // 这里用 React JSX 语义检查这些 .tsx，避免 vue-tsc 以 Vue JSX 规则误判
+    // React 代码（className / React context 等）。React 侧类型已由
+    // tsconfig.react.json（typecheck）独立把关。
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": ["vite.config.ts", "src/env.d.ts", "src/vue-entry.ts", "src/**/*.vue"]
+}

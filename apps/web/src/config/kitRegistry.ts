@@ -113,6 +113,12 @@ export const KIT_REGISTRY: KitConfig[] = [
     description: "远程屏幕共享与语音通话",
     loader: () => import("@weblink/streamkit/vue"),
   },
+  {
+    id: "improvkit",
+    title: "Improv Kit",
+    description: "Improv Wi-Fi 串口配网",
+    loader: () => import("@weblink/improvkit/vue"),
+  },
 ]
 
 export function findKit(id: string): KitConfig | undefined {
