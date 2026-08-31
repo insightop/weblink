@@ -1,0 +1,1 @@
+export { OtaPage } from './OtaPage'

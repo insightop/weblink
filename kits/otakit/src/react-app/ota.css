@@ -1,0 +1,135 @@
+.ota-kit {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+  padding: 24px;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  color: #1f2933;
+}
+
+.ota-kit h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.ota-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ota-row {
+  display: flex;
+  gap: 8px;
+}
+
+.ota-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.ota-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #cbd2d9;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.ota-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border: 1px solid #cadbff;
+  border-radius: 6px;
+  background: #f5f8ff;
+  color: #1a4fd8;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.ota-btn:hover {
+  background: #e8f0ff;
+}
+
+.ota-btn-primary {
+  background: #1a4fd8;
+  border-color: #1a4fd8;
+  color: #fff;
+}
+
+.ota-btn-small {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+.ota-upload {
+  align-self: flex-start;
+  position: relative;
+  overflow: hidden;
+}
+
+.ota-upload input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ota-error {
+  margin: 4px 0 0;
+  color: #c0392b;
+  font-size: 0.9rem;
+}
+
+.ota-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ota-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.ota-progress-bar {
+  width: 100%;
+  height: 12px;
+}
+
+.ota-log {
+  border: 1px solid #d7dde3;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ota-log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f0f3f7;
+  font-size: 0.85rem;
+}
+
+.ota-log-body {
+  margin: 0;
+  padding: 12px;
+  min-height: 80px;
+  max-height: 200px;
+  overflow: auto;
+  background: #1f2933;
+  color: #cbd2d9;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

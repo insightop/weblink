@@ -1,0 +1,31 @@
+export const messages = {
+  ota: {
+    title: 'OTA Kit',
+    unsupported: 'Web Serial is not supported. Please use Chrome/Edge.',
+    insecure: 'A secure context (HTTPS or localhost) is required.',
+    selectPort: 'Select Serial Port',
+    firmwareUrl: 'Firmware URL',
+    downloadFirmware: 'Download Firmware',
+    uploadFirmware: 'Upload Firmware',
+    start: 'Start Flashing',
+    stage: {
+      idle: 'Idle',
+      connecting: 'Connecting',
+      programming: 'Programming',
+      resetting: 'Resetting',
+      done: 'Done',
+      failed: 'Failed',
+    },
+    clearLog: 'Clear Log',
+    error: {
+      'xcp.connect_failed': 'XCP connect failed: device did not enter bootloader mode',
+      'info_table.rejected': 'Info table check failed: device rejected the upgrade',
+      'info_table.error': 'Info table check error',
+      'firmware.parse_failed': 'Firmware parse failed: no valid data',
+      'firmware.no_segments': 'Firmware parse failed: no valid data segments',
+      'firmware.segment_missing': 'Failed to get segment',
+      'erase.failed': 'Erase failed',
+      'write.failed': 'Write failed',
+    },
+  },
+}
